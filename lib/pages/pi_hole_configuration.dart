@@ -87,7 +87,8 @@ class _PiholeConfigurationPageState extends State<PiholeConfigurationPage> {
                               ),
                               SizedBox(height: 10),
                               SizedBox(
-                                height: MediaQuery.sizeOf(context).height * 0.78,
+                                height:
+                                    MediaQuery.sizeOf(context).height * 0.78,
                                 child: JsonView.map(
                                   configResult,
                                   theme: JsonViewTheme(
@@ -106,7 +107,9 @@ class _PiholeConfigurationPageState extends State<PiholeConfigurationPage> {
                                       size: 20,
                                     ),
                                     separator: Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 8.0,
+                                      ),
                                       child: Icon(
                                         Icons.arrow_right_alt_outlined,
                                         size: 20,

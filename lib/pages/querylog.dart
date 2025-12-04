@@ -121,8 +121,12 @@ class _QueryLogPageState extends State<QueryLogPage> {
     var queryStatusConstant = KConstants.queryStatus[query.status];
     bool isDarkMode = PiUtils.getDarkMode(context);
     Color queryStatusColor = queryStatusConstant["color"];
-    Color queryStatusColorWithAlpha = queryStatusColor.withAlpha(isDarkMode? KListStyle.darkAlphaIntensity: KListStyle.lightAlphaIntensity);
-    
+    Color queryStatusColorWithAlpha = queryStatusColor.withAlpha(
+      isDarkMode
+          ? KListStyle.darkAlphaIntensity
+          : KListStyle.lightAlphaIntensity,
+    );
+
     return ListTileTheme(
       minVerticalPadding: 0,
       child: ExpansionTile(
@@ -203,11 +207,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            CustomTagWidget(
-                              title: '${query.type}',
-                            ),
-                          ],
+                          children: [CustomTagWidget(title: '${query.type}')],
                         ),
                       ),
                       Padding(

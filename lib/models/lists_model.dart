@@ -18,7 +18,7 @@ class Lists {
   final int? invalid_domains;
   final int? abp_entries;
   final int? status;
-  
+
   Lists({
     required this.address,
     required this.comment,

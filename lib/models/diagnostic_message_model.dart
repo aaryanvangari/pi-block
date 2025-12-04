@@ -20,7 +20,11 @@ class DiagnosticMessage {
   });
 
   factory DiagnosticMessage.fromJson(Map<String, dynamic> json) {
-    log(json.toString(), level: Level.FINEST.value, name: "DiagnosticMessage.fromJson");
+    log(
+      json.toString(),
+      level: Level.FINEST.value,
+      name: "DiagnosticMessage.fromJson",
+    );
     return DiagnosticMessage(
       id: json["id"],
       timestamp: (json["timestamp"]).toDouble(),

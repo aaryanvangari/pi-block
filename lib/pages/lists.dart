@@ -192,10 +192,16 @@ class _ListsPageState extends State<ListsPage> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           CustomTagWidget(
-                            iconData: (item.type == "block") ? Icons.block : FontAwesomeIcons.check,
-                            color: (item.type == "block") ? Colors.red : Colors.green,
-                            title: (item.type == "block") ? "Blocklist": "Allowlist",
-                          )
+                            iconData: (item.type == "block")
+                                ? Icons.block
+                                : FontAwesomeIcons.check,
+                            color: (item.type == "block")
+                                ? Colors.red
+                                : Colors.green,
+                            title: (item.type == "block")
+                                ? "Blocklist"
+                                : "Allowlist",
+                          ),
                         ],
                       ),
                       SizedBox(height: 4),
@@ -203,9 +209,13 @@ class _ListsPageState extends State<ListsPage> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           CustomTagWidget(
-                            iconData: (item.status == 1) ? FontAwesomeIcons.circleCheck : FontAwesomeIcons.clockRotateLeft,
+                            iconData: (item.status == 1)
+                                ? FontAwesomeIcons.circleCheck
+                                : FontAwesomeIcons.clockRotateLeft,
                             color: Colors.green,
-                            title: (item.status == 1) ? "Downloaded": "Upstream",
+                            title: (item.status == 1)
+                                ? "Downloaded"
+                                : "Upstream",
                           ),
                         ],
                       ),

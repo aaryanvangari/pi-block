@@ -21,10 +21,12 @@ class CustomTagWidget extends StatelessWidget {
       ),
       child: Row(
         children: [
-          iconData != null ? Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2.0),
-            child: Icon(iconData, size: 10, color: color),
-          ): SizedBox(),
+          iconData != null
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                  child: Icon(iconData, size: 10, color: color),
+                )
+              : SizedBox(),
           Text(
             title,
             textAlign: TextAlign.center,

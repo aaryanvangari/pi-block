@@ -113,7 +113,9 @@ class _DomainsPageState extends State<DomainsPage> {
           padding: EdgeInsets.all(8),
           decoration: BoxDecoration(
             // color: (item.type == "deny")? KListStyle.listHeaderBackgroundColors["red"]?.withAlpha(15): KListStyle.listHeaderBackgroundColors["green"]?.withAlpha(15),
-            color: (item.type == "deny")? listHeaderRedBackground.value: listHeaderGreenBackground.value,
+            color: (item.type == "deny")
+                ? listHeaderRedBackground.value
+                : listHeaderGreenBackground.value,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
@@ -193,9 +195,13 @@ class _DomainsPageState extends State<DomainsPage> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           CustomTagWidget(
-                            iconData: (item.type == "deny") ? Icons.block : FontAwesomeIcons.check,
-                            color: (item.type == "deny") ? Colors.red: Colors.green,
-                            title: (item.kind == "regex") ? "Regex": "Exact",
+                            iconData: (item.type == "deny")
+                                ? Icons.block
+                                : FontAwesomeIcons.check,
+                            color: (item.type == "deny")
+                                ? Colors.red
+                                : Colors.green,
+                            title: (item.kind == "regex") ? "Regex" : "Exact",
                           ),
                         ],
                       ),

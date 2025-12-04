@@ -157,7 +157,7 @@ class PiHttpClient {
   dynamic put(
     String urlEndpoint,
     dynamic queryParams,
-    dynamic body,[
+    dynamic body, [
     String? scheme,
     String? server,
     int? port,
