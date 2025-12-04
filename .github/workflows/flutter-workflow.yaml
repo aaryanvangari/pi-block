@@ -1,0 +1,56 @@
+name: Flutter CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '17.x'
+
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'beta'
+
+      - name: Get Flutter Version
+        id: flutter_version
+        uses: bungabear/flutter_version_read@main
+        with:
+          file: ./pubspec.yaml
+
+      - name: Flutter App Version Number
+        run: echo 'version_number:' ${{ steps.flutter_version.outputs.version_number }}
+
+      - name: Flutter App Build Number
+        run: echo 'build_number:' ${{ steps.flutter_version.outputs.build_number }}
+
+      - run: flutter pub get
+      - run: dart format --set-exit-if-changed .
+      - run: flutter analyze .
+
+      - name: Build APK
+        run: flutter build apk
+
+      - name: Build appBundle
+        run: flutter build appbundle
+
+      - name: Rename APK
+        run: |
+          VERSION_NUMBER=${{ steps.flutter_version.outputs.version_number }}
+          BUILD_NUMBER=${{ steps.flutter_version.outputs.build_number }}
+          mv build/app/outputs/flutter-apk/app-release.apk "build/app/outputs/flutter-apk/Pi-Block-${VERSION_NUMBER}-${BUILD_NUMBER}.apk"
+          mv build/app/outputs/bundle/release/app-release.aab "build/app/outputs/bundle/release/Pi-Block-${VERSION_NUMBER}-${BUILD_NUMBER}.aab"
+
+      - name: Upload the APK onto Github
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/flutter-apk/*.apk,build/app/outputs/bundle/release/*.aab"
+          token: ${{ secrets.GH_TOKEN }}
+          skipIfReleaseExists: true
+          tag: ${{ steps.flutter_version.outputs.version_number }}
