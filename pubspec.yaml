@@ -1,7 +1,7 @@
 name: pi_block
 description: "Application to manage Pi-Hole instance"
 publish_to: 'none'
-version: 0.1.0
+version: 1.0.0
 
 environment:
   sdk: ^3.9.2
@@ -27,7 +27,7 @@ dependencies:
   flutter_timer_countdown: ^1.0.7
   multi_value_listenable_builder: ^0.0.2
   flutter_advanced_switch: ^3.1.0
-  flutter_switch: ^0.3.2       
+  flutter_switch: ^0.3.2
   package_info_plus: ^9.0.0
 
 dev_dependencies:
