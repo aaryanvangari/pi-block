@@ -83,7 +83,7 @@ class PiUtils {
     }
 
     if (e.toString() == "Session Error: Session Expired") {
-      await Future.delayed(Duration(seconds: 0));
+      // await Future.delayed(Duration(seconds: 0));
       context.go("/");
     }
     GlobalSnackbar.error(context, errorTitle, errorDescription);
