@@ -10,9 +10,12 @@ class GradientBackground extends StatelessWidget {
       decoration: BoxDecoration(
         // shape: BoxShape.circle,
         gradient: LinearGradient(
-          colors: [Color.fromARGB(255, 116, 187, 119), Color.fromARGB(255, 99, 188, 120)],
+          colors: [
+            Color.fromARGB(255, 116, 187, 119),
+            Color.fromARGB(255, 99, 188, 120),
+          ],
           begin: Alignment.bottomCenter,
-          end: Alignment.topCenter
+          end: Alignment.topCenter,
         ),
       ),
       child: child,

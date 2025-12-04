@@ -78,7 +78,9 @@ class _DashboardPageState extends State<DashboardPage> {
           ? true
           : false;
       // Add 1 more second to make sure it's timer mismatch doesn't occur. Research on it thoroughly
-      blockedTimerNotifier.value = Duration(seconds: result["timer"] ?? 0 + 1 ?? 0);
+      blockedTimerNotifier.value = Duration(
+        seconds: result["timer"] ?? 0 + 1 ?? 0,
+      );
       blockingExpansibleController.collapse();
     } catch (e) {
       if (!mounted) return;

@@ -307,7 +307,10 @@ class _StatsPageState extends State<StatsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 2,
+                            ),
                             child: Text(
                               "Query Types",
                               style: TextStyle(
@@ -370,7 +373,10 @@ class _StatsPageState extends State<StatsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 2,
+                            ),
                             child: Text(
                               "Upstreams",
                               style: TextStyle(
@@ -438,7 +444,10 @@ class _StatsPageState extends State<StatsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 2,
+                            ),
                             child: Text(
                               "Top Permitted Domains",
                               style: TextStyle(
@@ -505,7 +514,10 @@ class _StatsPageState extends State<StatsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 2,
+                            ),
                             child: Text(
                               "Top Blocked Domains",
                               style: TextStyle(
@@ -572,7 +584,10 @@ class _StatsPageState extends State<StatsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 2,
+                            ),
                             child: Text(
                               "Top Clients (Total)",
                               style: TextStyle(
@@ -639,7 +654,10 @@ class _StatsPageState extends State<StatsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0,
+                              vertical: 2,
+                            ),
                             child: Text(
                               "Top Clients (Blocked only)",
                               style: TextStyle(

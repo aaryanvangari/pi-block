@@ -210,7 +210,7 @@ class _LabelLinePainter extends CustomPainter {
     required this.radialLen,
     required this.horizontalLen,
     required this.startDegreeDeg,
-    required this.labelColor
+    required this.labelColor,
   });
 
   @override

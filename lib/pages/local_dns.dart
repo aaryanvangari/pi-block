@@ -23,7 +23,9 @@ class _LocalDnsPageState extends State<LocalDnsPage> {
             },
           ),
         ),
-        body: SingleChildScrollView(child: Column(children: [Text("Local DNS")])),
+        body: SingleChildScrollView(
+          child: Column(children: [Text("Local DNS")]),
+        ),
       ),
     );
   }

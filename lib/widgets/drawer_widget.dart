@@ -16,9 +16,7 @@ class DrawerWidget extends StatelessWidget {
         children: [
           Column(
             children: [
-              DrawerHeader(
-                child: LogoWidget(type: "drawer")
-              ),
+              DrawerHeader(child: LogoWidget(type: "drawer")),
               // ExpansionTile(
               //   showTrailingIcon: true,
               //   childrenPadding: EdgeInsets.symmetric(horizontal: 10),
@@ -46,7 +44,10 @@ class DrawerWidget extends StatelessWidget {
               //   ],
               // ),
               ListTile(
-                title: Text("Pi-Hole Configuration", style: KTextStyle.drawerEntryItemTitle),
+                title: Text(
+                  "Pi-Hole Configuration",
+                  style: KTextStyle.drawerEntryItemTitle,
+                ),
                 leading: Icon(Icons.code),
                 onTap: () {
                   context.go("/piholeConfiguration");

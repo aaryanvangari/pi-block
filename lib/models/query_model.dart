@@ -10,7 +10,10 @@ class Reply {
   Reply({required this.type, required this.time});
 
   factory Reply.fromJson(Map<String, dynamic> json) {
-    return Reply(type: json['type'] ?? "", time: double.tryParse(json['time'].toString()));
+    return Reply(
+      type: json['type'] ?? "",
+      time: double.tryParse(json['time'].toString()),
+    );
   }
 
   Map<String, dynamic> toJson() {

@@ -94,7 +94,10 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
                       "Login to Pi-Hole instance",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -117,7 +120,11 @@ class _LoginPageState extends State<LoginPage> {
                                   if (nonNullValue.isEmpty) {
                                     return ("Server Url is required");
                                   }
-                                  Uri? url = Uri.tryParse(currentValue!, 0, currentValue.length);
+                                  Uri? url = Uri.tryParse(
+                                    currentValue!,
+                                    0,
+                                    currentValue.length,
+                                  );
                                   if (url!.host.isEmpty) {
                                     return ("Invalid Url");
                                   }

@@ -11,12 +11,9 @@ class EmptyCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return 
-    Card(
+    return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -30,7 +27,7 @@ class EmptyCardWidget extends StatelessWidget {
                 // color: Theme.of(context).colorScheme.primary,
               ),
             ),
-            SizedBox(height: 10, width: MediaQuery.sizeOf(context).width,),
+            SizedBox(height: 10, width: MediaQuery.sizeOf(context).width),
             Center(
               child: Text(
                 message,
@@ -47,4 +44,3 @@ class EmptyCardWidget extends StatelessWidget {
     );
   }
 }
-

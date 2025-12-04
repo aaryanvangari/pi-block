@@ -168,10 +168,10 @@ class _MainAppState extends State<MainApp> {
               colorScheme: ColorScheme.fromSeed(
                 seedColor: Colors.blue,
                 brightness: (darkMode == 'System')
-                  ? MediaQuery.of(context).platformBrightness
-                  : (darkMode == "Dark")
-                  ? Brightness.dark
-                  : Brightness.light,
+                    ? MediaQuery.of(context).platformBrightness
+                    : (darkMode == "Dark")
+                    ? Brightness.dark
+                    : Brightness.light,
               ),
               primarySwatch: Colors.grey,
               // brightness: (darkMode == 'System')

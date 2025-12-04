@@ -8,6 +8,9 @@ ValueNotifier<Duration> blockedTimerNotifier = ValueNotifier(Duration());
 ValueNotifier<bool> blockedExpandedStateNotifier = ValueNotifier(false);
 ValueNotifier<bool> isBlockedEnabledNotifier = ValueNotifier(true);
 ValueNotifier<Color> listHeaderBackground = ValueNotifier(Colors.transparent);
-ValueNotifier<Color> listHeaderRedBackground = ValueNotifier(Colors.transparent);
-ValueNotifier<Color> listHeaderGreenBackground = ValueNotifier(Colors.transparent);
-
+ValueNotifier<Color> listHeaderRedBackground = ValueNotifier(
+  Colors.transparent,
+);
+ValueNotifier<Color> listHeaderGreenBackground = ValueNotifier(
+  Colors.transparent,
+);

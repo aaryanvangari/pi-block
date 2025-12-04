@@ -41,7 +41,7 @@ class Domain {
       enabled: json["enabled"],
       id: json["id"],
       date_added: json["date_added"],
-      date_modified: json["date_modified"]
+      date_modified: json["date_modified"],
     );
   }
 }
