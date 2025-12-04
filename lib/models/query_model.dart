@@ -49,7 +49,7 @@ class EDE {
   }
 }
 
-class Query {
+class QueryModel {
   final int? id;
   final double? time;
   final String? type;
@@ -63,7 +63,7 @@ class Query {
   final EDE ede;
   final String? cname;
 
-  Query({
+  QueryModel({
     required this.id,
     required this.time,
     required this.type,
@@ -78,9 +78,9 @@ class Query {
     required this.cname,
   });
 
-  factory Query.fromJson(Map<String, dynamic> json) {
-    log(json.toString(), level: Level.FINEST.value, name: "Query.fromJson");
-    return Query(
+  factory QueryModel.fromJson(Map<String, dynamic> json) {
+    log(json.toString(), level: Level.FINEST.value, name: "QueryModel.fromJson");
+    return QueryModel(
       id: json["id"],
       time: json["time"],
       type: json["type"],

@@ -4,7 +4,7 @@ import 'dart:developer';
 
 import 'package:logging/logging.dart';
 
-class Lists {
+class ListsModel {
   final String? address;
   final String? comment;
   final List<dynamic>? groups;
@@ -19,7 +19,7 @@ class Lists {
   final int? abp_entries;
   final int? status;
 
-  Lists({
+  ListsModel({
     required this.address,
     required this.comment,
     required this.groups,
@@ -35,9 +35,9 @@ class Lists {
     required this.status,
   });
 
-  factory Lists.fromJson(Map<String, dynamic> json) {
-    log(json.toString(), level: Level.FINEST.value, name: "Lists.fromJson");
-    return Lists(
+  factory ListsModel.fromJson(Map<String, dynamic> json) {
+    log(json.toString(), level: Level.FINEST.value, name: "ListsModel.fromJson");
+    return ListsModel(
       address: json["address"],
       comment: json["comment"] ?? "",
       groups: json["groups"],

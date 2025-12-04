@@ -76,7 +76,7 @@ class _DomainsPageState extends State<DomainsPage> {
         name: "DomainsPage.getDomainsData",
       );
       listData["domains"] = (result['domains'] as List<dynamic>)
-          .map((json) => Domain.fromJson(json as Map<String, dynamic>))
+          .map((json) => DomainModel.fromJson(json as Map<String, dynamic>))
           .toList();
 
       return listData;
@@ -87,7 +87,7 @@ class _DomainsPageState extends State<DomainsPage> {
     }
   }
 
-  Widget _domainRow(Domain item) {
+  Widget _domainRow(DomainModel item) {
     return ListTileTheme(
       minVerticalPadding: 0,
       child: ExpansionTile(

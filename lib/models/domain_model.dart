@@ -4,7 +4,7 @@ import 'dart:developer';
 
 import 'package:logging/logging.dart';
 
-class Domain {
+class DomainModel {
   final String? domain;
   final String? unicode;
   final String? type;
@@ -16,7 +16,7 @@ class Domain {
   final int? date_added;
   final int? date_modified;
 
-  Domain({
+  DomainModel({
     required this.domain,
     required this.unicode,
     required this.type,
@@ -29,9 +29,9 @@ class Domain {
     required this.date_modified,
   });
 
-  factory Domain.fromJson(Map<String, dynamic> json) {
-    log(json.toString(), level: Level.FINEST.value, name: "Domain.fromJson");
-    return Domain(
+  factory DomainModel.fromJson(Map<String, dynamic> json) {
+    log(json.toString(), level: Level.FINEST.value, name: "DomainModel.fromJson");
+    return DomainModel(
       domain: json["domain"],
       unicode: json["unicode"],
       type: json["type"],

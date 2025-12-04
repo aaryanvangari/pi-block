@@ -69,7 +69,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
     return {};
   }
 
-  Widget getStatusHumanReadableText(Query query) {
+  Widget getStatusHumanReadableText(QueryModel query) {
     String status = "";
     var queryStatusConstant = KConstants.queryStatus[query.status];
     var isCNAME =
@@ -108,8 +108,8 @@ class _QueryLogPageState extends State<QueryLogPage> {
     return statusWidget;
   }
 
-  Widget buildStatusCell(Query row) {
-    var queryStatusConstant = KConstants.queryStatus[row.status];
+  Widget buildStatusCell(String status) {
+    var queryStatusConstant = KConstants.queryStatus[status];
     return Icon(
       queryStatusConstant["icon"],
       size: 12,
@@ -117,7 +117,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
     );
   }
 
-  Widget _queryLogRow(Query query) {
+  Widget _queryLogRow(QueryModel query) {
     var queryStatusConstant = KConstants.queryStatus[query.status];
     bool isDarkMode = PiUtils.getDarkMode(context);
     Color queryStatusColor = queryStatusConstant["color"];
@@ -215,7 +215,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
                           horizontal: 5.0,
                           vertical: 3,
                         ),
-                        child: buildStatusCell(query),
+                        child: buildStatusCell(query.status),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -384,7 +384,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
         name: "QueryLogPage.getNextPage",
       );
       queryData["queries"] = (result['queries'] as List<dynamic>)
-          .map((json) => Query.fromJson(json as Map<String, dynamic>))
+          .map((json) => QueryModel.fromJson(json as Map<String, dynamic>))
           .toList();
       queryData["recordsFiltered"] = result["recordsFiltered"];
 

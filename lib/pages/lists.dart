@@ -76,7 +76,7 @@ class _ListsPageState extends State<ListsPage> {
         name: "ListsPage.getListsData",
       );
       listData["lists"] = (result['lists'] as List<dynamic>)
-          .map((json) => Lists.fromJson(json as Map<String, dynamic>))
+          .map((json) => ListsModel.fromJson(json as Map<String, dynamic>))
           .toList();
 
       return listData;
@@ -87,7 +87,7 @@ class _ListsPageState extends State<ListsPage> {
     }
   }
 
-  Widget _listRow(Lists item) {
+  Widget _listRow(ListsModel item) {
     return ListTileTheme(
       minVerticalPadding: 0,
       child: ExpansionTile(

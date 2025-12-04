@@ -171,7 +171,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
       var diagnosticsData = {};
       diagnosticsData["messages"] = (result['messages'] as List<dynamic>)
           .map(
-            (json) => DiagnosticMessage.fromJson(json as Map<String, dynamic>),
+            (json) => DiagnosticMessageModel.fromJson(json as Map<String, dynamic>),
           )
           .toList();
 
