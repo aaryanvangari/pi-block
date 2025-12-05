@@ -20,7 +20,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
   int pageSize = 5;
   late int _totalPages = 1;
   int _currentPage = 1;
-  dynamic _selectedPageData;
+  late QueryListModel _selectedPageData;
   bool loading = false;
   PiHttpClient piHttpClient = PiHttpClient();
 
@@ -54,10 +54,11 @@ class _QueryLogPageState extends State<QueryLogPage> {
         level: Level.FINE.value,
         name: "QueryLogPage.getFirstPage",
       );
+      QueryListModel queryListModel = result as QueryListModel;
       setState(() {
         loading = false;
-        _selectedPageData = result;
-        _totalPages = (result["recordsFiltered"] / pageSize).ceil();
+        _selectedPageData = queryListModel;
+        _totalPages = (queryListModel.recordsFiltered / pageSize).ceil();
       });
     } catch (e) {
       setState(() {
@@ -167,7 +168,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${query.domain}',
+                            query.domain,
                             style: KTextStyle.listHeaderTitle,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -178,7 +179,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${query.client.name}',
+                            query.client.name,
                             style: KTextStyle.listHeaderSubTitle,
                           ),
                         ],
@@ -207,7 +208,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
                         ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [CustomTagWidget(title: '${query.type}')],
+                          children: [CustomTagWidget(title: query.type)],
                         ),
                       ),
                       Padding(
@@ -222,7 +223,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
                           horizontal: 5.0,
                           vertical: 3,
                         ),
-                        child: Text(PiUtils.calculateTime(query.reply.time!)),
+                        child: Text(PiUtils.calculateTime(query.reply.time)),
                       ),
                     ],
                   ),
@@ -271,7 +272,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
                           maxLines: 3,
                         ),
                         Text(
-                          PiUtils.getDateFormatter(query.time!),
+                          PiUtils.getDateFormatter(query.time),
                           style: KTextStyle.listExpandedValue,
                         ),
                         Text(
@@ -279,7 +280,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
                           style: KTextStyle.listExpandedValue,
                         ),
                         Text(
-                          '${query.reply.type}',
+                          query.reply.type,
                           style: KTextStyle.listExpandedValue,
                         ),
                         Text(
@@ -299,12 +300,11 @@ class _QueryLogPageState extends State<QueryLogPage> {
     );
   }
 
-  Widget generateQueryLogData(dynamic data) {
-    var items = data?["queries"];
+  Widget generateQueryLogData(QueryListModel queryListModel) {
     ListView listView = ListView.separated(
-      itemCount: items.length,
+      itemCount: queryListModel.queries.length,
       itemBuilder: (context, index) {
-        var selectedPageItem = items[index];
+        var selectedPageItem = queryListModel.queries[index];
         return _queryLogRow(selectedPageItem);
       },
       separatorBuilder: (context, index) {
@@ -318,10 +318,9 @@ class _QueryLogPageState extends State<QueryLogPage> {
     if (loading) {
       return Center(child: CircularProgressIndicator());
     } else {
-      if (_selectedPageData != null &&
-          _selectedPageData?["queries"]?.length > 0) {
+      if (_selectedPageData.queries.isNotEmpty) {
         return generateQueryLogData(_selectedPageData);
-      } else if (_selectedPageData?["queries"]?.length == 0) {
+      } else if (_selectedPageData.queries.isEmpty) {
         return Center(
           child: Text(
             "No Data",
@@ -348,12 +347,12 @@ class _QueryLogPageState extends State<QueryLogPage> {
   }
 
   Future<Map<String, dynamic>> onPageChanged(int page) async {
-    Map<String, dynamic> data = {};
     try {
-      data = await getNextPage(page, pageSize);
+      QueryListModel queryListModel =
+          await getNextPage(page, pageSize) as QueryListModel;
       setState(() {
         _currentPage = page;
-        _selectedPageData = data;
+        _selectedPageData = queryListModel;
       });
     } catch (e) {
       if (!mounted) return {};
@@ -362,7 +361,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
     return {};
   }
 
-  Future<Map<String, dynamic>> getNextPage(int start, int length) async {
+  Future<Object> getNextPage(int start, int length) async {
     try {
       final queryParameter = <String, dynamic>{
         'start': ((start - 1) * pageSize).toString(),
@@ -376,19 +375,17 @@ class _QueryLogPageState extends State<QueryLogPage> {
         queryParams: queryParameter,
       );
       PiUtils.handleAPIException(result, false);
-      Map<String, dynamic> queryData = {};
 
       log(
         result.toString(),
         level: Level.FINE.value,
         name: "QueryLogPage.getNextPage",
       );
-      queryData["queries"] = (result['queries'] as List<dynamic>)
-          .map((json) => QueryModel.fromJson(json as Map<String, dynamic>))
-          .toList();
-      queryData["recordsFiltered"] = result["recordsFiltered"];
+      QueryListModel queryListModel = QueryListModel.fromJson(
+        result as Map<String, dynamic>,
+      );
 
-      return queryData;
+      return queryListModel;
     } catch (e) {
       log(
         e.toString(),

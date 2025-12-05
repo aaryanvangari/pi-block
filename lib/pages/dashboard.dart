@@ -5,6 +5,11 @@ import 'package:logging/logging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/models/blocking_model.dart';
+import 'package:pi_block/models/host_model.dart';
+import 'package:pi_block/models/summary_model.dart';
+import 'package:pi_block/models/system_model.dart';
+import 'package:pi_block/models/version_model.dart';
 import 'dart:convert';
 
 import 'package:pi_block/widgets/empty_card_widget.dart';
@@ -74,13 +79,22 @@ class _DashboardPageState extends State<DashboardPage> {
         );
       }
 
-      isBlockedEnabledNotifier.value = (result["blocking"] == "enabled")
-          ? true
-          : false;
-      // Add 1 more second to make sure it's timer mismatch doesn't occur. Research on it thoroughly
-      blockedTimerNotifier.value = Duration(
-        seconds: result["timer"] ?? 0 + 1 ?? 0,
+      BlockingModel blockingModel = BlockingModel.fromJson(
+        result as Map<String, dynamic>,
       );
+      isBlockedEnabledNotifier.value =
+          (blockingModel.blocking == BlockingStatus.enabled) ? true : false;
+
+      // if blocking is enabled then resetting timer in local and in preferences
+      if (isBlockedEnabledNotifier.value) {
+        blockedTimerNotifier.value = Duration();
+        await prefs.setInt(KConstants.blockingTimer, Duration().inSeconds);
+      } else {
+        // Add 1 more second to make sure it's timer mismatch doesn't occur. Research on it thoroughly
+        blockedTimerNotifier.value = Duration(
+          seconds: blockingModel.timer.toInt() + 1,
+        );
+      }
       blockingExpansibleController.collapse();
     } catch (e) {
       if (!mounted) return;
@@ -88,15 +102,16 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  bool getIsUpdateAvailable(dynamic version) {
-    var coreLocal = version["version"]["core"]["local"]["version"].toString();
-    var coreRemote = version["version"]["core"]["remote"]["version"].toString();
-    var webLocal = version["version"]["web"]["local"]["version"].toString();
-    var webRemote = version["version"]["web"]["remote"]["version"].toString();
-    var ftlLocal = version["version"]["ftl"]["local"]["version"].toString();
-    var ftlRemote = version["version"]["ftl"]["remote"]["version"].toString();
-    var dockerLocal = version["version"]["docker"]["local"].toString();
-    var dockerRemote = version["version"]["docker"]["remote"].toString();
+  bool getIsUpdateAvailable(VersionModel versionModel) {
+    var coreLocal = versionModel.version.core.local.version;
+    var coreRemote = versionModel.version.core.remote.version;
+    var webLocal = versionModel.version.web.local.version;
+    var webRemote = versionModel.version.web.remote.version;
+    var ftlLocal = versionModel.version.ftl.local.version;
+    var ftlRemote = versionModel.version.ftl.remote.version;
+    var dockerLocal = versionModel.version.docker.local;
+    var dockerRemote = versionModel.version.docker.remote;
+
     bool coreUpdate = false;
     bool webUpdate = false;
     bool ftlUpdate = false;
@@ -113,19 +128,19 @@ class _DashboardPageState extends State<DashboardPage> {
     return updateAvailable;
   }
 
-  String getMemoryInfo(String type, dynamic item) {
+  String getMemoryInfo(String type, SystemModel systemModel) {
     String memoryInfo = "";
     int free = 0;
     int total = 0;
     double usedPercentage = 0.0;
     if (type == "ram") {
-      free = item["system"]["memory"]["ram"]["used"];
-      total = item["system"]["memory"]["ram"]["total"];
-      usedPercentage = item["system"]["memory"]["ram"]["%used"];
+      free = systemModel.system.memory.ram.used;
+      total = systemModel.system.memory.ram.total;
+      usedPercentage = systemModel.system.memory.ram.percentUsed;
     } else if (type == "swap") {
-      free = item["system"]["memory"]["swap"]["used"];
-      total = item["system"]["memory"]["swap"]["total"];
-      usedPercentage = item["system"]["memory"]["swap"]["%used"];
+      free = systemModel.system.memory.swap.used;
+      total = systemModel.system.memory.swap.total;
+      usedPercentage = systemModel.system.memory.swap.percentUsed;
     }
     String freeString = (free / (1024 * 1024)).toStringAsFixed(1);
     String totalString = (total / (1024 * 1024)).toStringAsFixed(1);
@@ -168,22 +183,26 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  Future<Map<String, dynamic>> getBlockingStatus() async {
+  Future getBlockingStatus() async {
     try {
       var result = await piHttpClient.get(KUrls.dns);
       PiUtils.handleAPIException(result, false);
-
-      isBlockedEnabledNotifier.value = (result["blocking"] == "enabled")
-          ? true
-          : false;
-      await handleBlockingTimer();
 
       log(
         result.toString(),
         level: Level.FINE.value,
         name: "DashboardPage.getBlockingStatus",
       );
-      return result;
+
+      BlockingModel blockingModel = BlockingModel.fromJson(
+        result as Map<String, dynamic>,
+      );
+      isBlockedEnabledNotifier.value =
+          (blockingModel.blocking == BlockingStatus.enabled) ? true : false;
+
+      await handleBlockingTimer();
+
+      // return result;
     } catch (e) {
       if (!mounted) return {};
       PiUtils.handleGeneralException(context, e);
@@ -191,7 +210,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return {};
   }
 
-  Future<Map<String, dynamic>> getSummary() async {
+  Future<Object> getSummary() async {
     try {
       var result = await piHttpClient.get(KUrls.summary);
       PiUtils.handleAPIException(result, false);
@@ -201,8 +220,11 @@ class _DashboardPageState extends State<DashboardPage> {
         level: Level.FINE.value,
         name: "DashboardPage.getSummary",
       );
+      SummaryModel summaryModel = SummaryModel.fromJson(
+        result as Map<String, dynamic>,
+      );
 
-      return result;
+      return summaryModel;
     } catch (e) {
       if (!mounted) return {};
       PiUtils.handleGeneralException(context, e);
@@ -210,16 +232,19 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  Future<Map<String, dynamic>> getSystemInfo() async {
+  Future<Object> getSystemInfo() async {
     try {
       var result = await piHttpClient.get(KUrls.system);
       PiUtils.handleAPIException(result, false);
       log(
         result.toString(),
         level: Level.FINE.value,
-        name: "DashboardPage.getBlockingStatus",
+        name: "DashboardPage.getSystemInfo",
       );
-      return result;
+      SystemModel systemModel = SystemModel.fromJson(
+        result as Map<String, dynamic>,
+      );
+      return systemModel;
     } catch (e) {
       if (!mounted) return {};
       PiUtils.handleGeneralException(context, e);
@@ -227,7 +252,7 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  Future<Map<String, dynamic>> getHostInfo() async {
+  Future<Object> getHostInfo() async {
     try {
       var result = await piHttpClient.get(KUrls.hosts);
       PiUtils.handleAPIException(result, false);
@@ -236,7 +261,8 @@ class _DashboardPageState extends State<DashboardPage> {
         level: Level.FINE.value,
         name: "DashboardPage.getHostInfo",
       );
-      return result;
+      HostModel hostModel = HostModel.fromJson(result as Map<String, dynamic>);
+      return hostModel;
     } catch (e) {
       if (!mounted) return {};
       PiUtils.handleGeneralException(context, e);
@@ -244,7 +270,7 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  Future<Map<String, dynamic>> getVersion() async {
+  Future<Object> getVersion() async {
     try {
       var result = await piHttpClient.get(KUrls.versions);
       PiUtils.handleAPIException(result, false);
@@ -253,7 +279,10 @@ class _DashboardPageState extends State<DashboardPage> {
         level: Level.FINE.value,
         name: "DashboardPage.getVersion",
       );
-      return result;
+      VersionModel versionModel = VersionModel.fromJson(
+        result as Map<String, dynamic>,
+      );
+      return versionModel;
     } catch (e) {
       if (!mounted) return {};
       PiUtils.handleGeneralException(context, e);
@@ -603,7 +632,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   widge = Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasData) {
-                  var summary = snapshot.data;
+                  var summaryModel = snapshot.data as SummaryModel;
 
                   widge = GridView.count(
                     crossAxisCount: 2,
@@ -614,14 +643,14 @@ class _DashboardPageState extends State<DashboardPage> {
                       _buildStatCard(
                         context,
                         title: "Total Queries",
-                        value: summary["queries"]["total"].toString(),
+                        value: summaryModel.queries.total.toString(),
                         icon: FontAwesomeIcons.earthAmericas,
                         color: Color(0xFF00c0ef),
                       ),
                       _buildStatCard(
                         context,
                         title: "Queries Blocked",
-                        value: summary["queries"]["blocked"].toString(),
+                        value: summaryModel.queries.blocked.toString(),
                         icon: FontAwesomeIcons.hand,
                         color: Color(0xFFdd4b39),
                       ),
@@ -629,16 +658,14 @@ class _DashboardPageState extends State<DashboardPage> {
                         context,
                         title: "Percentage Blocked",
                         value:
-                            summary["queries"]["percent_blocked"]
-                                .toStringAsFixed(2) +
-                            "%",
+                            '${summaryModel.queries.percentBlocked.toStringAsFixed(2)}%',
                         icon: FontAwesomeIcons.chartPie,
                         color: Color(0xFFf39c12),
                       ),
                       _buildStatCard(
                         context,
                         title: "Domains on Lists",
-                        value: summary["gravity"]["domains_being_blocked"]
+                        value: summaryModel.gravity.domainsBeingBlocked
                             .toString(),
                         icon: FontAwesomeIcons.list,
                         color: Color(0xFF00a65a),
@@ -709,17 +736,104 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
               ),
             ),
-            // System and Host Information
+            // Host Information
             FutureBuilder(
-              future: Future.wait([getSystemInfo(), getHostInfo()]),
+              future: getHostInfo(),
               builder: (context, AsyncSnapshot snapshot) {
                 Widget widget;
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   widget = Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasData) {
-                  var system = snapshot.data[0];
-                  var host = snapshot.data[1];
+                  var hostModel = snapshot.data as HostModel;
+
+                  widget = Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Padding(
+                      padding: KCardStyle.dashboardCardPadding,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Host",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              // color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Hostname"),
+                                  Text(
+                                    hostModel.host.uname.nodename,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Product"),
+                                  Text(
+                                    hostModel.host.dmi.product.version,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Board"),
+                                  Text(
+                                    '${hostModel.host.dmi.board.vendor}-${hostModel.host.dmi.board.name}',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                } else if (snapshot.hasError) {
+                  widget = ErrorCardWidget(
+                    header: "Host",
+                    message: "Error loading data",
+                  );
+                } else {
+                  widget = EmptyCardWidget(header: "Host", message: "No data");
+                }
+                return widget;
+              },
+            ),
+            // System information
+            FutureBuilder(
+              future: getSystemInfo(),
+              builder: (context, AsyncSnapshot snapshot) {
+                Widget widget;
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  widget = Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasData) {
+                  var systemModel = snapshot.data as SystemModel;
 
                   widget = Card(
                     elevation: 4,
@@ -746,38 +860,10 @@ class _DashboardPageState extends State<DashboardPage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text("Hostname"),
-                                  Text(
-                                    host["host"]["uname"]["nodename"]
-                                        .toString(),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text("Product"),
-                                  Text(
-                                    host["host"]["dmi"]["product"]["version"]
-                                        .toString(),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
                                   Text("Uptime"),
                                   Text(
                                     PiUtils.getTimeAgo(
-                                      system["system"]["uptime"],
+                                      systemModel.system.uptime,
                                       "seconds",
                                     ),
                                     style: TextStyle(
@@ -792,7 +878,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 children: [
                                   Text("Ram"),
                                   Text(
-                                    getMemoryInfo("ram", system),
+                                    getMemoryInfo("ram", systemModel),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -805,7 +891,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 children: [
                                   Text("Swap"),
                                   Text(
-                                    getMemoryInfo("swap", system),
+                                    getMemoryInfo("swap", systemModel),
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -818,7 +904,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 children: [
                                   Text("Cpu"),
                                   Text(
-                                    "${system["system"]["cpu"]["nprocs"]} cores (${system["system"]["cpu"]["%cpu"].toStringAsFixed(2)}%)",
+                                    "${systemModel.system.cpu.nprocs} cores (${systemModel.system.cpu.percentCpu.toStringAsFixed(2)}%)",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -854,8 +940,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   widget = Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasData) {
-                  var version = snapshot.data;
-                  bool isUpdateAvailable = getIsUpdateAvailable(version);
+                  var versionModel = snapshot.data as VersionModel;
+                  bool isUpdateAvailable = getIsUpdateAvailable(versionModel);
 
                   widget = Card(
                     elevation: 4,
@@ -886,8 +972,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                       label: Text(
                                         'Update Available',
                                         style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.grey.shade900,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
                                         ),
                                       ),
                                     )
@@ -903,39 +989,27 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                           SizedBox(height: 5),
                           _versionRow(
-                            component: "core",
-                            local:
-                                version["version"]["core"]["local"]["version"]
-                                    .toString(),
-                            remote:
-                                version["version"]["core"]["remote"]["version"]
-                                    .toString(),
+                            component: "Core",
+                            local: versionModel.version.core.local.version,
+                            remote: versionModel.version.core.remote.version,
                             header: false,
                           ),
                           _versionRow(
-                            component: "web",
-                            local: version["version"]["web"]["local"]["version"]
-                                .toString(),
-                            remote:
-                                version["version"]["web"]["remote"]["version"]
-                                    .toString(),
+                            component: "Web",
+                            local: versionModel.version.web.local.version,
+                            remote: versionModel.version.web.remote.version,
                             header: false,
                           ),
                           _versionRow(
-                            component: "ftl",
-                            local: version["version"]["ftl"]["local"]["version"]
-                                .toString(),
-                            remote:
-                                version["version"]["ftl"]["remote"]["version"]
-                                    .toString(),
+                            component: "FTL",
+                            local: versionModel.version.ftl.local.version,
+                            remote: versionModel.version.ftl.remote.version,
                             header: false,
                           ),
                           _versionRow(
                             component: "Docker",
-                            local: version["version"]["docker"]["local"]
-                                .toString(),
-                            remote: version["version"]["docker"]["remote"]
-                                .toString(),
+                            local: versionModel.version.docker.local,
+                            remote: versionModel.version.docker.remote,
                             header: false,
                           ),
                         ],
