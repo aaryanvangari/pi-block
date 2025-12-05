@@ -542,6 +542,20 @@ class _DashboardPageState extends State<DashboardPage> {
                                   ],
                                 ),
                                 ValueListenableBuilder(
+                                  valueListenable: blockedExpandedStateNotifier,
+                                  builder:
+                                      (context, blockedExpandedState, child) {
+                                        return Padding(
+                                          padding: const EdgeInsets.only(top: 26.0),
+                                          child: Center(
+                                            child: blockedExpandedState
+                                                ? Icon(Icons.keyboard_arrow_up, size: 20,)
+                                                : Icon(Icons.keyboard_arrow_down, size: 20,),
+                                          ),
+                                        );
+                                      },
+                                ),
+                                ValueListenableBuilder(
                                   valueListenable: isBlockedEnabledNotifier,
                                   builder: (context, isBlockingEnabled, child) {
                                     return Switch(
@@ -552,22 +566,6 @@ class _DashboardPageState extends State<DashboardPage> {
                                       inactiveThumbColor: Colors.grey,
                                     );
                                   },
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ValueListenableBuilder(
-                                  valueListenable: blockedExpandedStateNotifier,
-                                  builder:
-                                      (context, blockedExpandedState, child) {
-                                        return Center(
-                                          child: blockedExpandedState
-                                              ? Icon(Icons.keyboard_arrow_up)
-                                              : Icon(Icons.keyboard_arrow_down),
-                                        );
-                                      },
                                 ),
                               ],
                             ),
