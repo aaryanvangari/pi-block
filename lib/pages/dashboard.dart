@@ -18,6 +18,7 @@ import 'package:pi_block/components/pi_http_client.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/provider/auth_provider.dart';
+import 'package:pi_block/widgets/load_text.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -147,6 +148,20 @@ class _DashboardPageState extends State<DashboardPage> {
     memoryInfo =
         "${freeString}GB / ${totalString}GB (${usedPercentage.toStringAsFixed(2)}%)";
     return memoryInfo;
+  }
+
+  List<Widget> getSystemLoad(List<double> loads) {
+    List<Widget> loadList = [];
+    for (var load in loads) {
+      if (load > 1 && load < 2) {
+        loadList.add(LoadTextWidget(title: load, color: Colors.orange));
+      } else if (load < 1) {
+        loadList.add(LoadTextWidget(title: load, color: Colors.green));
+      } else if (load > 2) {
+        loadList.add(LoadTextWidget(title: load, color: Colors.red));
+      }
+    }
+    return loadList;
   }
 
   handleBlockingTimer() async {
@@ -575,6 +590,10 @@ class _DashboardPageState extends State<DashboardPage> {
                             physics: NeverScrollableScrollPhysics(),
                             itemCount: 8,
                             itemBuilder: (context, index) {
+                              // gradient from green to red using hue
+                              double hue = 120.0;
+                              double decrementFactor = (hue / 8).toDouble();
+                              hue = hue - (decrementFactor * index);
                               return GestureDetector(
                                 onTap: () {
                                   onBlockingChanged(
@@ -585,18 +604,26 @@ class _DashboardPageState extends State<DashboardPage> {
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: Colors.red[(index % 8 + 1) * 100],
+                                    color: HSVColor.fromAHSV(
+                                      1.0,
+                                      hue,
+                                      1.0,
+                                      0.7,
+                                    ).toColor(),
                                     borderRadius: BorderRadius.circular(15),
                                   ),
                                   child: Center(
-                                    child: Text(
-                                      blockingTimes[index][0],
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w500,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        blockingTimes[index][0],
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textAlign: TextAlign.center,
                                       ),
-                                      textAlign: TextAlign.center,
                                     ),
                                   ),
                                 ),
@@ -907,6 +934,18 @@ class _DashboardPageState extends State<DashboardPage> {
                                     "${systemModel.system.cpu.nprocs} cores (${systemModel.system.cpu.percentCpu.toStringAsFixed(2)}%)",
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Load"),
+                                  Row(
+                                    children: getSystemLoad(
+                                      systemModel.system.cpu.load.raw,
                                     ),
                                   ),
                                 ],
