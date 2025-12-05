@@ -1,6 +1,12 @@
 # Changelog
 
-## [1.1.0](/compare/1.0.0...1.1.0) (2025-12-05)
+## [1.1.1](https://github.com/aaryanvangari/pi-block/compare/1.1.0...1.1.1) (2025-12-05)
+
+### Features
+
+* ignore duplicate headings in markdown files 2d525b6
+
+## [1.1.0](https://github.com/aaryanvangari/pi-block/compare/1.0.0...1.1.0) (2025-12-05)
 
 ### Bug Fixes
 
@@ -13,7 +19,7 @@
 * revamped welcome screen with emphasizing login button af250b3
 * using models for data binding 0c13b5c
 
-## [1.0.0](/compare/0.1.0...1.0.0) (2025-12-04)
+## [1.0.0](https://github.com/aaryanvangari/pi-block/compare/0.1.0...1.0.0) (2025-12-04)
 
 ### Bug Fixes
 
