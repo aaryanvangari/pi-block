@@ -59,7 +59,7 @@ class _ListsPageState extends State<ListsPage> {
     }
   }
 
-  Future<Map<String, dynamic>> getListsData() async {
+  Future<Object> getListsData() async {
     try {
       final queryParameter = <String, dynamic>{
         '_': DateTime.now().millisecondsSinceEpoch.toString(),
@@ -69,17 +69,16 @@ class _ListsPageState extends State<ListsPage> {
         queryParams: queryParameter,
       );
       PiUtils.handleAPIException(result, false);
-      Map<String, dynamic> listData = {};
+
       log(
         result.toString(),
         level: Level.FINE.value,
         name: "ListsPage.getListsData",
       );
-      listData["lists"] = (result['lists'] as List<dynamic>)
-          .map((json) => Lists.fromJson(json as Map<String, dynamic>))
+      List<ListsModel> listsModels = (result['lists'] as List<dynamic>)
+          .map((json) => ListsModel.fromJson(json as Map<String, dynamic>))
           .toList();
-
-      return listData;
+      return listsModels;
     } catch (e) {
       if (!mounted) return {};
       PiUtils.handleGeneralException(context, e);
@@ -87,7 +86,7 @@ class _ListsPageState extends State<ListsPage> {
     }
   }
 
-  Widget _listRow(Lists item) {
+  Widget _listRow(ListsModel item) {
     return ListTileTheme(
       minVerticalPadding: 0,
       child: ExpansionTile(
@@ -130,7 +129,7 @@ class _ListsPageState extends State<ListsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${item.comment}',
+                            item.comment,
                             style: KTextStyle.listHeaderTitle,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -142,7 +141,7 @@ class _ListsPageState extends State<ListsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${item.address}',
+                            item.address,
                             style: KTextStyle.listHeaderSubTitle,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
@@ -153,7 +152,7 @@ class _ListsPageState extends State<ListsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Updated : ${PiUtils.getTimeAgo(item.date_updated!, "milliseconds")}',
+                            'Updated : ${PiUtils.getTimeAgo(item.date_updated, "milliseconds")}',
                             style: KTextStyle.listHeaderSubTitle,
                           ),
                         ],
@@ -179,7 +178,7 @@ class _ListsPageState extends State<ListsPage> {
                               toggleSize: 15.0,
                               borderRadius: 10.0,
                               activeColor: Colors.green,
-                              value: item.enabled ?? false,
+                              value: item.enabled,
                               onToggle: (value) {
                                 onListStateChanged(value, item);
                               },
@@ -270,14 +269,8 @@ class _ListsPageState extends State<ListsPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '${item.comment}',
-                          style: KTextStyle.listExpandedValue,
-                        ),
-                        Text(
-                          '${item.address}',
-                          style: KTextStyle.listExpandedValue,
-                        ),
+                        Text(item.comment, style: KTextStyle.listExpandedValue),
+                        Text(item.address, style: KTextStyle.listExpandedValue),
                         Text(
                           item.id.toString(),
                           style: KTextStyle.listExpandedValue,
@@ -291,15 +284,15 @@ class _ListsPageState extends State<ListsPage> {
                           style: KTextStyle.listExpandedValue,
                         ),
                         Text(
-                          '${PiUtils.getTimeAgo(item.date_added!, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added!.toDouble())})',
+                          '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
                           style: KTextStyle.listExpandedValue,
                         ),
                         Text(
-                          '${PiUtils.getTimeAgo(item.date_modified!, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified!.toDouble())})',
+                          '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
                           style: KTextStyle.listExpandedValue,
                         ),
                         Text(
-                          '${PiUtils.getTimeAgo(item.date_updated!, "milliseconds")} (${PiUtils.getDateFormatter(item.date_updated!.toDouble())})',
+                          '${PiUtils.getTimeAgo(item.date_updated, "milliseconds")} (${PiUtils.getDateFormatter(item.date_updated.toDouble())})',
                           style: KTextStyle.listExpandedValue,
                         ),
                       ],
@@ -314,12 +307,11 @@ class _ListsPageState extends State<ListsPage> {
     );
   }
 
-  Widget getLists(dynamic data) {
-    var items = data?["lists"];
+  Widget getLists(List<ListsModel> listsModels) {
     ListView listView = ListView.separated(
-      itemCount: items.length,
+      itemCount: listsModels.length,
       itemBuilder: (context, index) {
-        var selectedPageItem = items[index];
+        var selectedPageItem = listsModels[index];
         return _listRow(selectedPageItem);
       },
       separatorBuilder: (context, index) {
@@ -345,7 +337,8 @@ class _ListsPageState extends State<ListsPage> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       widget = Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasData) {
-                      var lists = snapshot.data;
+                      List<ListsModel> listsModels =
+                          snapshot.data as List<ListsModel>;
 
                       widget = Card(
                         elevation: 4,
@@ -374,7 +367,7 @@ class _ListsPageState extends State<ListsPage> {
                               SizedBox(
                                 height: MediaQuery.sizeOf(context).height * 0.8,
                                 width: MediaQuery.sizeOf(context).width * 0.98,
-                                child: getLists(lists),
+                                child: getLists(listsModels),
                               ),
                             ],
                           ),

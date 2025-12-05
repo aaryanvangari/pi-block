@@ -4,14 +4,14 @@ import 'dart:developer';
 
 import 'package:logging/logging.dart';
 
-class DiagnosticMessage {
+class DiagnosticMessageModel {
   final int? id;
   final double? timestamp;
   final String? type;
   final String? plain;
   final String? html;
 
-  DiagnosticMessage({
+  DiagnosticMessageModel({
     required this.id,
     required this.timestamp,
     required this.type,
@@ -19,13 +19,13 @@ class DiagnosticMessage {
     required this.html,
   });
 
-  factory DiagnosticMessage.fromJson(Map<String, dynamic> json) {
+  factory DiagnosticMessageModel.fromJson(Map<String, dynamic> json) {
     log(
       json.toString(),
       level: Level.FINEST.value,
-      name: "DiagnosticMessage.fromJson",
+      name: "DiagnosticMessageModel.fromJson",
     );
-    return DiagnosticMessage(
+    return DiagnosticMessageModel(
       id: json["id"],
       timestamp: (json["timestamp"]).toDouble(),
       type: json["type"],

@@ -4,16 +4,49 @@ import 'dart:developer';
 
 import 'package:logging/logging.dart';
 
+class QueryListModel {
+  final List<QueryModel> queries;
+  final int cursor;
+  final int recordsTotal;
+  final int recordsFiltered;
+  final int draw;
+  final double took;
+
+  QueryListModel({
+    required this.queries,
+    required this.cursor,
+    required this.recordsTotal,
+    required this.recordsFiltered,
+    required this.draw,
+    required this.took,
+  });
+
+  factory QueryListModel.fromJson(Map<String, dynamic> json) {
+    log(
+      json.toString(),
+      level: Level.FINEST.value,
+      name: "QueryListModel.fromJson",
+    );
+    return QueryListModel(
+      queries: (json['queries'] as List<dynamic>)
+          .map((e) => QueryModel.fromJson(e))
+          .toList(),
+      cursor: json["cursor"] ?? 0,
+      recordsTotal: json["recordsTotal"] ?? 0,
+      recordsFiltered: json["recordsFiltered"] ?? 0,
+      draw: json["draw"] ?? 0,
+      took: json["took"] ?? 0,
+    );
+  }
+}
+
 class Reply {
-  String? type;
-  double? time;
+  String type;
+  double time;
   Reply({required this.type, required this.time});
 
   factory Reply.fromJson(Map<String, dynamic> json) {
-    return Reply(
-      type: json['type'] ?? "",
-      time: double.tryParse(json['time'].toString()),
-    );
+    return Reply(type: json['type'] ?? "", time: json['time'] ?? 0);
   }
 
   Map<String, dynamic> toJson() {
@@ -22,8 +55,8 @@ class Reply {
 }
 
 class Client {
-  String? ip;
-  String? name;
+  String ip;
+  String name;
   Client({required this.ip, required this.name});
 
   factory Client.fromJson(Map<String, dynamic> json) {
@@ -36,12 +69,12 @@ class Client {
 }
 
 class EDE {
-  int? code;
-  String? text;
+  int code;
+  String text;
   EDE({required this.code, required this.text});
 
   factory EDE.fromJson(Map<String, dynamic> json) {
-    return EDE(code: json['code'], text: json['text']);
+    return EDE(code: json['code'] ?? 0, text: json['text'] ?? "");
   }
 
   Map<String, dynamic> toJson() {
@@ -49,21 +82,21 @@ class EDE {
   }
 }
 
-class Query {
-  final int? id;
-  final double? time;
-  final String? type;
+class QueryModel {
+  final int id;
+  final double time;
+  final String type;
   final String status;
-  final String? dnssec;
-  final String? domain;
-  final String? upstream;
+  final String dnssec;
+  final String domain;
+  final String upstream;
   final Reply reply;
   final Client client;
-  final int? list_id;
+  final int list_id;
   final EDE ede;
-  final String? cname;
+  final String cname;
 
-  Query({
+  QueryModel({
     required this.id,
     required this.time,
     required this.type,
@@ -78,21 +111,20 @@ class Query {
     required this.cname,
   });
 
-  factory Query.fromJson(Map<String, dynamic> json) {
-    log(json.toString(), level: Level.FINEST.value, name: "Query.fromJson");
-    return Query(
-      id: json["id"],
-      time: json["time"],
-      type: json["type"],
+  factory QueryModel.fromJson(Map<String, dynamic> json) {
+    return QueryModel(
+      id: json["id"] ?? 0,
+      time: json["time"] ?? 0,
+      type: json["type"] ?? "",
       status: json["status"] ?? "",
-      dnssec: json["dnssec"],
-      domain: json["domain"],
-      upstream: json["upstream"],
+      dnssec: json["dnssec"] ?? "",
+      domain: json["domain"] ?? "",
+      upstream: json["upstream"] ?? "",
       reply: Reply.fromJson(json["reply"]),
       client: Client.fromJson(json["client"]),
-      list_id: json["list_id"],
+      list_id: json["list_id"] ?? 0,
       ede: EDE.fromJson(json["ede"]),
-      cname: json["cname"],
+      cname: json["cname"] ?? "",
     );
   }
 }

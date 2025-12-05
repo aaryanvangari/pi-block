@@ -76,7 +76,7 @@ class _DomainsPageState extends State<DomainsPage> {
         name: "DomainsPage.getDomainsData",
       );
       listData["domains"] = (result['domains'] as List<dynamic>)
-          .map((json) => Domain.fromJson(json as Map<String, dynamic>))
+          .map((json) => DomainModel.fromJson(json as Map<String, dynamic>))
           .toList();
 
       return listData;
@@ -87,7 +87,7 @@ class _DomainsPageState extends State<DomainsPage> {
     }
   }
 
-  Widget _domainRow(Domain item) {
+  Widget _domainRow(DomainModel item) {
     return ListTileTheme(
       minVerticalPadding: 0,
       child: ExpansionTile(
@@ -133,7 +133,7 @@ class _DomainsPageState extends State<DomainsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${item.domain}',
+                            item.domain,
                             style: KTextStyle.listHeaderTitle,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -145,7 +145,7 @@ class _DomainsPageState extends State<DomainsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${item.comment}',
+                            item.comment,
                             style: KTextStyle.listHeaderSubTitle,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -156,7 +156,7 @@ class _DomainsPageState extends State<DomainsPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Modified : ${PiUtils.getTimeAgo(item.date_modified!, "milliseconds")}',
+                            'Modified : ${PiUtils.getTimeAgo(item.date_modified, "milliseconds")}',
                             style: KTextStyle.listHeaderSubTitle,
                           ),
                         ],
@@ -182,7 +182,7 @@ class _DomainsPageState extends State<DomainsPage> {
                               toggleSize: 15.0,
                               borderRadius: 10.0,
                               activeColor: Colors.green,
-                              value: item.enabled ?? false,
+                              value: item.enabled,
                               onToggle: (value) {
                                 onDomainStateChanged(value, item);
                               },
@@ -240,28 +240,19 @@ class _DomainsPageState extends State<DomainsPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '${item.domain}',
-                          style: KTextStyle.listExpandedValue,
-                        ),
-                        Text(
-                          '${item.unicode}',
-                          style: KTextStyle.listExpandedValue,
-                        ),
-                        Text(
-                          '${item.comment}',
-                          style: KTextStyle.listExpandedValue,
-                        ),
+                        Text(item.domain, style: KTextStyle.listExpandedValue),
+                        Text(item.unicode, style: KTextStyle.listExpandedValue),
+                        Text(item.comment, style: KTextStyle.listExpandedValue),
                         Text(
                           item.id.toString(),
                           style: KTextStyle.listExpandedValue,
                         ),
                         Text(
-                          '${PiUtils.getTimeAgo(item.date_added!, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added!.toDouble())})',
+                          '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
                           style: KTextStyle.listExpandedValue,
                         ),
                         Text(
-                          '${PiUtils.getTimeAgo(item.date_modified!, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified!.toDouble())})',
+                          '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
                           style: KTextStyle.listExpandedValue,
                         ),
                       ],

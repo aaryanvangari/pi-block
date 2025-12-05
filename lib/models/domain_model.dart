@@ -4,19 +4,19 @@ import 'dart:developer';
 
 import 'package:logging/logging.dart';
 
-class Domain {
-  final String? domain;
-  final String? unicode;
-  final String? type;
-  final String? kind;
-  final String? comment;
-  final List<dynamic>? groups;
-  final bool? enabled;
-  final int? id;
-  final int? date_added;
-  final int? date_modified;
+class DomainModel {
+  final String domain;
+  final String unicode;
+  final String type;
+  final String kind;
+  final String comment;
+  final List<int> groups;
+  final bool enabled;
+  final int id;
+  final int date_added;
+  final int date_modified;
 
-  Domain({
+  DomainModel({
     required this.domain,
     required this.unicode,
     required this.type,
@@ -29,19 +29,23 @@ class Domain {
     required this.date_modified,
   });
 
-  factory Domain.fromJson(Map<String, dynamic> json) {
-    log(json.toString(), level: Level.FINEST.value, name: "Domain.fromJson");
-    return Domain(
-      domain: json["domain"],
-      unicode: json["unicode"],
-      type: json["type"],
-      kind: json["kind"],
+  factory DomainModel.fromJson(Map<String, dynamic> json) {
+    log(
+      json.toString(),
+      level: Level.FINEST.value,
+      name: "DomainModel.fromJson",
+    );
+    return DomainModel(
+      domain: json["domain"] ?? "",
+      unicode: json["unicode"] ?? "",
+      type: json["type"] ?? "",
+      kind: json["kind"] ?? "",
       comment: json["comment"] ?? "",
-      groups: json["groups"],
-      enabled: json["enabled"],
-      id: json["id"],
-      date_added: json["date_added"],
-      date_modified: json["date_modified"],
+      groups: (json['groups'] as List).map((e) => (e as int).toInt()).toList(),
+      enabled: json["enabled"] ?? false,
+      id: json["id"] ?? 0,
+      date_added: json["date_added"] ?? 0,
+      date_modified: json["date_modified"] ?? 0,
     );
   }
 }

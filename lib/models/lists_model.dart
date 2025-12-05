@@ -4,22 +4,22 @@ import 'dart:developer';
 
 import 'package:logging/logging.dart';
 
-class Lists {
-  final String? address;
-  final String? comment;
-  final List<dynamic>? groups;
-  final bool? enabled;
-  final int? id;
-  final int? date_added;
-  final int? date_modified;
-  final String? type;
-  final int? date_updated;
-  final int? number;
-  final int? invalid_domains;
-  final int? abp_entries;
-  final int? status;
+class ListsModel {
+  final String address;
+  final String comment;
+  final List<int> groups;
+  final bool enabled;
+  final int id;
+  final int date_added;
+  final int date_modified;
+  final String type;
+  final int date_updated;
+  final int number;
+  final int invalid_domains;
+  final int abp_entries;
+  final int status;
 
-  Lists({
+  ListsModel({
     required this.address,
     required this.comment,
     required this.groups,
@@ -35,22 +35,26 @@ class Lists {
     required this.status,
   });
 
-  factory Lists.fromJson(Map<String, dynamic> json) {
-    log(json.toString(), level: Level.FINEST.value, name: "Lists.fromJson");
-    return Lists(
-      address: json["address"],
+  factory ListsModel.fromJson(Map<String, dynamic> json) {
+    log(
+      json.toString(),
+      level: Level.FINEST.value,
+      name: "ListsModel.fromJson",
+    );
+    return ListsModel(
+      address: json["address"] ?? "",
       comment: json["comment"] ?? "",
-      groups: json["groups"],
-      enabled: json["enabled"],
-      id: json["id"],
-      date_added: json["date_added"],
-      date_modified: json["date_modified"],
-      type: json["type"],
-      date_updated: json["date_updated"],
-      number: json["number"],
-      invalid_domains: json["invalid_domains"],
-      abp_entries: json["abp_entries"],
-      status: json["status"],
+      groups: (json['groups'] as List).map((e) => (e as int).toInt()).toList(),
+      enabled: json["enabled"] ?? false,
+      id: json["id"] ?? 0,
+      date_added: json["date_added"] ?? 0,
+      date_modified: json["date_modified"] ?? 0,
+      type: json["type"] ?? "",
+      date_updated: json["date_updated"] ?? 0,
+      number: json["number"] ?? 0,
+      invalid_domains: json["invalid_domains"] ?? 0,
+      abp_entries: json["abp_entries"] ?? 0,
+      status: json["status"] ?? 0,
     );
   }
 }
