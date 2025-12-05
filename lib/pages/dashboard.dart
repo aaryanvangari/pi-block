@@ -546,11 +546,19 @@ class _DashboardPageState extends State<DashboardPage> {
                                   builder:
                                       (context, blockedExpandedState, child) {
                                         return Padding(
-                                          padding: const EdgeInsets.only(top: 26.0),
+                                          padding: const EdgeInsets.only(
+                                            top: 26.0,
+                                          ),
                                           child: Center(
                                             child: blockedExpandedState
-                                                ? Icon(Icons.keyboard_arrow_up, size: 20,)
-                                                : Icon(Icons.keyboard_arrow_down, size: 20,),
+                                                ? Icon(
+                                                    Icons.keyboard_arrow_up,
+                                                    size: 20,
+                                                  )
+                                                : Icon(
+                                                    Icons.keyboard_arrow_down,
+                                                    size: 20,
+                                                  ),
                                           ),
                                         );
                                       },
