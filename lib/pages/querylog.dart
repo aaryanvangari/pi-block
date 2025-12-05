@@ -84,7 +84,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
               (query.reply.type != "UNKNOWN"
                   ? "Forwarded, reply from "
                   : "Forwarded to ") +
-              query.upstream!;
+              query.upstream;
           break;
         case "SPECIAL_DOMAIN":
           status = query.status;
@@ -132,7 +132,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
       minVerticalPadding: 0,
       child: ExpansionTile(
         showTrailingIcon: false,
-        childrenPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        childrenPadding: EdgeInsets.all(8),
         tilePadding: EdgeInsets.zero,
         dense: true,
         visualDensity: VisualDensity.compact,
@@ -188,7 +188,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            PiUtils.getDateFormatter(query.time!),
+                            PiUtils.getDateFormatter(query.time),
                             style: KTextStyle.listHeaderSubTitle,
                           ),
                         ],
@@ -214,14 +214,14 @@ class _QueryLogPageState extends State<QueryLogPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 5.0,
-                          vertical: 3,
+                          vertical: 2,
                         ),
                         child: buildStatusCell(query.status),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 5.0,
-                          vertical: 3,
+                          vertical: 2,
                         ),
                         child: Text(PiUtils.calculateTime(query.reply.time)),
                       ),
