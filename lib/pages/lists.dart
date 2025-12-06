@@ -366,7 +366,9 @@ class _ListsPageState extends State<ListsPage> {
                               SizedBox(height: 10),
                               SizedBox(
                                 height:
-                                    MediaQuery.sizeOf(context).height * 0.9 - kToolbarHeight - 8 -
+                                    MediaQuery.sizeOf(context).height * 0.9 -
+                                    kToolbarHeight -
+                                    8 -
                                     kBottomNavigationBarHeight,
                                 width: MediaQuery.sizeOf(context).width * 0.98,
                                 child: getLists(listsModels),

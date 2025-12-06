@@ -5,7 +5,7 @@ class CustomExpansionTileWidget extends StatelessWidget {
     super.key,
     required this.headerItems,
     required this.contentTitleItems,
-    required this.contentValueItems
+    required this.contentValueItems,
   });
   final List<Widget> headerItems;
   final List<Widget> contentTitleItems;
