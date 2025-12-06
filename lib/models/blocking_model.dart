@@ -30,12 +30,7 @@ class BlockingModel {
     return BlockingModel(
       blocking: BlockingStatusExtension.fromJson(json['blocking']),
       // casting timer into int and double based on result otherwise dart throws error of wrong datatype
-      timer: (json['timer'] != null)
-          ? ((json['timer'].runtimeType.toString() == "int")
-                    ? json['timer'] as int
-                    : json['timer'] as double)
-                .toDouble()
-          : 0.0,
+      timer: (json['timer'] != null) ? json['timer'].toDouble() : 0.0,
       took: json['took'],
     );
   }

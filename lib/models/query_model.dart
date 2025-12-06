@@ -46,7 +46,7 @@ class Reply {
   Reply({required this.type, required this.time});
 
   factory Reply.fromJson(Map<String, dynamic> json) {
-    return Reply(type: json['type'] ?? "", time: json['time'] ?? 0);
+    return Reply(type: json['type'] ?? "", time: json['time'].toDouble() ?? 0);
   }
 
   Map<String, dynamic> toJson() {
@@ -114,7 +114,7 @@ class QueryModel {
   factory QueryModel.fromJson(Map<String, dynamic> json) {
     return QueryModel(
       id: json["id"] ?? 0,
-      time: json["time"] ?? 0,
+      time: json["time"].toDouble() ?? 0,
       type: json["type"] ?? "",
       status: json["status"] ?? "",
       dnssec: json["dnssec"] ?? "",

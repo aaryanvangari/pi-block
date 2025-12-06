@@ -117,7 +117,7 @@ class Ram {
     free: json['free'],
     used: json['used'],
     available: json['available'],
-    percentUsed: (json['%used'] as double).toDouble(),
+    percentUsed: json['%used'].toDouble() ?? 0,
   );
 
   Map<String, dynamic> toJson() => {
@@ -153,7 +153,7 @@ class Swap {
     total: json['total'],
     used: json['used'],
     free: json['free'],
-    percentUsed: (json['%used'] as double).toDouble(),
+    percentUsed: json['%used'].toDouble() ?? 0,
   );
 
   Map<String, dynamic> toJson() => {
@@ -182,7 +182,7 @@ class Cpu {
 
   factory Cpu.fromJson(Map<String, dynamic> json) => Cpu(
     nprocs: json['nprocs'],
-    percentCpu: (json['%cpu'] as double).toDouble(),
+    percentCpu: json['%cpu'].toDouble() ?? 0,
     load: Load.fromJson(json['load']),
   );
 
@@ -226,8 +226,8 @@ class Ftl {
   Ftl({required this.percentMem, required this.percentCpu});
 
   factory Ftl.fromJson(Map<String, dynamic> json) => Ftl(
-    percentMem: (json['%mem'] as double).toDouble(),
-    percentCpu: (json['%cpu'] as double).toDouble(),
+    percentMem: json['%mem'].toDouble() ?? 0,
+    percentCpu: json['%cpu'].toDouble() ?? 0,
   );
 
   Map<String, dynamic> toJson() => {"%mem": percentMem, "%cpu": percentCpu};
