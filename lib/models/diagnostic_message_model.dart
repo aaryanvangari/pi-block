@@ -5,11 +5,11 @@ import 'dart:developer';
 import 'package:logging/logging.dart';
 
 class DiagnosticMessageModel {
-  final int? id;
-  final double? timestamp;
-  final String? type;
-  final String? plain;
-  final String? html;
+  final int id;
+  final double timestamp;
+  final String type;
+  final String plain;
+  final String html;
 
   DiagnosticMessageModel({
     required this.id,
@@ -26,11 +26,11 @@ class DiagnosticMessageModel {
       name: "DiagnosticMessageModel.fromJson",
     );
     return DiagnosticMessageModel(
-      id: json["id"],
-      timestamp: (json["timestamp"]).toDouble(),
-      type: json["type"],
-      plain: json["plain"],
-      html: json["html"],
+      id: json["id"] ?? 0,
+      timestamp: json["timestamp"].toDouble() ?? 0,
+      type: json["type"] ?? "",
+      plain: json["plain"] ?? "",
+      html: json["html"] ?? "",
     );
   }
 }

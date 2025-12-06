@@ -23,6 +23,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
   late QueryListModel _selectedPageData;
   bool loading = false;
   PiHttpClient piHttpClient = PiHttpClient();
+  int pagerHeight = 60;
 
   @override
   void initState() {
@@ -429,7 +430,12 @@ class _QueryLogPageState extends State<QueryLogPage> {
                       ),
                       SizedBox(height: 10),
                       SizedBox(
-                        height: MediaQuery.sizeOf(context).height * 0.63,
+                        height:
+                            MediaQuery.sizeOf(context).height * 0.9 -
+                            kToolbarHeight -
+                            8 -
+                            pagerHeight -
+                            kBottomNavigationBarHeight,
                         width: MediaQuery.sizeOf(context).width * 0.98,
                         child: getQueryLog(),
                       ),

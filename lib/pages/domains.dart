@@ -325,10 +325,12 @@ class _DomainsPageState extends State<DomainsPage> {
                               ),
                               SizedBox(height: 10),
                               SizedBox(
-                                height: MediaQuery.sizeOf(context).height * 0.8,
+                                height:
+                                    MediaQuery.sizeOf(context).height * 0.9 - kToolbarHeight - 8 -
+                                    kBottomNavigationBarHeight,
                                 width: MediaQuery.sizeOf(context).width * 0.98,
                                 child: getDomains(domains),
-                              ),
+                              )
                             ],
                           ),
                         ),

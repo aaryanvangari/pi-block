@@ -90,11 +90,11 @@ class Queries {
   factory Queries.fromJson(Map<String, dynamic> json) => Queries(
     total: json['total'],
     blocked: json['blocked'],
-    percentBlocked: json['percent_blocked'],
+    percentBlocked: json['percent_blocked'].toDouble() ?? 0,
     uniqueDomains: json['unique_domains'],
     forwarded: json['forwarded'],
     cached: json['cached'],
-    frequency: json['frequency'],
+    frequency: json['frequency'].toDouble() ?? 0,
     types: QueryTypes.fromJson(json['types']),
     status: QueryStatus.fromJson(json['status']),
   );
