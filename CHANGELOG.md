@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/aaryanvangari/pi-block/compare/1.1.2...1.2.0) (2025-12-06)
+
+### Bug Fixes
+
+* fix content going below bottom navigation bar ([c06bc25](https://github.com/aaryanvangari/pi-block/commit/c06bc25))
+* fix data binding issues from int to double ([6d9f431](https://github.com/aaryanvangari/pi-block/commit/6d9f431))
+
+### Features
+
+* from card view to simple list view with expansion tiles ([9bd2ce6](https://github.com/aaryanvangari/pi-block/commit/9bd2ce6))
+* handle null checks ([d04076f](https://github.com/aaryanvangari/pi-block/commit/d04076f))
+
 ## [1.1.2](https://github.com/aaryanvangari/pi-block/compare/1.1.1...1.1.2) (2025-12-05)
 
 ## [1.1.1](https://github.com/aaryanvangari/pi-block/compare/1.1.0...1.1.1) (2025-12-05)
