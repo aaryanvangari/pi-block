@@ -1,10 +1,11 @@
 # Changelog
 
-## [1.3.0](https://github.com/aaryanvangari/pi-block/compare/1.2.0...1.3.0) (2025-12-07)
+## [1.3.1](https://github.com/aaryanvangari/pi-block/compare/1.2.0...1.3.1) (2025-12-07)
 
 ### Bug Fixes
 
 * dart format suggestions ([0da52f2](https://github.com/aaryanvangari/pi-block/commit/0da52f2))
+* fix validators package inclusion ([83ed695](https://github.com/aaryanvangari/pi-block/commit/83ed695))
 
 ### Features
 
