@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.0](https://github.com/aaryanvangari/pi-block/compare/1.2.0...1.3.0) (2025-12-07)
+
+### Bug Fixes
+
+* dart format suggestions ([0da52f2](https://github.com/aaryanvangari/pi-block/commit/0da52f2))
+
+### Features
+
+* change seed color to custom blue ([a40ade6](https://github.com/aaryanvangari/pi-block/commit/a40ade6))
+* standardize border radius, change from "login" to "get started" ([5740587](https://github.com/aaryanvangari/pi-block/commit/5740587))
+* standardize border radius, implement custom validators ([c9a3035](https://github.com/aaryanvangari/pi-block/commit/c9a3035))
+* standardize border radius, showing trailing icon when description available, increased duration ([3cc8da4](https://github.com/aaryanvangari/pi-block/commit/3cc8da4))
+
 ## [1.2.0](https://github.com/aaryanvangari/pi-block/compare/1.1.2...1.2.0) (2025-12-06)
 
 ### Bug Fixes
