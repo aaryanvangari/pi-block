@@ -117,7 +117,8 @@ class _LoginPageState extends State<LoginPage> {
                               preferBelow: false,
                               child: TextFormField(
                                 controller: _serverUrlController,
-                                validator: (value) => piValidators.serverUrlValidator(value),
+                                validator: (value) =>
+                                    piValidators.serverUrlValidator(value),
                                 onChanged: (value) {
                                   Form.of(context).validate();
                                 },
@@ -152,7 +153,8 @@ class _LoginPageState extends State<LoginPage> {
                                 obscureText: passwordVisible,
                                 enableSuggestions: false,
                                 autocorrect: false,
-                                validator: (value) => piValidators.apiTokenValidator(value),
+                                validator: (value) =>
+                                    piValidators.apiTokenValidator(value),
                                 onChanged: (value) {
                                   Form.of(context).validate();
                                 },

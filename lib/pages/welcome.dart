@@ -86,9 +86,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: Text(
-                      "Get Started",
-                    ),
+                    child: Text("Get Started"),
                   ),
                 ],
               ),
