@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pi_block/components/pi_validators.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/provider/auth_provider.dart';
@@ -18,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   final _serverUrlController = TextEditingController();
   bool loading = false;
   bool passwordVisible = false;
+  PiValidators piValidators = PiValidators();
 
   void doLogin() async {
     final auth = Provider.of<AuthProvider>(context, listen: false);
@@ -115,30 +117,19 @@ class _LoginPageState extends State<LoginPage> {
                               preferBelow: false,
                               child: TextFormField(
                                 controller: _serverUrlController,
-                                validator: (currentValue) {
-                                  var nonNullValue = currentValue ?? '';
-                                  if (nonNullValue.isEmpty) {
-                                    return ("Server Url is required");
-                                  }
-                                  Uri? url = Uri.tryParse(
-                                    currentValue!,
-                                    0,
-                                    currentValue.length,
-                                  );
-                                  if (url!.host.isEmpty) {
-                                    return ("Invalid Url");
-                                  }
-                                  return null;
+                                validator: (value) => piValidators.serverUrlValidator(value),
+                                onChanged: (value) {
+                                  Form.of(context).validate();
                                 },
                                 decoration: InputDecoration(
                                   labelText: "Pi-Hole Server Url",
                                   border: KInputStyle.inputBorder,
                                   focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(30),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(color: Colors.grey),
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(30),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(color: Colors.grey),
                                   ),
                                   suffixIcon: IconButton(
@@ -161,22 +152,19 @@ class _LoginPageState extends State<LoginPage> {
                                 obscureText: passwordVisible,
                                 enableSuggestions: false,
                                 autocorrect: false,
-                                validator: (currentValue) {
-                                  var nonNullValue = currentValue ?? '';
-                                  if (nonNullValue.isEmpty) {
-                                    return ("API Token is required");
-                                  }
-                                  return null;
+                                validator: (value) => piValidators.apiTokenValidator(value),
+                                onChanged: (value) {
+                                  Form.of(context).validate();
                                 },
                                 decoration: InputDecoration(
                                   labelText: "API Token",
                                   border: KInputStyle.inputBorder,
                                   focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(30),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(color: Colors.grey),
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(30),
+                                    borderRadius: BorderRadius.circular(10),
                                     borderSide: BorderSide(color: Colors.grey),
                                   ),
                                   suffixIcon: IconButton(
@@ -206,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                               style: ElevatedButton.styleFrom(
                                 minimumSize: Size(double.infinity, 50),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                               child: Text("Login"),

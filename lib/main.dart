@@ -166,7 +166,7 @@ class _MainAppState extends State<MainApp> {
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
               colorScheme: ColorScheme.fromSeed(
-                seedColor: Colors.blue,
+                seedColor: const Color.fromARGB(255, 60, 119, 228),
                 brightness: (darkMode == 'System')
                     ? MediaQuery.of(context).platformBrightness
                     : (darkMode == "Dark")

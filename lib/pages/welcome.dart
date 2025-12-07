@@ -83,16 +83,11 @@ class _WelcomePageState extends State<WelcomePage> {
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(size.width * 0.7, 50),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      backgroundColor: const Color.fromARGB(255, 216, 161, 53),
                     ),
                     child: Text(
-                      "Login",
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      "Get Started",
                     ),
                   ),
                 ],

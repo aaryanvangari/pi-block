@@ -9,7 +9,7 @@ class GlobalSnackbar {
       behavior: SnackBarBehavior.floating,
       content: Card(
         // Rounding the border of the card
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         // Setting the clipping behavior for the card
         clipBehavior: Clip.antiAliasWithSaveLayer,
         elevation: 1,
@@ -27,6 +27,7 @@ class GlobalSnackbar {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     ExpansionTile(
+                      showTrailingIcon: description.isNotEmpty,
                       dense: true,
                       iconColor: Theme.of(context).colorScheme.onError,
                       collapsedIconColor: Theme.of(context).colorScheme.onError,
@@ -89,7 +90,7 @@ class GlobalSnackbar {
       // SnackBar as transparent
       backgroundColor: Colors.transparent,
       // SnackBar duration
-      duration: const Duration(seconds: 3),
+      duration: const Duration(seconds: 5),
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
