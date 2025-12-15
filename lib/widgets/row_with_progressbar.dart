@@ -91,7 +91,6 @@ class RowWithProgressbar extends StatelessWidget {
             ),
           ],
         ),
-        // Divider(height: 2),
       ],
     );
   }

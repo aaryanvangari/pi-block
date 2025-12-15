@@ -352,7 +352,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
         );
       },
       separatorBuilder: (context, index) {
-        return Divider(height: 1, thickness: 1, indent: 10, endIndent: 10);
+        return KListStyle.listDivider;
       },
     );
     return listView;

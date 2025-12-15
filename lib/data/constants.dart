@@ -24,6 +24,12 @@ class KConstants {
       "dark": Colors.orange.withAlpha(170),
     },
   };
+  static final Divider sectionDivider = Divider(
+    height: 1,
+    thickness: 1,
+    indent: 10,
+    endIndent: 10,
+  );
   static final Map<String, dynamic> queryStatus = {
     "GRAVITY": {
       "color": queryStatusColors["red"],
@@ -191,12 +197,10 @@ class KListStyle {
   static final int lightAlphaIntensityTitle = 220;
   static final int darkAlphaIntensityTitle = 170;
   static final Divider listDivider = Divider(
-    height: 2,
+    height: 1,
     thickness: 1,
     indent: 10,
     endIndent: 10,
-    color: Colors.transparent,
-    radius: BorderRadius.circular(15),
   );
   static const Map<String, Color> listHeaderBackgroundColors = {
     "red": Color(0xFFFF0000),

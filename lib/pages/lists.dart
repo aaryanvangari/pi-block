@@ -542,7 +542,7 @@ class _ListsPageState extends State<ListsPage> {
         );
       },
       separatorBuilder: (context, index) {
-        return Divider(height: 1, thickness: 1, indent: 10, endIndent: 10);
+        return KListStyle.listDivider;
       },
     );
     return listView;

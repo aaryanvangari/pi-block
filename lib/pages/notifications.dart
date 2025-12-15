@@ -97,13 +97,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         );
       },
       separatorBuilder: (context, index) {
-        return Divider(
-          height: 1,
-          thickness: 1,
-          indent: 10,
-          endIndent: 10,
-          color: Theme.of(context).colorScheme.onSurface.withAlpha(60),
-        );
+        return KListStyle.listDivider;
       },
     );
     return listView;
