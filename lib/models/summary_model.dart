@@ -151,24 +151,19 @@ class StatsQueryTypes extends Equatable {
   final double took;
 
   const StatsQueryTypes({required this.types, required this.took});
-  
+
   factory StatsQueryTypes.fromJson(Map<String, dynamic> json) {
     return StatsQueryTypes(
       types: QueryTypes.fromJson(json["types"]),
       took: json["took"] ?? 0,
     );
   }
-  
+
   Map<String, dynamic> toJson() => {"types": types, "took": took};
 
-  StatsQueryTypes copyWith({
-    QueryTypes? types,
-    double? took,
-  }) => StatsQueryTypes(
-    types: types ?? this.types,
-    took: took ?? this.took,
-  );
-  
+  StatsQueryTypes copyWith({QueryTypes? types, double? took}) =>
+      StatsQueryTypes(types: types ?? this.types, took: took ?? this.took);
+
   @override
   List<Object?> get props => [types, took];
 }

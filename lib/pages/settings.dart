@@ -128,7 +128,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ],
                   ),
                 ),
-                KConstants.sectionDivider
+                KConstants.sectionDivider,
               ],
             ),
             FutureBuilder(

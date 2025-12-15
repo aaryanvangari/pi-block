@@ -5,7 +5,7 @@ import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
-class BlockingModel extends Equatable{
+class BlockingModel extends Equatable {
   /// The current blocking status
   final BlockingStatus blocking;
 
@@ -54,7 +54,7 @@ class BlockingModel extends Equatable{
   );
 
   @override
-  List<Object?> get props => [blocking, timer, took,];
+  List<Object?> get props => [blocking, timer, took];
 }
 
 // Enum for blocking status

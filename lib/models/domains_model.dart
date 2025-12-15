@@ -90,10 +90,7 @@ class StatDomainModel extends Equatable {
     return {'domain': domain, 'count': count};
   }
 
-  StatDomainModel copyWith({
-    String? domain,
-    int? count,
-  }) => StatDomainModel(
+  StatDomainModel copyWith({String? domain, int? count}) => StatDomainModel(
     domain: domain ?? this.domain,
     count: count ?? this.count,
   );

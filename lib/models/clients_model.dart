@@ -98,11 +98,7 @@ class ClientModel extends Equatable {
     return {'ip': ip, 'name': name, 'count': count};
   }
 
-  ClientModel copyWith({
-    String? ip,
-    String? name,
-    int? count,
-  }) => ClientModel(
+  ClientModel copyWith({String? ip, String? name, int? count}) => ClientModel(
     ip: ip ?? this.ip,
     name: name ?? this.name,
     count: count ?? this.count,

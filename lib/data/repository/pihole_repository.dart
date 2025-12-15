@@ -226,7 +226,7 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getClients(blocked);
       ClientsModel clientsModel = ClientsModel.fromJson(result);
-      
+
       log(
         clientsModel.toString(),
         level: Level.FINE.value,
@@ -243,7 +243,7 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getDomains(blocked);
       DomainsModel domainsModel = DomainsModel.fromJson(result);
-      
+
       log(
         domainsModel.toString(),
         level: Level.FINE.value,
@@ -260,7 +260,7 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getQueriesHistory();
       HistoryModel historyModel = HistoryModel.fromJson(result);
-      
+
       log(
         historyModel.toString(),
         level: Level.FINE.value,
@@ -324,7 +324,7 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getSystemInfo();
       SystemModel systemModel = SystemModel.fromJson(result);
-      
+
       log(
         systemModel.toString(),
         level: Level.FINE.value,
@@ -443,7 +443,7 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getPiholeConfiguration();
       PiholeConfigModel piholeConfigModel = PiholeConfigModel.fromJson(result);
-      
+
       log(
         piholeConfigModel.toString(),
         level: Level.FINE.value,

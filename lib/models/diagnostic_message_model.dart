@@ -5,7 +5,7 @@ import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
-class DiagnosticMessageModel extends Equatable{
+class DiagnosticMessageModel extends Equatable {
   final int id;
   final double timestamp;
   final String type;
