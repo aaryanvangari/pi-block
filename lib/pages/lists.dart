@@ -100,7 +100,8 @@ class _ListsPageState extends State<ListsPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: 3,
                       children: [
                         CustomTagWidget(
                           iconData: FontAwesomeIcons.listOl,

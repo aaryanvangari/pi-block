@@ -414,7 +414,8 @@ class _DomainsPageState extends State<DomainsPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: 3,
                       children: [
                         CustomTagWidget(
                           iconData: (item.type == "deny")

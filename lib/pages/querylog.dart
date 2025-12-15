@@ -171,7 +171,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
                         ],
                       ),
                     ),
-                    CustomTagWidget(title: item.type, horizontalPadding: 0),
+                    CustomTagWidget(title: item.type),
                   ],
                 ),
                 Flex(
