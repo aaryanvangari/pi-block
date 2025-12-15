@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.1.0](https://github.com/aaryanvangari/pi-block/compare/2.0.0...2.1.0) (2025-12-15)
+
+### Bug Fixes
+
+* remove unused import ([3460780](https://github.com/aaryanvangari/pi-block/commit/3460780))
+
+### Features
+
+* add copyWith function to all models ([d2b04ed](https://github.com/aaryanvangari/pi-block/commit/d2b04ed))
+* all models extends Equatable ([3aa345d](https://github.com/aaryanvangari/pi-block/commit/3aa345d))
+* logging models after binding in repository ([3b703a7](https://github.com/aaryanvangari/pi-block/commit/3b703a7))
+* removed horizontal padding and using wrap throughout for custom tag ([a2593ca](https://github.com/aaryanvangari/pi-block/commit/a2593ca))
+* standardise dividers throughout application ([e82f2e6](https://github.com/aaryanvangari/pi-block/commit/e82f2e6))
+* standardise toggle switches and dynamic total switches ([c089008](https://github.com/aaryanvangari/pi-block/commit/c089008))
+
 ## [2.0.0](https://github.com/aaryanvangari/pi-block/compare/1.3.1...2.0.0) (2025-12-15)
 
 ### Features
