@@ -2,16 +2,17 @@
 
 import 'dart:developer';
 
+import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
-class HostModel {
+class HostModel extends Equatable{
   /// Host details including uname, model, and DMI info
   final Host host;
 
   /// Time in seconds it took to process the request
   final double took;
 
-  HostModel({required this.host, required this.took});
+  const HostModel({required this.host, required this.took});
 
   factory HostModel.fromJson(Map<String, dynamic> json) {
     log(json.toString(), level: Level.FINEST.value, name: "HostModel.fromJson");
@@ -19,9 +20,15 @@ class HostModel {
   }
 
   Map<String, dynamic> toJson() => {"host": host.toJson(), "took": took};
+
+  @override
+  List<Object?> get props => [
+    host,
+    took
+  ];
 }
 
-class Host {
+class Host extends Equatable{
   /// uname information
   final Uname uname;
 
@@ -31,7 +38,7 @@ class Host {
   /// DMI information (BIOS, board, product, system)
   final Dmi dmi;
 
-  Host({required this.uname, required this.model, required this.dmi});
+  const Host({required this.uname, required this.model, required this.dmi});
 
   factory Host.fromJson(Map<String, dynamic> json) => Host(
     uname: Uname.fromJson(json['uname']),
@@ -44,10 +51,17 @@ class Host {
     "model": model,
     "dmi": dmi.toJson(),
   };
+
+  @override
+  List<Object?> get props => [
+    uname,
+    model,
+    dmi
+  ];
 }
 
 /// -------------------- Uname --------------------
-class Uname {
+class Uname extends Equatable{
   final String domainname;
   final String machine;
   final String nodename;
@@ -55,7 +69,7 @@ class Uname {
   final String sysname;
   final String version;
 
-  Uname({
+  const Uname({
     required this.domainname,
     required this.machine,
     required this.nodename,
@@ -81,16 +95,26 @@ class Uname {
     "sysname": sysname,
     "version": version,
   };
+
+  @override
+  List<Object?> get props => [
+    domainname,
+    machine,
+    nodename,
+    release,
+    sysname,
+    version,
+  ];
 }
 
 /// -------------------- DMI --------------------
-class Dmi {
+class Dmi extends Equatable{
   final Bios bios;
   final Board board;
   final Product product;
   final Sys sys;
 
-  Dmi({
+  const Dmi({
     required this.bios,
     required this.board,
     required this.product,
@@ -110,21 +134,34 @@ class Dmi {
     "product": product.toJson(),
     "sys": sys.toJson(),
   };
+
+  @override
+  List<Object?> get props => [
+    bios,
+    board,
+    product,
+    sys,
+  ];
 }
 
-class Bios {
+class Bios extends Equatable{
   /// BIOS vendor (if available, null otherwise)
   final String vendor;
 
-  Bios({required this.vendor});
+  const Bios({required this.vendor});
 
   factory Bios.fromJson(Map<String, dynamic> json) =>
       Bios(vendor: json['vendor'] ?? "");
 
   Map<String, dynamic> toJson() => {"vendor": vendor};
+
+  @override
+  List<Object?> get props => [
+    vendor,
+  ];
 }
 
-class Board {
+class Board extends Equatable{
   /// Board name (if available)
   final String name;
 
@@ -134,7 +171,7 @@ class Board {
   /// Board version (if available)
   final String version;
 
-  Board({required this.name, required this.vendor, required this.version});
+  const Board({required this.name, required this.vendor, required this.version});
 
   factory Board.fromJson(Map<String, dynamic> json) => Board(
     name: json['name'] ?? "",
@@ -147,9 +184,16 @@ class Board {
     "vendor": vendor,
     "version": version,
   };
+
+  @override
+  List<Object?> get props => [
+    name,
+    vendor,
+    version,
+  ];
 }
 
-class Product {
+class Product extends Equatable{
   /// Product name (if available)
   final String name;
 
@@ -159,7 +203,7 @@ class Product {
   /// Product family (if available)
   final String family;
 
-  Product({required this.name, required this.version, required this.family});
+  const Product({required this.name, required this.version, required this.family});
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
     name: json['name'] ?? "",
@@ -172,16 +216,28 @@ class Product {
     "version": version,
     "family": family,
   };
+
+  @override
+  List<Object?> get props => [
+    name,
+    version,
+    family,
+  ];
 }
 
-class Sys {
+class Sys extends Equatable{
   /// System vendor (if available)
   final String vendor;
 
-  Sys({required this.vendor});
+  const Sys({required this.vendor});
 
   factory Sys.fromJson(Map<String, dynamic> json) =>
       Sys(vendor: json['vendor'] ?? "");
 
   Map<String, dynamic> toJson() => {"vendor": vendor};
+
+  @override
+  List<Object?> get props => [
+    vendor,
+  ];
 }

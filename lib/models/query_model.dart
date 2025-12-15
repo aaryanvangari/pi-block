@@ -2,9 +2,10 @@
 
 import 'dart:developer';
 
+import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
-class QueryListModel {
+class QueryListModel extends Equatable{
   final List<QueryModel> queries;
   final int cursor;
   final int recordsTotal;
@@ -12,7 +13,7 @@ class QueryListModel {
   final int draw;
   final double took;
 
-  QueryListModel({
+  const QueryListModel({
     required this.queries,
     required this.cursor,
     required this.recordsTotal,
@@ -38,12 +39,15 @@ class QueryListModel {
       took: json["took"] ?? 0,
     );
   }
+
+  @override
+  List<Object?> get props => [queries, cursor, recordsTotal, recordsFiltered, draw, took];
 }
 
-class Reply {
-  String type;
-  double time;
-  Reply({required this.type, required this.time});
+class Reply extends Equatable{
+  final String type;
+  final double time;
+  const Reply({required this.type, required this.time});
 
   factory Reply.fromJson(Map<String, dynamic> json) {
     return Reply(type: json['type'] ?? "", time: json['time'].toDouble() ?? 0);
@@ -52,12 +56,15 @@ class Reply {
   Map<String, dynamic> toJson() {
     return {'type': type, 'time': time};
   }
+
+  @override
+  List<Object?> get props => [type, time,];
 }
 
-class Client {
-  String ip;
-  String name;
-  Client({required this.ip, required this.name});
+class Client extends Equatable{
+  final String ip;
+  final String name;
+  const Client({required this.ip, required this.name});
 
   factory Client.fromJson(Map<String, dynamic> json) {
     return Client(ip: json['ip'] ?? "", name: json['name'] ?? "");
@@ -66,12 +73,15 @@ class Client {
   Map<String, dynamic> toJson() {
     return {'ip': ip, 'name': name};
   }
+
+  @override
+  List<Object?> get props => [ip, name,];
 }
 
-class EDE {
-  int code;
-  String text;
-  EDE({required this.code, required this.text});
+class EDE extends Equatable{
+  final int code;
+  final String text;
+  const EDE({required this.code, required this.text});
 
   factory EDE.fromJson(Map<String, dynamic> json) {
     return EDE(code: json['code'] ?? 0, text: json['text'] ?? "");
@@ -80,9 +90,12 @@ class EDE {
   Map<String, dynamic> toJson() {
     return {'code': code, 'text': text};
   }
+
+  @override
+  List<Object?> get props => [code, text,];
 }
 
-class QueryModel {
+class QueryModel extends Equatable{
   final int id;
   final double time;
   final String type;
@@ -96,7 +109,7 @@ class QueryModel {
   final EDE ede;
   final String cname;
 
-  QueryModel({
+  const QueryModel({
     required this.id,
     required this.time,
     required this.type,
@@ -127,4 +140,20 @@ class QueryModel {
       cname: json["cname"] ?? "",
     );
   }
+
+  @override
+  List<Object?> get props => [
+    id,
+    time,
+    type,
+    status,
+    dnssec,
+    domain,
+    upstream,
+    reply,
+    client,
+    list_id,
+    ede,
+    cname,
+  ];
 }

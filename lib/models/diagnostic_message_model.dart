@@ -2,16 +2,17 @@
 
 import 'dart:developer';
 
+import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
-class DiagnosticMessageModel {
+class DiagnosticMessageModel extends Equatable{
   final int id;
   final double timestamp;
   final String type;
   final String plain;
   final String html;
 
-  DiagnosticMessageModel({
+  const DiagnosticMessageModel({
     required this.id,
     required this.timestamp,
     required this.type,
@@ -33,4 +34,7 @@ class DiagnosticMessageModel {
       html: json["html"] ?? "",
     );
   }
+
+  @override
+  List<Object> get props => [id, timestamp, type, plain, html];
 }

@@ -5,7 +5,7 @@ import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
-class SummaryModel {
+class SummaryModel extends Equatable {
   /// Query statistics
   final Queries queries;
 
@@ -18,7 +18,7 @@ class SummaryModel {
   /// Time in seconds it took to process the request
   final double took;
 
-  SummaryModel({
+  const SummaryModel({
     required this.queries,
     required this.clients,
     required this.gravity,
@@ -45,10 +45,13 @@ class SummaryModel {
     "gravity": gravity.toJson(),
     "took": took,
   };
+
+  @override
+  List<Object?> get props => [queries, clients, gravity, took];
 }
 
 /// -------------------- Queries --------------------
-class Queries {
+class Queries extends Equatable{
   /// Total number of queries
   final int total;
 
@@ -76,7 +79,7 @@ class Queries {
   /// Number of individual queries by status
   final QueryStatus status;
 
-  Queries({
+  const Queries({
     required this.total,
     required this.blocked,
     required this.percentBlocked,
@@ -111,6 +114,19 @@ class Queries {
     "types": types.toJson(),
     "status": status.toJson(),
   };
+
+  @override
+  List<Object?> get props => [
+    total,
+    blocked,
+    percentBlocked,
+    uniqueDomains,
+    forwarded,
+    cached,
+    frequency,
+    types,
+    status
+  ];
 }
 
 class StatsQueryTypes extends Equatable {
@@ -229,7 +245,7 @@ class QueryTypes extends Equatable {
 }
 
 /// -------------------- Query Status --------------------
-class QueryStatus {
+class QueryStatus extends Equatable{
   final int UNKNOWN;
   final int GRAVITY;
   final int FORWARDED;
@@ -250,7 +266,7 @@ class QueryStatus {
   final int CACHE_STALE;
   final int EXTERNAL_BLOCKED_EDE15;
 
-  QueryStatus({
+  const QueryStatus({
     required this.UNKNOWN,
     required this.GRAVITY,
     required this.FORWARDED,
@@ -315,33 +331,62 @@ class QueryStatus {
     "CACHE_STALE": CACHE_STALE,
     "EXTERNAL_BLOCKED_EDE15": EXTERNAL_BLOCKED_EDE15,
   };
+
+  @override
+  List<Object?> get props => [
+    UNKNOWN, 
+    GRAVITY, 
+    FORWARDED, 
+    CACHE, 
+    REGEX, 
+    DENYLIST, 
+    EXTERNAL_BLOCKED_IP, 
+    EXTERNAL_BLOCKED_NULL, 
+    EXTERNAL_BLOCKED_NXRA, 
+    GRAVITY_CNAME, 
+    REGEX_CNAME, 
+    DENYLIST_CNAME, 
+    RETRIED, 
+    RETRIED_DNSSEC, 
+    IN_PROGRESS, 
+    DBBUSY, 
+    SPECIAL_DOMAIN, 
+    CACHE_STALE, 
+    EXTERNAL_BLOCKED_EDE15
+  ];
 }
 
 /// -------------------- Clients --------------------
-class Clients {
+class Clients extends Equatable{
   /// Number of active clients (seen in the last 24 hours)
   final int active;
 
   /// Total number of clients seen by FTL
   final int total;
 
-  Clients({required this.active, required this.total});
+  const Clients({required this.active, required this.total});
 
   factory Clients.fromJson(Map<String, dynamic> json) =>
       Clients(active: json['active'], total: json['total']);
 
   Map<String, dynamic> toJson() => {"active": active, "total": total};
+
+  @override
+  List<Object?> get props => [
+    active,
+    total
+  ];
 }
 
 /// -------------------- Gravity --------------------
-class Gravity {
+class Gravity extends Equatable{
   /// Number of domains on the Pi-hole's gravity list
   final int domainsBeingBlocked;
 
   /// Unix timestamp of last gravity update (0 if unknown)
   final int lastUpdate;
 
-  Gravity({required this.domainsBeingBlocked, required this.lastUpdate});
+  const Gravity({required this.domainsBeingBlocked, required this.lastUpdate});
 
   factory Gravity.fromJson(Map<String, dynamic> json) => Gravity(
     domainsBeingBlocked: json['domains_being_blocked'],
@@ -352,4 +397,10 @@ class Gravity {
     "domains_being_blocked": domainsBeingBlocked,
     "last_update": lastUpdate,
   };
+
+  @override
+  List<Object?> get props => [
+    domainsBeingBlocked,
+    lastUpdate
+  ];
 }

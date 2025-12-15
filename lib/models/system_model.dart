@@ -2,15 +2,16 @@
 
 import 'dart:developer';
 
+import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
-class SystemModel {
+class SystemModel extends Equatable{
   final SystemInfo system;
 
   /// Time in seconds it took to process the request
   final double took;
 
-  SystemModel({required this.system, required this.took});
+  const SystemModel({required this.system, required this.took});
 
   factory SystemModel.fromJson(Map<String, dynamic> json) {
     log(
@@ -25,13 +26,16 @@ class SystemModel {
   }
 
   Map<String, dynamic> toJson() => {"system": system.toJson(), "took": took};
+
+  @override
+  List<Object?> get props => [system, took,];
 }
 
 // ---------------------------------------------------------------------------
 // SYSTEM INFO
 // ---------------------------------------------------------------------------
 
-class SystemInfo {
+class SystemInfo extends Equatable{
   /// How long the system has been running (seconds)
   final int uptime;
 
@@ -47,7 +51,7 @@ class SystemInfo {
   /// FTL process information
   final Ftl ftl;
 
-  SystemInfo({
+  const SystemInfo({
     required this.uptime,
     required this.memory,
     required this.procs,
@@ -70,25 +74,31 @@ class SystemInfo {
     "cpu": cpu.toJson(),
     "ftl": ftl.toJson(),
   };
+
+  @override
+  List<Object?> get props => [uptime, memory, procs, cpu, ftl];
 }
 
 // ---------------------------------------------------------------------------
 // MEMORY (RAM + SWAP)
 // ---------------------------------------------------------------------------
 
-class Memory {
+class Memory extends Equatable{
   final Ram ram;
   final Swap swap;
 
-  Memory({required this.ram, required this.swap});
+  const Memory({required this.ram, required this.swap});
 
   factory Memory.fromJson(Map<String, dynamic> json) =>
       Memory(ram: Ram.fromJson(json['ram']), swap: Swap.fromJson(json['swap']));
 
   Map<String, dynamic> toJson() => {"ram": ram.toJson(), "swap": swap.toJson()};
+
+  @override
+  List<Object?> get props => [ram, swap,];
 }
 
-class Ram {
+class Ram extends Equatable{
   /// Total RAM in kilobytes
   final int total;
 
@@ -104,7 +114,7 @@ class Ram {
   /// Used RAM percentage
   final double percentUsed;
 
-  Ram({
+  const Ram({
     required this.total,
     required this.free,
     required this.used,
@@ -127,9 +137,12 @@ class Ram {
     "available": available,
     "%used": percentUsed,
   };
+
+  @override
+  List<Object?> get props => [total, free, used, available, percentUsed];
 }
 
-class Swap {
+class Swap extends Equatable{
   /// Total swap memory in kilobytes
   final int total;
 
@@ -142,7 +155,7 @@ class Swap {
   /// Swap usage percentage
   final double percentUsed;
 
-  Swap({
+  const Swap({
     required this.total,
     required this.used,
     required this.free,
@@ -162,13 +175,16 @@ class Swap {
     "free": free,
     "%used": percentUsed,
   };
+
+  @override
+  List<Object?> get props => [total, free, used, percentUsed];
 }
 
 // ---------------------------------------------------------------------------
 // CPU + LOAD
 // ---------------------------------------------------------------------------
 
-class Cpu {
+class Cpu extends Equatable{
   /// Number of available processors
   final int nprocs;
 
@@ -178,7 +194,7 @@ class Cpu {
   /// CPU load values
   final Load load;
 
-  Cpu({required this.nprocs, required this.percentCpu, required this.load});
+  const Cpu({required this.nprocs, required this.percentCpu, required this.load});
 
   factory Cpu.fromJson(Map<String, dynamic> json) => Cpu(
     nprocs: json['nprocs'],
@@ -191,16 +207,19 @@ class Cpu {
     "%cpu": percentCpu,
     "load": load.toJson(),
   };
+
+  @override
+  List<Object?> get props => [nprocs, percentCpu, load,];
 }
 
-class Load {
+class Load extends Equatable{
   /// Raw load averages (1m, 5m, 15m)
   final List<double> raw;
 
   /// Load averages in percent of CPU capacity
   final List<double> percent;
 
-  Load({required this.raw, required this.percent});
+  const Load({required this.raw, required this.percent});
 
   factory Load.fromJson(Map<String, dynamic> json) => Load(
     raw: (json['raw'] as List).map((e) => (e as double).toDouble()).toList(),
@@ -210,20 +229,23 @@ class Load {
   );
 
   Map<String, dynamic> toJson() => {"raw": raw, "percent": percent};
+
+  @override
+  List<Object?> get props => [raw, percent,];
 }
 
 // ---------------------------------------------------------------------------
 // FTL PROCESS INFO
 // ---------------------------------------------------------------------------
 
-class Ftl {
+class Ftl extends Equatable{
   /// Percentage of total RAM used by FTL
   final double percentMem;
 
   /// Percentage of total CPU used by FTL
   final double percentCpu;
 
-  Ftl({required this.percentMem, required this.percentCpu});
+  const Ftl({required this.percentMem, required this.percentCpu});
 
   factory Ftl.fromJson(Map<String, dynamic> json) => Ftl(
     percentMem: json['%mem'].toDouble() ?? 0,
@@ -231,4 +253,7 @@ class Ftl {
   );
 
   Map<String, dynamic> toJson() => {"%mem": percentMem, "%cpu": percentCpu};
+
+  @override
+  List<Object?> get props => [percentMem, percentCpu,];
 }
