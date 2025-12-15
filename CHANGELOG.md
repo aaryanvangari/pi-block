@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.0](https://github.com/aaryanvangari/pi-block/compare/1.3.1...2.0.0) (2025-12-15)
+
+### Features
+
+* complete rewrite using BLOC and revamped UI ([1fc3fed](https://github.com/aaryanvangari/pi-block/commit/1fc3fed))
+
 ## [1.3.1](https://github.com/aaryanvangari/pi-block/compare/1.2.0...1.3.1) (2025-12-07)
 
 ### Bug Fixes
