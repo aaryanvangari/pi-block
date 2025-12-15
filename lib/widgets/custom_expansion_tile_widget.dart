@@ -6,18 +6,21 @@ class CustomExpansionTileWidget extends StatelessWidget {
     required this.headerItems,
     required this.contentTitleItems,
     required this.contentValueItems,
+    required this.isHeaderARow,
   });
   final List<Widget> headerItems;
   final List<Widget> contentTitleItems;
   final List<Widget> contentValueItems;
+  final bool isHeaderARow;
 
   @override
   Widget build(BuildContext context) {
     return ListTileTheme(
       minVerticalPadding: 0,
+      enableFeedback: true,
       child: ExpansionTile(
         showTrailingIcon: false,
-        backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(40),
+        backgroundColor: Theme.of(context).colorScheme.onSurface.withAlpha(30),
         childrenPadding: EdgeInsets.all(10),
         tilePadding: EdgeInsets.zero,
         dense: true,
@@ -34,25 +37,31 @@ class CustomExpansionTileWidget extends StatelessWidget {
         title: Container(
           width: MediaQuery.sizeOf(context).width * 0.98,
           // height: MediaQuery.sizeOf(context).width * 0.35,
-          padding: EdgeInsets.all(8),
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 5),
           // decoration: BoxDecoration(
           //   // borderRadius: BorderRadius.circular(10),
           //   // color: listHeaderBackground.value,
           //   // border: Border(bottom: BorderSide(width: 1, color: Colors.grey.shade300))
           // ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 1),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: isHeaderARow
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: headerItems,
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 1),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: headerItems,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
         ),
         children: <Widget>[
           SingleChildScrollView(

@@ -6,9 +6,16 @@ Application to manage Pi-Hole instance.
 
 * Disable Pi-Hole DNS blocking indefinitely and for specific time periods
 * Overview of Pi-Hole query summary, session, system and versions information
-* Graphs of Query Types, Upstreams, Domains, Clients statistics
+* Bar graphs for Total Queries, Client Activity
+* Pie charts for Query Types, Upstreams
+* Statistics on Domains and clients
 * Browse Query Log
-* Browse domains
-* Browse subscribed lists
+* Manage domains
+* Manage subscribed lists
 * Pi-Hole diagnostic messages
 * Pi-Hole configuration as JSON
+
+## Limitations
+
+* For now works on instances with default group
+* Maybe some layout issues

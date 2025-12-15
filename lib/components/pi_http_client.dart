@@ -6,6 +6,11 @@ import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PiHttpClient {
+  final http.Client _httpClient;
+
+  PiHttpClient({http.Client? httpClient})
+    : _httpClient = httpClient ?? http.Client();
+
   dynamic get(String urlEndpoint, {dynamic queryParams}) async {
     dynamic result;
     try {
@@ -34,7 +39,7 @@ class PiHttpClient {
         time: DateTime.now(),
       );
 
-      http.Response response = await http.get(
+      http.Response response = await _httpClient.get(
         url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -62,6 +67,7 @@ class PiHttpClient {
 
   dynamic post(
     String urlEndpoint,
+    dynamic queryParams,
     dynamic body, [
     String? scheme,
     String? server,
@@ -87,7 +93,17 @@ class PiHttpClient {
       }
 
       Uri url;
-      url = Uri(scheme: scheme, host: server, port: port, path: urlEndpoint);
+      if ((queryParams != null) && (queryParams.keys.length > 0)) {
+        url = Uri(
+          scheme: scheme,
+          host: server,
+          port: port,
+          path: urlEndpoint,
+          queryParameters: queryParams,
+        );
+      } else {
+        url = Uri(scheme: scheme, host: server, port: port, path: urlEndpoint);
+      }
 
       log(
         url.toString(),
@@ -96,7 +112,7 @@ class PiHttpClient {
         time: DateTime.now(),
       );
 
-      http.Response response = await http.post(
+      http.Response response = await _httpClient.post(
         url,
         headers: headers,
         body: body,
@@ -108,6 +124,11 @@ class PiHttpClient {
         name: "PiHttpClient.post",
         time: DateTime.now(),
       );
+
+      /// #TODO Refactor
+      if (response.statusCode == 204) {
+        return {"deleted": true};
+      }
       result = jsonDecode(response.body);
       return result;
     } catch (e) {
@@ -121,15 +142,37 @@ class PiHttpClient {
     }
   }
 
-  dynamic delete(Uri url, String sid) async {
+  dynamic delete(
+    String urlEndpoint,
+    bool rawResponse, {
+    dynamic queryParams,
+  }) async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      String scheme = prefs.getString("scheme")!;
+      String server = prefs.getString("server")!;
+      int port = prefs.getInt("port")!;
+      String sid = prefs.getString("sid")!;
+      Uri url;
+      if ((queryParams != null) && (queryParams.keys.length > 0)) {
+        url = Uri(
+          scheme: scheme,
+          host: server,
+          port: port,
+          path: urlEndpoint,
+          queryParameters: queryParams,
+        );
+      } else {
+        url = Uri(scheme: scheme, host: server, port: port, path: urlEndpoint);
+      }
+
       log(
         url.toString(),
         level: Level.INFO.value,
         name: "PiHttpClient.delete",
         time: DateTime.now(),
       );
-      var response = await http.delete(
+      var response = await _httpClient.delete(
         url,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
@@ -142,6 +185,11 @@ class PiHttpClient {
         name: "PiHttpClient.delete",
         time: DateTime.now(),
       );
+
+      /// #TODO Refactor
+      if (response.statusCode == 204) {
+        return rawResponse ? response : {"deleted": true};
+      }
       return response;
     } catch (e) {
       log(
@@ -201,7 +249,7 @@ class PiHttpClient {
         time: DateTime.now(),
       );
 
-      http.Response response = await http.put(
+      http.Response response = await _httpClient.put(
         url,
         headers: headers,
         body: body,
@@ -225,4 +273,6 @@ class PiHttpClient {
       rethrow;
     }
   }
+
+  void close() => _httpClient.close();
 }

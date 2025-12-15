@@ -10,7 +10,6 @@ dependencies:
   flutter:
     sdk: flutter
   fl_chart: ^1.1.1
-  flutter_json_view: ^1.1.5
   flutter_randomcolor: ^1.0.18
   font_awesome_flutter: ^10.12.0
   go_router: ^16.3.0
@@ -20,16 +19,21 @@ dependencies:
   logging: ^1.3.0
   pager: ^0.0.6
   provider: ^6.1.5+1
-  rounded_expansion_tile: ^0.0.13
   shared_preferences: ^2.5.3
   timeago: ^3.7.1
-  circle_time_progress: ^0.0.2
   flutter_timer_countdown: ^1.0.7
-  multi_value_listenable_builder: ^0.0.2
-  flutter_advanced_switch: ^3.1.0
   flutter_switch: ^0.3.2       
   package_info_plus: ^9.0.0
   validators: ^3.0.0
+  flutter_bloc: ^9.1.1
+  equatable: ^2.0.7
+  flutter_slidable: ^4.0.3
+  toggle_switch: ^2.3.0
+  material_symbols_icons: ^4.2892.0
+  url_launcher: ^6.3.2
+  re_editor: ^0.8.0
+  flutter_json: ^0.0.5
+  re_highlight: ^0.0.3
 
 dev_dependencies:
   flutter_test:

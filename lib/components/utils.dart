@@ -145,7 +145,11 @@ class PiUtils {
     bool isDarkMode = getDarkMode(context);
     // Generate a Flutter Color object
     Color randomColor = RandomColor.getColorObject(
-      Options(luminosity: isDarkMode ? Luminosity.light : Luminosity.dark),
+      Options(
+        luminosity: isDarkMode ? Luminosity.bright : Luminosity.bright,
+        alpha: isDarkMode ? 0.1 : 0.9,
+        // colorType: ColorType.random
+      ),
     );
     return randomColor;
   }
@@ -177,11 +181,4 @@ class PiUtils {
       throw SessionException("Session Expired", "");
     }
   }
-
-  // int getTotalPages(int total) {
-  //   int remainder = total ~/ pageSize;
-  //   int quotient = total % pageSize;
-  //   if (quotient > 0) remainder++;
-  //   return remainder;
-  // }
 }

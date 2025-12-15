@@ -10,58 +10,81 @@ class KConstants {
     "green": Color(0xFF008000),
     "orange": Color(0xFFffa500),
   };
+  static Map<String, dynamic> queryLogColors = {
+    "red": {
+      "light": Colors.red.withAlpha(220),
+      "dark": Colors.red.withAlpha(170),
+    },
+    "green": {
+      "light": Colors.green.withAlpha(220),
+      "dark": Colors.green.withAlpha(200),
+    },
+    "orange": {
+      "light": Colors.orange.withAlpha(220),
+      "dark": Colors.orange.withAlpha(170),
+    },
+  };
   static final Map<String, dynamic> queryStatus = {
     "GRAVITY": {
       "color": queryStatusColors["red"],
       "icon": FontAwesomeIcons.ban,
       "fieldtext": "Blocked (gravity)",
       "blocked": true,
+      "colorName": "red",
     },
     "FORWARDED": {
       "color": queryStatusColors["green"],
       "icon": FontAwesomeIcons.cloudArrowDown,
       "fieldtext": '',
+      "colorName": "green",
     },
     "CACHE": {
       "color": queryStatusColors["green"],
       "icon": FontAwesomeIcons.database,
       "fieldtext": "Served from cache",
+      "colorName": "green",
     },
     "REGEX": {
       "color": queryStatusColors["red"],
       "icon": FontAwesomeIcons.ban,
       "fieldtext": "Blocked (regex)",
       "blocked": true,
+      "colorName": "red",
     },
     "DENYLIST": {
       "color": queryStatusColors["red"],
       "icon": FontAwesomeIcons.ban,
       "fieldtext": "Blocked (exact)",
       "blocked": true,
+      "colorName": "red",
     },
     "EXTERNAL_BLOCKED_IP": {
       "color": queryStatusColors["red"],
       "icon": FontAwesomeIcons.ban,
       "fieldtext": "Blocked (external, IP)",
       "blocked": true,
+      "colorName": "red",
     },
     "EXTERNAL_BLOCKED_NULL": {
       "color": queryStatusColors["red"],
       "icon": FontAwesomeIcons.ban,
       "fieldtext": "Blocked (external, NULL)",
       "blocked": true,
+      "colorName": "red",
     },
     "EXTERNAL_BLOCKED_NXRA": {
       "color": queryStatusColors["red"],
       "icon": FontAwesomeIcons.ban,
       "fieldtext": "Blocked (external, NXRA)",
       "blocked": true,
+      "colorName": "red",
     },
     "QUERY_EXTERNAL_BLOCKED_EDE15": {
       "color": queryStatusColors["red"],
       "icon": FontAwesomeIcons.ban,
       "fieldtext": "Blocked (external, EDE15)",
       "blocked": true,
+      "colorName": "red",
     },
     "GRAVITY_CNAME": {
       "color": queryStatusColors["red"],
@@ -69,6 +92,7 @@ class KConstants {
       "fieldtext": "Blocked (gravity, CNAME)",
       "isCNAME": true,
       "blocked": true,
+      "colorName": "red",
     },
     "REGEX_CNAME": {
       "color": queryStatusColors["red"],
@@ -76,6 +100,7 @@ class KConstants {
       "fieldtext": "Blocked (regex denied, CNAME)",
       "isCNAME": true,
       "blocked": true,
+      "colorName": "red",
     },
     "DENYLIST_CNAME": {
       "color": queryStatusColors["red"],
@@ -83,37 +108,44 @@ class KConstants {
       "fieldtext": "Blocked (exact denied, CNAME)",
       "isCNAME": true,
       "blocked": true,
+      "colorName": "red",
     },
     "RETRIED": {
       "color": queryStatusColors["green"],
       "icon": FontAwesomeIcons.arrowRotateRight, // fa-repeat
       "fieldtext": "Retried",
+      "colorName": "green",
     },
     "RETRIED_DNSSEC": {
       "color": queryStatusColors["green"],
       "icon": FontAwesomeIcons.arrowRotateRight, // fa-repeat
       "fieldtext": "Retried (ignored)",
+      "colorName": "green",
     },
     "IN_PROGRESS": {
       "color": queryStatusColors["green"],
       "icon": FontAwesomeIcons.hourglassHalf,
       "fieldtext": "Already forwarded, awaiting reply",
+      "colorName": "green",
     },
     "CACHE_STALE": {
       "color": queryStatusColors["green"],
       "icon": FontAwesomeIcons.infinity,
       "fieldtext": "Served by cache optimizer",
+      "colorName": "green",
     },
     "SPECIAL_DOMAIN": {
       "color": queryStatusColors["red"],
       "icon": FontAwesomeIcons.ban,
       "fieldtext": "",
       "blocked": true,
+      "colorName": "red",
     },
     "default": {
       "color": queryStatusColors["orange"],
       "icon": FontAwesomeIcons.question,
       "fieldtext": "",
+      "colorName": "orange",
     },
   };
 }
@@ -133,6 +165,7 @@ class KTextStyle {
     fontWeight: FontWeight.bold,
   );
   static const TextStyle listHeaderSubTitle = TextStyle(fontSize: 12);
+  static const TextStyle listHeaderTimeTitle = TextStyle(fontSize: 10);
 }
 
 class KInputStyle {
@@ -146,9 +179,17 @@ class KCardStyle {
   static final EdgeInsets dashboardCardPadding = EdgeInsets.all(12);
 }
 
+class KBottomSheetStyle {
+  static final shape = RoundedRectangleBorder(
+    borderRadius: BorderRadiusGeometry.vertical(top: Radius.circular(10)),
+  );
+}
+
 class KListStyle {
   static final int lightAlphaIntensity = 20;
   static final int darkAlphaIntensity = 55;
+  static final int lightAlphaIntensityTitle = 220;
+  static final int darkAlphaIntensityTitle = 170;
   static final Divider listDivider = Divider(
     height: 2,
     thickness: 1,
@@ -189,6 +230,14 @@ class KColors {
   ];
 }
 
+class PiholeUrls {
+  static const update = 'https://discourse.pi-hole.net/c/announcements/5';
+  static const core = 'https://github.com/pi-hole/pi-hole/releases';
+  static const web = 'https://github.com/pi-hole/web/releases';
+  static const ftl = 'https://github.com/pi-hole/FTL/releases';
+  static const docker = "https://github.com/pi-hole/docker-pi-hole/releases";
+}
+
 class KUrls {
   static const String base = "/api";
   static const String auth = '$base/auth';
@@ -196,15 +245,19 @@ class KUrls {
   static const String upStreams = '$base/stats/upstreams';
   static const String topDomains = '$base/stats/top_domains';
   static const String domains = '$base/domains';
+  static const String domainsDelete = '$base/domains:batchDelete';
   static const String clients = '$base/stats/top_clients';
   static const String queries = '$base/queries';
   static const String config = '$base/config';
   static const String messages = '$base/info/messages';
   static const String messagesCount = '$base/info/messages/count';
   static const String lists = '$base/lists';
+  static const String listsDelete = '$base/lists:batchDelete';
   static const String dns = '$base/dns/blocking';
   static const String summary = '$base/stats/summary';
   static const String system = '$base/info/system';
   static const String hosts = '$base/info/host';
   static const String versions = '$base/info/version';
+  static const String history = '$base/history';
+  static const String clientsHistory = '$base/history/clients';
 }
