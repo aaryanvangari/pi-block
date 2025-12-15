@@ -2,9 +2,10 @@
 
 import 'dart:developer';
 
+import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
-class BlockingModel {
+class BlockingModel extends Equatable {
   /// The current blocking status
   final BlockingStatus blocking;
 
@@ -14,7 +15,7 @@ class BlockingModel {
   /// Time in seconds it took to process the request
   final double took;
 
-  BlockingModel({
+  const BlockingModel({
     required this.blocking,
     required this.timer,
     required this.took,
@@ -40,6 +41,20 @@ class BlockingModel {
     "timer": timer,
     "took": took,
   };
+
+  /// Returns a copy of this object with updated fields
+  BlockingModel copyWith({
+    BlockingStatus? blocking,
+    double? timer,
+    double? took,
+  }) => BlockingModel(
+    blocking: blocking ?? this.blocking,
+    timer: timer ?? this.timer,
+    took: took ?? this.took,
+  );
+
+  @override
+  List<Object?> get props => [blocking, timer, took];
 }
 
 // Enum for blocking status

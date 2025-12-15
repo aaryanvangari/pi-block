@@ -128,14 +128,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ],
                   ),
                 ),
-                Divider(
-                  height: 1,
-                  color: Theme.of(context).colorScheme.outline,
-                  thickness: 1,
-                  indent: 10,
-                  endIndent: 10,
-                  radius: BorderRadius.circular(10),
-                ),
+                KConstants.sectionDivider,
               ],
             ),
             FutureBuilder(

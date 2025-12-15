@@ -5,7 +5,7 @@ import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
-class SummaryModel {
+class SummaryModel extends Equatable {
   /// Query statistics
   final Queries queries;
 
@@ -18,7 +18,7 @@ class SummaryModel {
   /// Time in seconds it took to process the request
   final double took;
 
-  SummaryModel({
+  const SummaryModel({
     required this.queries,
     required this.clients,
     required this.gravity,
@@ -35,7 +35,7 @@ class SummaryModel {
       queries: Queries.fromJson(json['queries']),
       clients: Clients.fromJson(json['clients']),
       gravity: Gravity.fromJson(json['gravity']),
-      took: json['took'],
+      took: (json['took'] as num?)?.toDouble() ?? 0,
     );
   }
 
@@ -45,38 +45,36 @@ class SummaryModel {
     "gravity": gravity.toJson(),
     "took": took,
   };
+
+  SummaryModel copyWith({
+    Queries? queries,
+    Clients? clients,
+    Gravity? gravity,
+    double? took,
+  }) => SummaryModel(
+    queries: queries ?? this.queries,
+    clients: clients ?? this.clients,
+    gravity: gravity ?? this.gravity,
+    took: took ?? this.took,
+  );
+
+  @override
+  List<Object?> get props => [queries, clients, gravity, took];
 }
 
 /// -------------------- Queries --------------------
-class Queries {
-  /// Total number of queries
+class Queries extends Equatable {
   final int total;
-
-  /// Number of blocked queries
   final int blocked;
-
-  /// Percent of blocked queries
   final double percentBlocked;
-
-  /// Number of unique domains FTL knows
   final int uniqueDomains;
-
-  /// Number of queries forwarded upstream
   final int forwarded;
-
-  /// Number of queries replied to from cache or local configuration
   final int cached;
-
-  /// Average number of queries per second
   final double frequency;
-
-  /// Number of individual queries by type
   final QueryTypes types;
-
-  /// Number of individual queries by status
   final QueryStatus status;
 
-  Queries({
+  const Queries({
     required this.total,
     required this.blocked,
     required this.percentBlocked,
@@ -89,13 +87,13 @@ class Queries {
   });
 
   factory Queries.fromJson(Map<String, dynamic> json) => Queries(
-    total: json['total'],
-    blocked: json['blocked'],
-    percentBlocked: json['percent_blocked'].toDouble() ?? 0,
-    uniqueDomains: json['unique_domains'],
-    forwarded: json['forwarded'],
-    cached: json['cached'],
-    frequency: json['frequency'].toDouble() ?? 0,
+    total: json['total'] ?? 0,
+    blocked: json['blocked'] ?? 0,
+    percentBlocked: (json['percent_blocked'] as num?)?.toDouble() ?? 0,
+    uniqueDomains: json['unique_domains'] ?? 0,
+    forwarded: json['forwarded'] ?? 0,
+    cached: json['cached'] ?? 0,
+    frequency: (json['frequency'] as num?)?.toDouble() ?? 0,
     types: QueryTypes.fromJson(json['types']),
     status: QueryStatus.fromJson(json['status']),
   );
@@ -111,11 +109,47 @@ class Queries {
     "types": types.toJson(),
     "status": status.toJson(),
   };
+
+  Queries copyWith({
+    int? total,
+    int? blocked,
+    double? percentBlocked,
+    int? uniqueDomains,
+    int? forwarded,
+    int? cached,
+    double? frequency,
+    QueryTypes? types,
+    QueryStatus? status,
+  }) => Queries(
+    total: total ?? this.total,
+    blocked: blocked ?? this.blocked,
+    percentBlocked: percentBlocked ?? this.percentBlocked,
+    uniqueDomains: uniqueDomains ?? this.uniqueDomains,
+    forwarded: forwarded ?? this.forwarded,
+    cached: cached ?? this.cached,
+    frequency: frequency ?? this.frequency,
+    types: types ?? this.types,
+    status: status ?? this.status,
+  );
+
+  @override
+  List<Object?> get props => [
+    total,
+    blocked,
+    percentBlocked,
+    uniqueDomains,
+    forwarded,
+    cached,
+    frequency,
+    types,
+    status,
+  ];
 }
 
 class StatsQueryTypes extends Equatable {
   final QueryTypes types;
   final double took;
+
   const StatsQueryTypes({required this.types, required this.took});
 
   factory StatsQueryTypes.fromJson(Map<String, dynamic> json) {
@@ -126,6 +160,9 @@ class StatsQueryTypes extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {"types": types, "took": took};
+
+  StatsQueryTypes copyWith({QueryTypes? types, double? took}) =>
+      StatsQueryTypes(types: types ?? this.types, took: took ?? this.took);
 
   @override
   List<Object?> get props => [types, took];
@@ -170,22 +207,22 @@ class QueryTypes extends Equatable {
   });
 
   factory QueryTypes.fromJson(Map<String, dynamic> json) => QueryTypes(
-    A: json['A'],
-    AAAA: json['AAAA'],
-    ANY: json['ANY'],
-    SRV: json['SRV'],
-    SOA: json['SOA'],
-    PTR: json['PTR'],
-    TXT: json['TXT'],
-    NAPTR: json['NAPTR'],
-    MX: json['MX'],
-    DS: json['DS'],
-    RRSIG: json['RRSIG'],
-    DNSKEY: json['DNSKEY'],
-    NS: json['NS'],
-    SVCB: json['SVCB'],
-    HTTPS: json['HTTPS'],
-    OTHER: json['OTHER'],
+    A: json['A'] ?? 0,
+    AAAA: json['AAAA'] ?? 0,
+    ANY: json['ANY'] ?? 0,
+    SRV: json['SRV'] ?? 0,
+    SOA: json['SOA'] ?? 0,
+    PTR: json['PTR'] ?? 0,
+    TXT: json['TXT'] ?? 0,
+    NAPTR: json['NAPTR'] ?? 0,
+    MX: json['MX'] ?? 0,
+    DS: json['DS'] ?? 0,
+    RRSIG: json['RRSIG'] ?? 0,
+    DNSKEY: json['DNSKEY'] ?? 0,
+    NS: json['NS'] ?? 0,
+    SVCB: json['SVCB'] ?? 0,
+    HTTPS: json['HTTPS'] ?? 0,
+    OTHER: json['OTHER'] ?? 0,
   );
 
   Map<String, dynamic> toJson() => {
@@ -206,6 +243,42 @@ class QueryTypes extends Equatable {
     "HTTPS": HTTPS,
     "OTHER": OTHER,
   };
+
+  QueryTypes copyWith({
+    int? A,
+    int? AAAA,
+    int? ANY,
+    int? SRV,
+    int? SOA,
+    int? PTR,
+    int? TXT,
+    int? NAPTR,
+    int? MX,
+    int? DS,
+    int? RRSIG,
+    int? DNSKEY,
+    int? NS,
+    int? SVCB,
+    int? HTTPS,
+    int? OTHER,
+  }) => QueryTypes(
+    A: A ?? this.A,
+    AAAA: AAAA ?? this.AAAA,
+    ANY: ANY ?? this.ANY,
+    SRV: SRV ?? this.SRV,
+    SOA: SOA ?? this.SOA,
+    PTR: PTR ?? this.PTR,
+    TXT: TXT ?? this.TXT,
+    NAPTR: NAPTR ?? this.NAPTR,
+    MX: MX ?? this.MX,
+    DS: DS ?? this.DS,
+    RRSIG: RRSIG ?? this.RRSIG,
+    DNSKEY: DNSKEY ?? this.DNSKEY,
+    NS: NS ?? this.NS,
+    SVCB: SVCB ?? this.SVCB,
+    HTTPS: HTTPS ?? this.HTTPS,
+    OTHER: OTHER ?? this.OTHER,
+  );
 
   @override
   List<Object?> get props => [
@@ -229,7 +302,7 @@ class QueryTypes extends Equatable {
 }
 
 /// -------------------- Query Status --------------------
-class QueryStatus {
+class QueryStatus extends Equatable {
   final int UNKNOWN;
   final int GRAVITY;
   final int FORWARDED;
@@ -250,7 +323,7 @@ class QueryStatus {
   final int CACHE_STALE;
   final int EXTERNAL_BLOCKED_EDE15;
 
-  QueryStatus({
+  const QueryStatus({
     required this.UNKNOWN,
     required this.GRAVITY,
     required this.FORWARDED,
@@ -273,25 +346,25 @@ class QueryStatus {
   });
 
   factory QueryStatus.fromJson(Map<String, dynamic> json) => QueryStatus(
-    UNKNOWN: json['UNKNOWN'],
-    GRAVITY: json['GRAVITY'],
-    FORWARDED: json['FORWARDED'],
-    CACHE: json['CACHE'],
-    REGEX: json['REGEX'],
-    DENYLIST: json['DENYLIST'],
-    EXTERNAL_BLOCKED_IP: json['EXTERNAL_BLOCKED_IP'],
-    EXTERNAL_BLOCKED_NULL: json['EXTERNAL_BLOCKED_NULL'],
-    EXTERNAL_BLOCKED_NXRA: json['EXTERNAL_BLOCKED_NXRA'],
-    GRAVITY_CNAME: json['GRAVITY_CNAME'],
-    REGEX_CNAME: json['REGEX_CNAME'],
-    DENYLIST_CNAME: json['DENYLIST_CNAME'],
-    RETRIED: json['RETRIED'],
-    RETRIED_DNSSEC: json['RETRIED_DNSSEC'],
-    IN_PROGRESS: json['IN_PROGRESS'],
-    DBBUSY: json['DBBUSY'],
-    SPECIAL_DOMAIN: json['SPECIAL_DOMAIN'],
-    CACHE_STALE: json['CACHE_STALE'],
-    EXTERNAL_BLOCKED_EDE15: json['EXTERNAL_BLOCKED_EDE15'],
+    UNKNOWN: json['UNKNOWN'] ?? 0,
+    GRAVITY: json['GRAVITY'] ?? 0,
+    FORWARDED: json['FORWARDED'] ?? 0,
+    CACHE: json['CACHE'] ?? 0,
+    REGEX: json['REGEX'] ?? 0,
+    DENYLIST: json['DENYLIST'] ?? 0,
+    EXTERNAL_BLOCKED_IP: json['EXTERNAL_BLOCKED_IP'] ?? 0,
+    EXTERNAL_BLOCKED_NULL: json['EXTERNAL_BLOCKED_NULL'] ?? 0,
+    EXTERNAL_BLOCKED_NXRA: json['EXTERNAL_BLOCKED_NXRA'] ?? 0,
+    GRAVITY_CNAME: json['GRAVITY_CNAME'] ?? 0,
+    REGEX_CNAME: json['REGEX_CNAME'] ?? 0,
+    DENYLIST_CNAME: json['DENYLIST_CNAME'] ?? 0,
+    RETRIED: json['RETRIED'] ?? 0,
+    RETRIED_DNSSEC: json['RETRIED_DNSSEC'] ?? 0,
+    IN_PROGRESS: json['IN_PROGRESS'] ?? 0,
+    DBBUSY: json['DBBUSY'] ?? 0,
+    SPECIAL_DOMAIN: json['SPECIAL_DOMAIN'] ?? 0,
+    CACHE_STALE: json['CACHE_STALE'] ?? 0,
+    EXTERNAL_BLOCKED_EDE15: json['EXTERNAL_BLOCKED_EDE15'] ?? 0,
   );
 
   Map<String, dynamic> toJson() => {
@@ -315,41 +388,115 @@ class QueryStatus {
     "CACHE_STALE": CACHE_STALE,
     "EXTERNAL_BLOCKED_EDE15": EXTERNAL_BLOCKED_EDE15,
   };
+
+  QueryStatus copyWith({
+    int? UNKNOWN,
+    int? GRAVITY,
+    int? FORWARDED,
+    int? CACHE,
+    int? REGEX,
+    int? DENYLIST,
+    int? EXTERNAL_BLOCKED_IP,
+    int? EXTERNAL_BLOCKED_NULL,
+    int? EXTERNAL_BLOCKED_NXRA,
+    int? GRAVITY_CNAME,
+    int? REGEX_CNAME,
+    int? DENYLIST_CNAME,
+    int? RETRIED,
+    int? RETRIED_DNSSEC,
+    int? IN_PROGRESS,
+    int? DBBUSY,
+    int? SPECIAL_DOMAIN,
+    int? CACHE_STALE,
+    int? EXTERNAL_BLOCKED_EDE15,
+  }) => QueryStatus(
+    UNKNOWN: UNKNOWN ?? this.UNKNOWN,
+    GRAVITY: GRAVITY ?? this.GRAVITY,
+    FORWARDED: FORWARDED ?? this.FORWARDED,
+    CACHE: CACHE ?? this.CACHE,
+    REGEX: REGEX ?? this.REGEX,
+    DENYLIST: DENYLIST ?? this.DENYLIST,
+    EXTERNAL_BLOCKED_IP: EXTERNAL_BLOCKED_IP ?? this.EXTERNAL_BLOCKED_IP,
+    EXTERNAL_BLOCKED_NULL: EXTERNAL_BLOCKED_NULL ?? this.EXTERNAL_BLOCKED_NULL,
+    EXTERNAL_BLOCKED_NXRA: EXTERNAL_BLOCKED_NXRA ?? this.EXTERNAL_BLOCKED_NXRA,
+    GRAVITY_CNAME: GRAVITY_CNAME ?? this.GRAVITY_CNAME,
+    REGEX_CNAME: REGEX_CNAME ?? this.REGEX_CNAME,
+    DENYLIST_CNAME: DENYLIST_CNAME ?? this.DENYLIST_CNAME,
+    RETRIED: RETRIED ?? this.RETRIED,
+    RETRIED_DNSSEC: RETRIED_DNSSEC ?? this.RETRIED_DNSSEC,
+    IN_PROGRESS: IN_PROGRESS ?? this.IN_PROGRESS,
+    DBBUSY: DBBUSY ?? this.DBBUSY,
+    SPECIAL_DOMAIN: SPECIAL_DOMAIN ?? this.SPECIAL_DOMAIN,
+    CACHE_STALE: CACHE_STALE ?? this.CACHE_STALE,
+    EXTERNAL_BLOCKED_EDE15:
+        EXTERNAL_BLOCKED_EDE15 ?? this.EXTERNAL_BLOCKED_EDE15,
+  );
+
+  @override
+  List<Object?> get props => [
+    UNKNOWN,
+    GRAVITY,
+    FORWARDED,
+    CACHE,
+    REGEX,
+    DENYLIST,
+    EXTERNAL_BLOCKED_IP,
+    EXTERNAL_BLOCKED_NULL,
+    EXTERNAL_BLOCKED_NXRA,
+    GRAVITY_CNAME,
+    REGEX_CNAME,
+    DENYLIST_CNAME,
+    RETRIED,
+    RETRIED_DNSSEC,
+    IN_PROGRESS,
+    DBBUSY,
+    SPECIAL_DOMAIN,
+    CACHE_STALE,
+    EXTERNAL_BLOCKED_EDE15,
+  ];
 }
 
 /// -------------------- Clients --------------------
-class Clients {
-  /// Number of active clients (seen in the last 24 hours)
+class Clients extends Equatable {
   final int active;
-
-  /// Total number of clients seen by FTL
   final int total;
 
-  Clients({required this.active, required this.total});
+  const Clients({required this.active, required this.total});
 
   factory Clients.fromJson(Map<String, dynamic> json) =>
-      Clients(active: json['active'], total: json['total']);
+      Clients(active: json['active'] ?? 0, total: json['total'] ?? 0);
 
   Map<String, dynamic> toJson() => {"active": active, "total": total};
+
+  Clients copyWith({int? active, int? total}) =>
+      Clients(active: active ?? this.active, total: total ?? this.total);
+
+  @override
+  List<Object?> get props => [active, total];
 }
 
 /// -------------------- Gravity --------------------
-class Gravity {
-  /// Number of domains on the Pi-hole's gravity list
+class Gravity extends Equatable {
   final int domainsBeingBlocked;
-
-  /// Unix timestamp of last gravity update (0 if unknown)
   final int lastUpdate;
 
-  Gravity({required this.domainsBeingBlocked, required this.lastUpdate});
+  const Gravity({required this.domainsBeingBlocked, required this.lastUpdate});
 
   factory Gravity.fromJson(Map<String, dynamic> json) => Gravity(
-    domainsBeingBlocked: json['domains_being_blocked'],
-    lastUpdate: json['last_update'],
+    domainsBeingBlocked: json['domains_being_blocked'] ?? 0,
+    lastUpdate: json['last_update'] ?? 0,
   );
 
   Map<String, dynamic> toJson() => {
     "domains_being_blocked": domainsBeingBlocked,
     "last_update": lastUpdate,
   };
+
+  Gravity copyWith({int? domainsBeingBlocked, int? lastUpdate}) => Gravity(
+    domainsBeingBlocked: domainsBeingBlocked ?? this.domainsBeingBlocked,
+    lastUpdate: lastUpdate ?? this.lastUpdate,
+  );
+
+  @override
+  List<Object?> get props => [domainsBeingBlocked, lastUpdate];
 }

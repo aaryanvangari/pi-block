@@ -414,7 +414,8 @@ class _DomainsPageState extends State<DomainsPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
+                    Wrap(
+                      spacing: 3,
                       children: [
                         CustomTagWidget(
                           iconData: (item.type == "deny")
@@ -542,7 +543,7 @@ class _DomainsPageState extends State<DomainsPage> {
         );
       },
       separatorBuilder: (context, index) {
-        return Divider(height: 1, thickness: 1, indent: 10, endIndent: 10);
+        return KListStyle.listDivider;
       },
     );
     return listView;

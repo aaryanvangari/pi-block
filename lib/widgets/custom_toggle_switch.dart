@@ -24,7 +24,7 @@ class CustomToggleSwitch extends StatelessWidget {
       activeFgColor: Theme.of(context).colorScheme.onPrimary,
       inactiveBgColor: Theme.of(context).colorScheme.secondary.withAlpha(100),
       inactiveFgColor: Theme.of(context).colorScheme.onSecondary,
-      totalSwitches: 2,
+      totalSwitches: labels.length,
       labels: labels,
       onToggle: (index) => onToggle(index!),
     );
