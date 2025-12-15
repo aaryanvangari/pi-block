@@ -392,38 +392,12 @@ class _ListsPageState extends State<ListsPage> {
                           spacing: 16,
                           runSpacing: 10,
                           children: [
-                            ToggleSwitch(
-                              cornerRadius: 20,
-                              minWidth: 70.0,
-                              minHeight: 30.0,
-                              fontSize: 12.0,
+                            CustomToggleSwitch(
                               initialLabelIndex: (type == "allow") ? 0 : 1,
-                              activeBgColor: [
-                                Theme.of(context).colorScheme.primary,
-                              ],
-                              activeFgColor: Theme.of(
-                                context,
-                              ).colorScheme.onPrimary,
-                              inactiveBgColor: Theme.of(
-                                context,
-                              ).colorScheme.secondary.withAlpha(100),
-                              inactiveFgColor: Theme.of(
-                                context,
-                              ).colorScheme.onSecondary,
-                              totalSwitches: 2,
-                              labels: ['Allow', 'Block'],
-                              onToggle: (index) {
-                                switch (index) {
-                                  case 0:
-                                    type = "allow";
-                                    break;
-                                  case 1:
-                                    type = "block";
-                                    break;
-                                  default:
-                                    type = "allow";
-                                }
-                              },
+                              labels: ['Allow', 'BLock'],
+                              onToggle: (index) => (index == 0)
+                                  ? type = "allow"
+                                  : type = "block",
                             ),
                           ],
                         ),
