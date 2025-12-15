@@ -18,7 +18,6 @@ import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/widgets/custom_toggle_switch.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 class ListsPage extends StatefulWidget {
   const ListsPage({super.key});
