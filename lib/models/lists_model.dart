@@ -5,19 +5,45 @@ import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
+/// Represents a single blocklist or allowlist entry
 class ListsModel extends Equatable {
+  /// URL or address of the list
   final String address;
+
+  /// Optional comment describing the list
   final String comment;
+
+  /// Group IDs this list belongs to
   final List<int> groups;
+
+  /// Whether this list is enabled
   final bool enabled;
+
+  /// Unique identifier of the list
   final int id;
+
+  /// Unix timestamp when the list was added
   final int date_added;
+
+  /// Unix timestamp when the list was last modified
   final int date_modified;
+
+  /// List type (e.g. adlist, whitelist, regex)
   final String type;
+
+  /// Unix timestamp when the list was last updated
   final int date_updated;
+
+  /// Number of domains in the list
   final int number;
+
+  /// Number of invalid domains in the list
   final int invalid_domains;
+
+  /// Number of ABP entries
   final int abp_entries;
+
+  /// Current status of the list
   final int status;
 
   const ListsModel({
@@ -45,7 +71,7 @@ class ListsModel extends Equatable {
     return ListsModel(
       address: json["address"] ?? "",
       comment: json["comment"] ?? "",
-      groups: (json['groups'] as List).map((e) => (e as int).toInt()).toList(),
+      groups: (json['groups'] as List).map((e) => (e as num).toInt()).toList(),
       enabled: json["enabled"] ?? false,
       id: json["id"] ?? 0,
       date_added: json["date_added"] ?? 0,
@@ -59,7 +85,24 @@ class ListsModel extends Equatable {
     );
   }
 
-  /// Returns a copy of this `ListsModel` with the given values updated.
+  /// Converts this object to JSON
+  Map<String, dynamic> toJson() => {
+    "address": address,
+    "comment": comment,
+    "groups": groups,
+    "enabled": enabled,
+    "id": id,
+    "date_added": date_added,
+    "date_modified": date_modified,
+    "type": type,
+    "date_updated": date_updated,
+    "number": number,
+    "invalid_domains": invalid_domains,
+    "abp_entries": abp_entries,
+    "status": status,
+  };
+
+  /// Returns a copy of this [ListsModel] with updated values
   ListsModel copyWith({
     String? address,
     String? comment,

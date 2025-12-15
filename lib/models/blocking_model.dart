@@ -42,6 +42,17 @@ class BlockingModel extends Equatable{
     "took": took,
   };
 
+  /// Returns a copy of this object with updated fields
+  BlockingModel copyWith({
+    BlockingStatus? blocking,
+    double? timer,
+    double? took,
+  }) => BlockingModel(
+    blocking: blocking ?? this.blocking,
+    timer: timer ?? this.timer,
+    took: took ?? this.took,
+  );
+
   @override
   List<Object?> get props => [blocking, timer, took,];
 }

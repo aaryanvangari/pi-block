@@ -51,6 +51,18 @@ class ClientsModel extends Equatable {
     };
   }
 
+  ClientsModel copyWith({
+    List<ClientModel>? clients,
+    int? totalQueries,
+    int? blockedQueries,
+    double? took,
+  }) => ClientsModel(
+    clients: clients ?? this.clients,
+    totalQueries: totalQueries ?? this.totalQueries,
+    blockedQueries: blockedQueries ?? this.blockedQueries,
+    took: took ?? this.took,
+  );
+
   @override
   List<Object> get props => [clients, totalQueries, blockedQueries, took];
 }
@@ -85,6 +97,16 @@ class ClientModel extends Equatable {
   Map<String, dynamic> toJson() {
     return {'ip': ip, 'name': name, 'count': count};
   }
+
+  ClientModel copyWith({
+    String? ip,
+    String? name,
+    int? count,
+  }) => ClientModel(
+    ip: ip ?? this.ip,
+    name: name ?? this.name,
+    count: count ?? this.count,
+  );
 
   @override
   List<Object> get props => [ip, name, count];

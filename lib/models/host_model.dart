@@ -1,11 +1,10 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
-class HostModel extends Equatable{
+class HostModel extends Equatable {
   /// Host details including uname, model, and DMI info
   final Host host;
 
@@ -16,23 +15,26 @@ class HostModel extends Equatable{
 
   factory HostModel.fromJson(Map<String, dynamic> json) {
     log(json.toString(), level: Level.FINEST.value, name: "HostModel.fromJson");
-    return HostModel(host: Host.fromJson(json['host']), took: json['took']);
+    return HostModel(
+      host: Host.fromJson(json['host']),
+      took: (json['took'] as num).toDouble(),
+    );
   }
 
   Map<String, dynamic> toJson() => {"host": host.toJson(), "took": took};
 
+  HostModel copyWith({Host? host, double? took}) =>
+      HostModel(host: host ?? this.host, took: took ?? this.took);
+
   @override
-  List<Object?> get props => [
-    host,
-    took
-  ];
+  List<Object?> get props => [host, took];
 }
 
-class Host extends Equatable{
+class Host extends Equatable {
   /// uname information
   final Uname uname;
 
-  /// Device model (if available, null otherwise)
+  /// Device model (if available)
   final String model;
 
   /// DMI information (BIOS, board, product, system)
@@ -52,16 +54,18 @@ class Host extends Equatable{
     "dmi": dmi.toJson(),
   };
 
+  Host copyWith({Uname? uname, String? model, Dmi? dmi}) => Host(
+    uname: uname ?? this.uname,
+    model: model ?? this.model,
+    dmi: dmi ?? this.dmi,
+  );
+
   @override
-  List<Object?> get props => [
-    uname,
-    model,
-    dmi
-  ];
+  List<Object?> get props => [uname, model, dmi];
 }
 
 /// -------------------- Uname --------------------
-class Uname extends Equatable{
+class Uname extends Equatable {
   final String domainname;
   final String machine;
   final String nodename;
@@ -96,6 +100,22 @@ class Uname extends Equatable{
     "version": version,
   };
 
+  Uname copyWith({
+    String? domainname,
+    String? machine,
+    String? nodename,
+    String? release,
+    String? sysname,
+    String? version,
+  }) => Uname(
+    domainname: domainname ?? this.domainname,
+    machine: machine ?? this.machine,
+    nodename: nodename ?? this.nodename,
+    release: release ?? this.release,
+    sysname: sysname ?? this.sysname,
+    version: version ?? this.version,
+  );
+
   @override
   List<Object?> get props => [
     domainname,
@@ -108,7 +128,7 @@ class Uname extends Equatable{
 }
 
 /// -------------------- DMI --------------------
-class Dmi extends Equatable{
+class Dmi extends Equatable {
   final Bios bios;
   final Board board;
   final Product product;
@@ -135,17 +155,19 @@ class Dmi extends Equatable{
     "sys": sys.toJson(),
   };
 
+  Dmi copyWith({Bios? bios, Board? board, Product? product, Sys? sys}) => Dmi(
+    bios: bios ?? this.bios,
+    board: board ?? this.board,
+    product: product ?? this.product,
+    sys: sys ?? this.sys,
+  );
+
   @override
-  List<Object?> get props => [
-    bios,
-    board,
-    product,
-    sys,
-  ];
+  List<Object?> get props => [bios, board, product, sys];
 }
 
-class Bios extends Equatable{
-  /// BIOS vendor (if available, null otherwise)
+class Bios extends Equatable {
+  /// BIOS vendor (if available)
   final String vendor;
 
   const Bios({required this.vendor});
@@ -155,13 +177,13 @@ class Bios extends Equatable{
 
   Map<String, dynamic> toJson() => {"vendor": vendor};
 
+  Bios copyWith({String? vendor}) => Bios(vendor: vendor ?? this.vendor);
+
   @override
-  List<Object?> get props => [
-    vendor,
-  ];
+  List<Object?> get props => [vendor];
 }
 
-class Board extends Equatable{
+class Board extends Equatable {
   /// Board name (if available)
   final String name;
 
@@ -171,7 +193,11 @@ class Board extends Equatable{
   /// Board version (if available)
   final String version;
 
-  const Board({required this.name, required this.vendor, required this.version});
+  const Board({
+    required this.name,
+    required this.vendor,
+    required this.version,
+  });
 
   factory Board.fromJson(Map<String, dynamic> json) => Board(
     name: json['name'] ?? "",
@@ -185,15 +211,17 @@ class Board extends Equatable{
     "version": version,
   };
 
+  Board copyWith({String? name, String? vendor, String? version}) => Board(
+    name: name ?? this.name,
+    vendor: vendor ?? this.vendor,
+    version: version ?? this.version,
+  );
+
   @override
-  List<Object?> get props => [
-    name,
-    vendor,
-    version,
-  ];
+  List<Object?> get props => [name, vendor, version];
 }
 
-class Product extends Equatable{
+class Product extends Equatable {
   /// Product name (if available)
   final String name;
 
@@ -203,7 +231,11 @@ class Product extends Equatable{
   /// Product family (if available)
   final String family;
 
-  const Product({required this.name, required this.version, required this.family});
+  const Product({
+    required this.name,
+    required this.version,
+    required this.family,
+  });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
     name: json['name'] ?? "",
@@ -217,15 +249,17 @@ class Product extends Equatable{
     "family": family,
   };
 
+  Product copyWith({String? name, String? version, String? family}) => Product(
+    name: name ?? this.name,
+    version: version ?? this.version,
+    family: family ?? this.family,
+  );
+
   @override
-  List<Object?> get props => [
-    name,
-    version,
-    family,
-  ];
+  List<Object?> get props => [name, version, family];
 }
 
-class Sys extends Equatable{
+class Sys extends Equatable {
   /// System vendor (if available)
   final String vendor;
 
@@ -236,8 +270,8 @@ class Sys extends Equatable{
 
   Map<String, dynamic> toJson() => {"vendor": vendor};
 
+  Sys copyWith({String? vendor}) => Sys(vendor: vendor ?? this.vendor);
+
   @override
-  List<Object?> get props => [
-    vendor,
-  ];
+  List<Object?> get props => [vendor];
 }

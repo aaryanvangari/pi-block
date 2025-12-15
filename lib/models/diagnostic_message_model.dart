@@ -35,6 +35,20 @@ class DiagnosticMessageModel extends Equatable{
     );
   }
 
+  DiagnosticMessageModel copyWith({
+    int? id,
+    double? timestamp,
+    String? type,
+    String? plain,
+    String? html,
+  }) => DiagnosticMessageModel(
+    id: id ?? this.id,
+    timestamp: timestamp ?? this.timestamp,
+    type: type ?? this.type,
+    plain: plain ?? this.plain,
+    html: html ?? this.html,
+  );
+
   @override
   List<Object> get props => [id, timestamp, type, plain, html];
 }

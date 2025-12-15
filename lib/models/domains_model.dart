@@ -51,6 +51,18 @@ class DomainsModel extends Equatable {
     };
   }
 
+  DomainsModel copyWith({
+    List<StatDomainModel>? domains,
+    int? totalQueries,
+    int? blockedQueries,
+    double? took,
+  }) => DomainsModel(
+    domains: domains ?? this.domains,
+    totalQueries: totalQueries ?? this.totalQueries,
+    blockedQueries: blockedQueries ?? this.blockedQueries,
+    took: took ?? this.took,
+  );
+
   @override
   List<Object> get props => [domains, totalQueries, blockedQueries, took];
 }
@@ -77,6 +89,14 @@ class StatDomainModel extends Equatable {
   Map<String, dynamic> toJson() {
     return {'domain': domain, 'count': count};
   }
+
+  StatDomainModel copyWith({
+    String? domain,
+    int? count,
+  }) => StatDomainModel(
+    domain: domain ?? this.domain,
+    count: count ?? this.count,
+  );
 
   @override
   List<Object> get props => [domain, count];

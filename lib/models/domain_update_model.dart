@@ -32,6 +32,16 @@ class DomainUpdateModel extends Equatable {
     );
   }
 
+  DomainUpdateModel copyWith({
+    List<DomainModel>? domains,
+    Processed? processed,
+    double? took,
+  }) => DomainUpdateModel(
+    domains: domains ?? this.domains,
+    processed: processed ?? this.processed,
+    took: took ?? this.took
+  );
+
   @override
   List<Object?> get props => [domains, processed, took];
 }
@@ -54,6 +64,14 @@ class Processed extends Equatable {
 
   Map<String, dynamic> toJson() => {"success": success, "errors": errors};
 
+  Processed copyWith({
+    List<SuccessItem>? success,
+    List<ErrorItem>? errors,
+  }) => Processed(
+    success: success ?? this.success,
+    errors: errors ?? this.errors
+  );
+
   @override
   List<Object?> get props => [success, errors];
 }
@@ -67,6 +85,12 @@ class SuccessItem extends Equatable {
       SuccessItem(item: json['item'] ?? "");
 
   Map<String, dynamic> toJson() => {"item": item};
+
+  SuccessItem copyWith({
+    String? item
+  }) => SuccessItem(
+    item: item ?? this.item
+  );
 
   @override
   List<Object?> get props => [item];
@@ -82,6 +106,14 @@ class ErrorItem extends Equatable {
       ErrorItem(item: json['item'] ?? "", error: json['error'] ?? "");
 
   Map<String, dynamic> toJson() => {"item": item, "error": error};
+
+  ErrorItem copyWith({
+    String? item,
+    String? error
+  }) => ErrorItem(
+    item: item ?? this.item,
+    error: error ?? this.error
+  );
 
   @override
   List<Object?> get props => [item, error];
