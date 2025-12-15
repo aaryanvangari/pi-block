@@ -28,7 +28,6 @@ class PiholeRepository {
   Future<List<DiagnosticMessageModel>> getDiagnosticMessages() async {
     try {
       var result = await piholeDataProvider.getDiagnosticMessages();
-
       List<DiagnosticMessageModel> diagnosticMessagesList =
           (result['messages'] as List<dynamic>)
               .map(
@@ -62,6 +61,7 @@ class PiholeRepository {
         level: Level.FINE.value,
         name: "PiholeRepository.deleteDiagnosticMessages",
       );
+
       return isDeleted;
     } catch (e) {
       rethrow;
@@ -71,16 +71,16 @@ class PiholeRepository {
   Future<List<ListsModel>> getListsData() async {
     try {
       var result = await piholeDataProvider.getListsData();
-
       List<ListsModel> listsModels = (result['lists'] as List<dynamic>)
           .map((json) => ListsModel.fromJson(json as Map<String, dynamic>))
           .toList();
 
       log(
-        result.toString(),
+        listsModels.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getListsData",
       );
+
       return listsModels;
     } catch (e) {
       rethrow;
@@ -93,10 +93,11 @@ class PiholeRepository {
       ListUpdateModel listUpdateModel = ListUpdateModel.fromJson(result);
 
       log(
-        result.toString(),
+        listUpdateModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.addListsItem",
       );
+
       return listUpdateModel;
     } catch (e) {
       rethrow;
@@ -109,10 +110,11 @@ class PiholeRepository {
       ListUpdateModel listUpdateModel = ListUpdateModel.fromJson(result);
 
       log(
-        result.toString(),
+        listUpdateModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.updateListsItem",
       );
+
       return listUpdateModel;
     } catch (e) {
       rethrow;
@@ -132,6 +134,7 @@ class PiholeRepository {
         level: Level.FINE.value,
         name: "PiholeRepository.deleteListsItem",
       );
+
       return isDeleted;
     } catch (e) {
       rethrow;
@@ -141,16 +144,16 @@ class PiholeRepository {
   Future<List<DomainModel>> getDomainsData() async {
     try {
       var result = await piholeDataProvider.getDomainsData();
-
       List<DomainModel> domainModels = (result['domains'] as List<dynamic>)
           .map((json) => DomainModel.fromJson(json as Map<String, dynamic>))
           .toList();
 
       log(
-        result.toString(),
+        domainModels.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getDomainsData",
       );
+
       return domainModels;
     } catch (e) {
       rethrow;
@@ -171,10 +174,11 @@ class PiholeRepository {
       DomainUpdateModel domainUpdateModel = DomainUpdateModel.fromJson(result);
 
       log(
-        result.toString(),
+        domainUpdateModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.updateDomainItem",
       );
+
       return domainUpdateModel;
     } catch (e) {
       rethrow;
@@ -194,6 +198,7 @@ class PiholeRepository {
         level: Level.FINE.value,
         name: "PiholeRepository.deleteDomainsItem",
       );
+
       return isDeleted;
     } catch (e) {
       rethrow;
@@ -206,10 +211,11 @@ class PiholeRepository {
       DomainUpdateModel domainUpdateModel = DomainUpdateModel.fromJson(result);
 
       log(
-        result.toString(),
+        domainUpdateModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.addDomainsItem",
       );
+
       return domainUpdateModel;
     } catch (e) {
       rethrow;
@@ -220,11 +226,13 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getClients(blocked);
       ClientsModel clientsModel = ClientsModel.fromJson(result);
+      
       log(
-        result.toString(),
+        clientsModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getClients",
       );
+
       return clientsModel;
     } catch (e) {
       rethrow;
@@ -235,11 +243,13 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getDomains(blocked);
       DomainsModel domainsModel = DomainsModel.fromJson(result);
+      
       log(
-        result.toString(),
+        domainsModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getDomains",
       );
+
       return domainsModel;
     } catch (e) {
       rethrow;
@@ -250,11 +260,13 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getQueriesHistory();
       HistoryModel historyModel = HistoryModel.fromJson(result);
+      
       log(
-        result.toString(),
+        historyModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getQueriesHistory",
       );
+
       return historyModel;
     } catch (e) {
       rethrow;
@@ -268,7 +280,7 @@ class PiholeRepository {
         result,
       );
       log(
-        result.toString(),
+        clientHistoryModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getClientsHistory",
       );
@@ -283,7 +295,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getQueryTypes();
       StatsQueryTypes statsQueryTypes = StatsQueryTypes.fromJson(result);
       log(
-        result.toString(),
+        statsQueryTypes.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getQueryTypes",
       );
@@ -298,7 +310,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getUpstreams();
       UpstreamsModel upstreamsModel = UpstreamsModel.fromJson(result);
       log(
-        result.toString(),
+        upstreamsModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getUpstreams",
       );
@@ -311,12 +323,14 @@ class PiholeRepository {
   Future<SystemModel> getSystemInfo() async {
     try {
       var result = await piholeDataProvider.getSystemInfo();
+      SystemModel systemModel = SystemModel.fromJson(result);
+      
       log(
-        result.toString(),
+        systemModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getSystemInfo",
       );
-      SystemModel systemModel = SystemModel.fromJson(result);
+
       return systemModel;
     } catch (e) {
       rethrow;
@@ -326,12 +340,14 @@ class PiholeRepository {
   Future<HostModel> getHostInfo() async {
     try {
       var result = await piholeDataProvider.getHostInfo();
+      HostModel hostModel = HostModel.fromJson(result);
+
       log(
-        result.toString(),
+        hostModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getHostInfo",
       );
-      HostModel hostModel = HostModel.fromJson(result);
+
       return hostModel;
     } catch (e) {
       rethrow;
@@ -341,12 +357,14 @@ class PiholeRepository {
   Future<VersionModel> getVersion() async {
     try {
       var result = await piholeDataProvider.getVersion();
+      VersionModel versionModel = VersionModel.fromJson(result);
+
       log(
-        result.toString(),
+        versionModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getVersion",
       );
-      VersionModel versionModel = VersionModel.fromJson(result);
+
       return versionModel;
     } catch (e) {
       rethrow;
@@ -356,13 +374,13 @@ class PiholeRepository {
   Future<SummaryModel> getSummary() async {
     try {
       var result = await piholeDataProvider.getSummary();
+      SummaryModel summaryModel = SummaryModel.fromJson(result);
 
       log(
-        result.toString(),
+        summaryModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getSummary",
       );
-      SummaryModel summaryModel = SummaryModel.fromJson(result);
 
       return summaryModel;
     } catch (e) {
@@ -373,14 +391,13 @@ class PiholeRepository {
   Future<BlockingModel> getBlockingStatus() async {
     try {
       var result = await piholeDataProvider.getBlockingStatus();
+      BlockingModel blockingModel = BlockingModel.fromJson(result);
 
       log(
-        result.toString(),
+        blockingModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getBlockingStatus",
       );
-
-      BlockingModel blockingModel = BlockingModel.fromJson(result);
 
       return blockingModel;
     } catch (e) {
@@ -394,7 +411,7 @@ class PiholeRepository {
       BlockingModel blockingModel = BlockingModel.fromJson(result);
 
       log(
-        result.toString(),
+        blockingModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.onBlockingChanged",
       );
@@ -408,13 +425,12 @@ class PiholeRepository {
   Future<QueryListModel> getQuerylogPage(int start, int pageSize) async {
     try {
       var result = await piholeDataProvider.getQuerylogPage(start, pageSize);
-
       QueryListModel queryListModel = QueryListModel.fromJson(result);
 
       log(
-        result.toString(),
+        queryListModel.toString(),
         level: Level.FINE.value,
-        name: "PiholeRepository.getNextPage",
+        name: "PiholeRepository.getQuerylogPage",
       );
 
       return queryListModel;
@@ -427,8 +443,9 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getPiholeConfiguration();
       PiholeConfigModel piholeConfigModel = PiholeConfigModel.fromJson(result);
+      
       log(
-        result.toString(),
+        piholeConfigModel.toString(),
         level: Level.FINE.value,
         name: "PiholeRepository.getPiholeConfiguration",
       );
