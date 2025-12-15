@@ -1,14 +1,13 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
+import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/pages/domains.dart';
 import 'package:pi_block/pages/lists.dart';
 import 'package:pi_block/widgets/drawer_widget.dart';
 import 'package:pi_block/widgets/navbar_widget.dart';
-import 'package:pi_block/components/pi_http_client.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/notifiers.dart';
@@ -27,7 +26,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int diagnosticsMessagesCount = 0;
   bool hasNotifications = false;
   final List<Widget> _pages = [
     const DashboardPage(),
@@ -37,34 +35,11 @@ class _HomePageState extends State<HomePage> {
     const ListsPage(),
   ];
   bool loading = false;
-  PiHttpClient piHttpClient = PiHttpClient();
 
   @override
   void initState() {
     super.initState();
-    getNotifications();
-  }
-
-  Future<Map<String, dynamic>> getNotifications() async {
-    try {
-      var result = await piHttpClient.get(KUrls.messagesCount);
-      PiUtils.handleAPIException(result, false);
-
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "HomePage.getNotifications",
-      );
-      setState(() {
-        diagnosticsMessagesCount = result["count"];
-      });
-
-      return result;
-    } catch (e) {
-      if (!mounted) return {};
-      PiUtils.handleGeneralException(context, e);
-    }
-    return {};
+    context.read<NotificationsBloc>().add(NotificationsFetched());
   }
 
   void doLogout() async {
@@ -119,12 +94,24 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   context.go("/notifications");
                 },
-                icon: (diagnosticsMessagesCount > 0)
-                    ? Badge.count(
-                        count: diagnosticsMessagesCount,
+                icon: BlocBuilder<NotificationsBloc, NotificationsState>(
+                  builder: (context, state) {
+                    Widget widget = SizedBox();
+                    if (state is NotificationsLoading) {
+                      widget = Icon(Icons.notifications_paused);
+                    } else if (state is NotificationsEmpty) {
+                      widget = Icon(Icons.notifications_none);
+                    } else if (state is NotificationsSuccess) {
+                      List<DiagnosticMessageModel> diagnosticMessagesList =
+                          state.diagnosticMessagesList;
+                      widget = Badge.count(
+                        count: diagnosticMessagesList.length,
                         child: Icon(Icons.notifications_on),
-                      )
-                    : Icon(Icons.notifications_none),
+                      );
+                    }
+                    return widget;
+                  },
+                ),
               ),
             ),
           ],

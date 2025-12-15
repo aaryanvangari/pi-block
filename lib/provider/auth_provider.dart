@@ -46,6 +46,7 @@ class AuthProvider extends ChangeNotifier {
       var body = jsonEncode(<String, String>{'password': password});
       var result = await piHttpClient.post(
         KUrls.auth,
+        null,
         body,
         uri.scheme,
         uri.host,
@@ -106,13 +107,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> logout(AuthProvider auth) async {
     try {
-      Uri uri = Uri(
-        scheme: auth._scheme,
-        host: auth._server,
-        port: auth._port,
-        path: KUrls.auth,
-      );
-      var response = await piHttpClient.delete(uri, _sid!);
+      var response = await piHttpClient.delete(KUrls.auth, true);
 
       log(
         response.toString(),

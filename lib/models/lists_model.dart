@@ -2,9 +2,10 @@
 
 import 'dart:developer';
 
+import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
-class ListsModel {
+class ListsModel extends Equatable {
   final String address;
   final String comment;
   final List<int> groups;
@@ -19,7 +20,7 @@ class ListsModel {
   final int abp_entries;
   final int status;
 
-  ListsModel({
+  const ListsModel({
     required this.address,
     required this.comment,
     required this.groups,
@@ -57,4 +58,54 @@ class ListsModel {
       status: json["status"] ?? 0,
     );
   }
+
+  /// Returns a copy of this `ListsModel` with the given values updated.
+  ListsModel copyWith({
+    String? address,
+    String? comment,
+    List<int>? groups,
+    bool? enabled,
+    int? id,
+    int? date_added,
+    int? date_modified,
+    String? type,
+    int? date_updated,
+    int? number,
+    int? invalid_domains,
+    int? abp_entries,
+    int? status,
+  }) {
+    return ListsModel(
+      address: address ?? this.address,
+      comment: comment ?? this.comment,
+      groups: groups ?? this.groups,
+      enabled: enabled ?? this.enabled,
+      id: id ?? this.id,
+      date_added: date_added ?? this.date_added,
+      date_modified: date_modified ?? this.date_modified,
+      type: type ?? this.type,
+      date_updated: date_updated ?? this.date_updated,
+      number: number ?? this.number,
+      invalid_domains: invalid_domains ?? this.invalid_domains,
+      abp_entries: abp_entries ?? this.abp_entries,
+      status: status ?? this.status,
+    );
+  }
+
+  @override
+  List<Object> get props => [
+    address,
+    comment,
+    groups,
+    enabled,
+    id,
+    date_added,
+    date_modified,
+    type,
+    date_updated,
+    number,
+    invalid_domains,
+    abp_entries,
+    status,
+  ];
 }

@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 
+import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
 class SummaryModel {
@@ -112,8 +113,26 @@ class Queries {
   };
 }
 
+class StatsQueryTypes extends Equatable {
+  final QueryTypes types;
+  final double took;
+  const StatsQueryTypes({required this.types, required this.took});
+
+  factory StatsQueryTypes.fromJson(Map<String, dynamic> json) {
+    return StatsQueryTypes(
+      types: QueryTypes.fromJson(json["types"]),
+      took: json["took"] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {"types": types, "took": took};
+
+  @override
+  List<Object?> get props => [types, took];
+}
+
 /// -------------------- Query Types --------------------
-class QueryTypes {
+class QueryTypes extends Equatable {
   final int A;
   final int AAAA;
   final int ANY;
@@ -131,7 +150,7 @@ class QueryTypes {
   final int HTTPS;
   final int OTHER;
 
-  QueryTypes({
+  const QueryTypes({
     required this.A,
     required this.AAAA,
     required this.ANY,
@@ -187,6 +206,26 @@ class QueryTypes {
     "HTTPS": HTTPS,
     "OTHER": OTHER,
   };
+
+  @override
+  List<Object?> get props => [
+    A,
+    AAAA,
+    ANY,
+    SRV,
+    SOA,
+    PTR,
+    TXT,
+    NAPTR,
+    MX,
+    DS,
+    RRSIG,
+    DNSKEY,
+    NS,
+    SVCB,
+    HTTPS,
+    OTHER,
+  ];
 }
 
 /// -------------------- Query Status --------------------
