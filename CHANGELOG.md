@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.1.0](https://github.com/aaryanvangari/pi-block/compare/3.0.0...3.1.0) (2025-12-19)
+
+### Bug Fixes
+
+* entitlements for network in MacOS ([cf24135](https://github.com/aaryanvangari/pi-block/commit/cf24135))
+
+### Features
+
+* organize notifications time ([27e4b7c](https://github.com/aaryanvangari/pi-block/commit/27e4b7c))
+* refresh summary stats every 15 seconds ([0f61286](https://github.com/aaryanvangari/pi-block/commit/0f61286))
+
 ## [3.0.0](https://github.com/aaryanvangari/pi-block/compare/2.1.0...3.0.0) (2025-12-19)
 
 ### Features
