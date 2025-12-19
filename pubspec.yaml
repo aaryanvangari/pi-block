@@ -34,6 +34,7 @@ dependencies:
   re_editor: ^0.8.0
   flutter_json: ^0.0.5
   re_highlight: ^0.0.3
+  rxdart: ^0.28.0
 
 dev_dependencies:
   flutter_test:

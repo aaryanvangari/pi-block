@@ -1,124 +1,192 @@
-import 'package:flutter/foundation.dart';
+import 'dart:async';
+
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
+import 'package:pi_block/models/lists_update_model.dart';
+import 'package:rxdart/subjects.dart';
 
 part 'lists_event.dart';
 part 'lists_state.dart';
 
 class ListsBloc extends Bloc<ListsEvent, ListsState> {
   final PiholeRepository piholeRepository;
-  ListsBloc(this.piholeRepository) : super(ListsInitial()) {
-    on<LoadLists>(_getLists);
-    on<UpdateLists>(_updateLists);
-    on<DeleteLists>(_deleteLists);
-    on<AddLists>(_addLists);
+
+  late final _listStreamController = BehaviorSubject<List<ListsModel>>.seeded(
+    const [],
+  );
+
+  ListsBloc(this.piholeRepository) : super(ListsState()) {
+    on<LoadLists>(_loadLists);
+    on<ListItemToggled>(_onListToggled);
+    on<UpdateListsItem>(_updateListsItem);
+    on<AddListsItem>(_addListsItem);
+    on<DeleteListsItem>(_deleteListsItem);
+    _listStreamController.add(const []);
   }
 
-  void _getLists(LoadLists event, Emitter<ListsState> emit) async {
-    emit(ListsLoading());
+  Stream<List<ListsModel>> getLists() =>
+      _listStreamController.asBroadcastStream();
+
+  void _loadLists(LoadLists event, Emitter<ListsState> emit) async {
+    emit(
+      state.copyWith(
+        status: ListsStateStatus.loading,
+        itemStatus: ListsItemStateStatus.initial,
+      ),
+    );
     try {
       final lists = await piholeRepository.getListsData();
-      emit(ListsLoaded(lists));
+      _listStreamController.add(lists);
+      await emit.forEach<List<ListsModel>>(
+        getLists(),
+        onData: (lists) =>
+            state.copyWith(status: ListsStateStatus.success, lists: lists),
+        onError: (_, _) => state.copyWith(status: ListsStateStatus.failure),
+      );
     } catch (e) {
-      emit(ListsError(e.toString()));
-    }
-  }
-
-  void _updateLists(UpdateLists event, Emitter<ListsState> emit) async {
-    emit(ListsLoading());
-    try {
-      await piholeRepository.updateListsItem(event.listsModel);
-      emit(ListsItemOperationSuccess("Successfully Updated"));
-
-      /// #TODO update item inline without loading whole list again
-      emit(ListsOperationSuccess(""));
-    } catch (e) {
-      emit(ListsError(e.toString()));
-    }
-  }
-
-  void _deleteLists(DeleteLists event, Emitter<ListsState> emit) async {
-    emit(ListsLoading());
-    try {
-      await piholeRepository.deleteListsItem(event.listsModel);
-      emit(ListsItemOperationSuccess("Successfully Deleted"));
-      emit(ListsOperationSuccess(""));
-    } catch (e) {
-      emit(ListsError(e.toString()));
-    }
-  }
-
-  void _addLists(AddLists event, Emitter<ListsState> emit) async {
-    emit(ListsLoading());
-    try {
-      await piholeRepository.addListsItem(event.listsModel);
-      emit(ListsItemOperationSuccess("Successfully Added"));
-      emit(ListsOperationSuccess(""));
-    } catch (e) {
-      emit(ListsError(e.toString()));
-    }
-  }
-}
-
-/*
-class ListsBloc extends Bloc<ListsEvent, ListsState> {
-  final PiholeRepository piholeRepository;
-  List<ListsModel> lists = [];
-  ListsBloc(this.piholeRepository) : super(ListsState()) {
-    on<ListsFetched>(_getLists);
-    on<ListItemEnableDisable>(_updateList);
-  }
-
-  void _getLists(ListsFetched event, Emitter<ListsState> emit) async {
-    emit(state.copyWith(status: ListsStateStatus.loading));
-    try {
-      lists = await piholeRepository.getListsData();
-      if (lists.isEmpty) {
-        emit(state.copyWith(lists: [], status: ListsStateStatus.empty));
-      } else {
-        emit(state.copyWith(lists: lists, status: ListsStateStatus.success));
-      }
-    } catch (e) {
-      addError(e);
       emit(
         state.copyWith(status: ListsStateStatus.failure, error: e.toString()),
       );
     }
   }
 
-  void _updateList(
-    ListItemEnableDisable event,
+  Future<void> _onListToggled(
+    ListItemToggled event,
     Emitter<ListsState> emit,
   ) async {
-    // emit(ListsLoading());
+    emit(state.copyWith(itemStatus: ListsItemStateStatus.loading));
     try {
-      final listUpdate = await piholeRepository.onListStateChanged(
-        event.value,
-        event.item,
+      final newList = event.listsModel.copyWith(enabled: event.isEnabled);
+      ListUpdateModel listUpdateModel = await piholeRepository.updateListsItem(
+        newList,
       );
-      final newLists = state.lists.asMap().forEach((index, value) {
-        if (value.id == event.item.id) {
-          state.lists[index] = listUpdate.lists[0];
-        }
-      });
-      // final newLists = state.lists;
-      // emit(ListsModified(lists: state.lists, status: ListsStateStatus.success));
-      emit(
-        ListsModified(
-          lists: state.copyWith(lists: newLists),
-          status: ListsStateStatus.success,
-        ),
-      );
-      // state.copyWith(status: ListsStateStatus.success, lists: state.lists),
-      // );
-      // state.lists.emit(ListsModified(listUpdateModel: listUpdate));
+      final lists = [..._listStreamController.value];
+      final listIndex = lists.indexWhere((t) => t.id == event.listsModel.id);
+      if (listIndex >= 0) {
+        lists[listIndex] = listUpdateModel.lists[0];
+      }
+      _listStreamController.add(lists);
     } catch (e) {
-      addError(e);
       emit(
-        state.copyWith(status: ListsStateStatus.failure, error: e.toString()),
+        state.copyWith(
+          itemStatus: ListsItemStateStatus.failure,
+          error: e.toString(),
+        ),
       );
     }
   }
+
+  Future<void> _updateListsItem(
+    UpdateListsItem event,
+    Emitter<ListsState> emit,
+  ) async {
+    emit(state.copyWith(itemStatus: ListsItemStateStatus.loading));
+    try {
+      final newList = event.listsModel.copyWith(
+        type: event.type,
+        comment: event.comment,
+        enabled: event.enabled,
+        groups: event.groups,
+      );
+
+      ListUpdateModel listUpdateModel = await piholeRepository.updateListsItem(
+        newList,
+      );
+      final lists = [..._listStreamController.value];
+      final listIndex = lists.indexWhere((t) => t.id == event.listsModel.id);
+      if (listIndex >= 0) {
+        lists[listIndex] = listUpdateModel.lists[0];
+      }
+      _listStreamController.add(lists);
+      emit(
+        state.copyWith(
+          itemStatus: ListsItemStateStatus.success,
+          message: "Successfully Updated",
+        ),
+      );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: ListsItemStateStatus.initial));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          itemStatus: ListsItemStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> _addListsItem(
+    AddListsItem event,
+    Emitter<ListsState> emit,
+  ) async {
+    emit(state.copyWith(itemStatus: ListsItemStateStatus.loading));
+    try {
+      ListUpdateModel listUpdateModel = await piholeRepository.addListsItem(
+        event.listsModel,
+      );
+      final lists = [..._listStreamController.value];
+      lists.add(listUpdateModel.lists[0]);
+      _listStreamController.add(lists);
+      emit(
+        state.copyWith(
+          itemStatus: ListsItemStateStatus.success,
+          message: "Successfully Added",
+        ),
+      );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: ListsItemStateStatus.initial));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          itemStatus: ListsItemStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> _deleteListsItem(
+    DeleteListsItem event,
+    Emitter<ListsState> emit,
+  ) async {
+    emit(state.copyWith(itemStatus: ListsItemStateStatus.loading));
+    try {
+      bool isDeleted = await piholeRepository.deleteListsItem(event.listsModel);
+      if (isDeleted) {
+        final lists = [..._listStreamController.value];
+        final listIndex = lists.indexWhere((t) => t.id == event.listsModel.id);
+        if (listIndex >= 0) {
+          lists.removeAt(listIndex);
+        }
+        _listStreamController.add(lists);
+        emit(
+          state.copyWith(
+            itemStatus: ListsItemStateStatus.success,
+            message: "Successfully Deleted",
+          ),
+        );
+      }
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: ListsItemStateStatus.initial));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          itemStatus: ListsItemStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _listStreamController.close();
+    return super.close();
+  }
 }
-*/

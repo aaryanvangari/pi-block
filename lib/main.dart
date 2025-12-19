@@ -84,6 +84,8 @@ class _MainAppState extends State<MainApp> {
 
     slidePrimary.value = colorScheme.primary.withAlpha(180);
     slideError.value = colorScheme.error.withAlpha(200);
+    circularLoadingOnPrimary.value = colorScheme.onPrimary.withAlpha(180);
+    circularLoadingOnError.value = colorScheme.onError.withAlpha(180);
     listHeaderTitleAllow.value = isDark
         ? TextStyle(
             fontSize: 14,
@@ -275,6 +277,7 @@ class _MainAppState extends State<MainApp> {
               SystemUiOverlayStyle.light, // # Status bar dark color issue test
           child: RepositoryProvider(
             create: (context) => PiholeRepository(PiholeDataProvider()),
+            dispose: (repository) => repository.dispose(),
             child: MultiBlocProvider(
               providers: getBlocProviders(),
               child: MaterialApp.router(

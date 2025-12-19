@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -11,12 +8,14 @@ import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/models/lists_model.dart';
+import 'package:pi_block/widgets/circular_loader_in_button.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/widgets/custom_toggle_switch.dart';
+import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
 
 class ListsPage extends StatefulWidget {
@@ -67,30 +66,18 @@ class _ListsPageState extends State<ListsPage> {
                         ],
                       ),
                     ),
-
-                    BlocBuilder<ListsBloc, ListsState>(
-                      builder: (context, state) {
-                        if (state is ListsLoaded) {
-                          return FlutterSwitch(
-                            height: 25.0,
-                            width: 45.0,
-                            padding: 4.0,
-                            toggleSize: 15.0,
-                            borderRadius: 20.0,
-                            activeColor: Colors.green,
-                            value: item.enabled,
-                            onToggle: (value) {
-                              final updatedListItem = item.copyWith(
-                                enabled: value,
-                              );
-                              context.read<ListsBloc>().add(
-                                UpdateLists(updatedListItem),
-                              );
-                            },
-                          );
-                        } else {
-                          return SizedBox();
-                        }
+                    FlutterSwitch(
+                      height: 25.0,
+                      width: 45.0,
+                      padding: 4.0,
+                      toggleSize: 15.0,
+                      borderRadius: 20.0,
+                      activeColor: Colors.green,
+                      value: item.enabled,
+                      onToggle: (value) {
+                        context.read<ListsBloc>().add(
+                          ListItemToggled(listsModel: item, isEnabled: value),
+                        );
                       },
                     ),
                   ],
@@ -188,6 +175,7 @@ class _ListsPageState extends State<ListsPage> {
     TextEditingController commentController = TextEditingController(
       text: comment,
     );
+    bool isLoading = false;
     showModalBottomSheet(
       isScrollControlled: true,
       elevation: 5,
@@ -256,29 +244,50 @@ class _ListsPageState extends State<ListsPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            FilledButton(
-                              onPressed: () {
-                                if (Form.of(ctx).validate()) {
-                                  ListsModel tempListsModel = listsModel
-                                      .copyWith(
-                                        type: type,
-                                        comment: commentController.text,
-                                        enabled: enabled,
-                                        groups: groups,
-                                      );
-                                  log(tempListsModel.toString());
-                                  context.read<ListsBloc>().add(
-                                    UpdateLists(tempListsModel),
-                                  );
-                                  Navigator.pop(ctx);
+                            BlocConsumer<ListsBloc, ListsState>(
+                              listener: (context, state) {
+                                if (state.itemStatus ==
+                                    ListsItemStateStatus.loading) {
+                                  isLoading = true;
+                                } else if (state.itemStatus ==
+                                    ListsItemStateStatus.success) {
+                                  isLoading = false;
+                                  if (Navigator.canPop(ctx)) {
+                                    Navigator.pop(ctx);
+                                  }
+                                } else if (state.itemStatus ==
+                                    ListsItemStateStatus.failure) {
+                                  isLoading = false;
+                                  if (Navigator.canPop(ctx)) {
+                                    Navigator.pop(ctx);
+                                  }
                                 }
                               },
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              child: Text("Save"),
+                              builder: (context, state) {
+                                return FilledButton(
+                                  onPressed: () {
+                                    if (Form.of(ctx).validate()) {
+                                      context.read<ListsBloc>().add(
+                                        UpdateListsItem(
+                                          listsModel: listsModel,
+                                          type: type,
+                                          comment: commentController.text,
+                                          enabled: enabled,
+                                          groups: groups,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  child: isLoading
+                                      ? CircularLoaderInButton()
+                                      : Text("Save"),
+                                );
+                              },
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -311,6 +320,7 @@ class _ListsPageState extends State<ListsPage> {
 
     TextEditingController commentController = TextEditingController();
     TextEditingController addressController = TextEditingController();
+    bool isLoading = false;
     showModalBottomSheet(
       isScrollControlled: true,
       elevation: 5,
@@ -405,31 +415,49 @@ class _ListsPageState extends State<ListsPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            FilledButton(
-                              onPressed: () {
-                                if (Form.of(ctx).validate()) {
-                                  /// #TODO refactor
-                                  ListsModel listsModel = ListsModel.fromJson(
-                                    jsonDecode("{\"groups\":[0]}"),
-                                  );
-                                  ListsModel tempListsModel = listsModel
-                                      .copyWith(
-                                        address: addressController.text,
-                                        comment: commentController.text,
-                                        type: type,
-                                      );
-                                  context.read<ListsBloc>().add(
-                                    AddLists(tempListsModel),
-                                  );
-                                  Navigator.pop(ctx);
+                            BlocConsumer<ListsBloc, ListsState>(
+                              listener: (context, state) {
+                                if (state.itemStatus ==
+                                    ListsItemStateStatus.loading) {
+                                  isLoading = true;
+                                } else if (state.itemStatus ==
+                                    ListsItemStateStatus.success) {
+                                  isLoading = false;
+                                  if (Navigator.canPop(ctx)) {
+                                    Navigator.pop(ctx);
+                                  }
+                                } else if (state.itemStatus ==
+                                    ListsItemStateStatus.failure) {
+                                  isLoading = false;
+                                  if (Navigator.canPop(ctx)) {
+                                    Navigator.pop(ctx);
+                                  }
                                 }
                               },
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              child: Text("Save"),
+                              builder: (context, state) {
+                                return FilledButton(
+                                  onPressed: () {
+                                    if (Form.of(ctx).validate()) {
+                                      ListsModel listsModel = ListsModel(
+                                        type: type,
+                                        comment: commentController.text,
+                                        address: addressController.text,
+                                      );
+                                      context.read<ListsBloc>().add(
+                                        AddListsItem(listsModel: listsModel),
+                                      );
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  child: isLoading
+                                      ? CircularLoaderInButton()
+                                      : Text("Save"),
+                                );
+                              },
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -482,7 +510,7 @@ class _ListsPageState extends State<ListsPage> {
                       cancelFunction: () => Navigator.pop(ctx),
                       primaryFunction: () => {
                         ctx.read<ListsBloc>().add(
-                          DeleteLists(selectedPageItem),
+                          DeleteListsItem(listsModel: selectedPageItem),
                         ),
                         Navigator.pop(ctx),
                       },
@@ -532,29 +560,32 @@ class _ListsPageState extends State<ListsPage> {
             child: Column(
               children: [
                 BlocConsumer<ListsBloc, ListsState>(
-                  buildWhen: (previous, current) {
-                    return true;
-                  },
                   listener: (context, state) {
-                    if (state is ListsError) {
+                    if (state.status == ListsStateStatus.failure) {
                       PiUtils.handleGeneralException(
                         context,
-                        state.errorMessage,
+                        "An Error Occured",
                       );
-                    } else if (state is ListsItemOperationSuccess) {
+                    } else if (state.itemStatus ==
+                        ListsItemStateStatus.failure) {
+                      PiUtils.handleGeneralException(
+                        context,
+                        "An Error Occured",
+                      );
+                    } else if (state.itemStatus ==
+                        ListsItemStateStatus.success) {
                       GlobalSnackbar.info(context, state.message, "");
                     }
                   },
                   builder: (context, state) {
                     Widget widget = SizedBox();
-                    if (state is ListsError) {
-                      widget = CustomErrorWidget(message: "Error loading data");
-                    } else if (state is ListsLoading) {
+                    if (state.status == ListsStateStatus.loading) {
                       widget = Center(child: CircularProgressIndicator());
-                    } else if (state is ListsOperationSuccess) {
-                      context.read<ListsBloc>().add(LoadLists());
-                      return SizedBox();
-                    } else if (state is ListsLoaded) {
+                    } else if (state.status == ListsStateStatus.failure) {
+                      widget = CustomErrorWidget(message: "Error loading data");
+                    } else if (state.lists.isEmpty) {
+                      widget = Center(child: EmptyWidget(message: "No data"));
+                    } else if (state.status == ListsStateStatus.success) {
                       List<ListsModel> listsModels = state.lists;
                       widget = Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

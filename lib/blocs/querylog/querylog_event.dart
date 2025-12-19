@@ -1,16 +1,27 @@
 part of 'querylog_bloc.dart';
 
-@immutable
-abstract class QuerylogEvent {}
+sealed class QuerylogEvent extends Equatable {
+  const QuerylogEvent();
 
-class LoadQuerylog extends QuerylogEvent {
-  final int start;
-  final int pageSize;
-  LoadQuerylog(this.start, this.pageSize);
+  @override
+  List<Object> get props => [];
 }
 
-class AllowDenyQuerylogDomain extends QuerylogEvent {
+final class LoadQuerylog extends QuerylogEvent {
+  final int start;
+  final int pageSize;
+  const LoadQuerylog(this.start, this.pageSize);
+
+  @override
+  List<Object> get props => [start, pageSize];
+}
+
+final class AllowDenyQuerylogDomain extends QuerylogEvent {
+  const AllowDenyQuerylogDomain({required this.queryModel, required this.type});
+
   final QueryModel queryModel;
   final String type;
-  AllowDenyQuerylogDomain(this.queryModel, this.type);
+
+  @override
+  List<Object> get props => [queryModel, type];
 }

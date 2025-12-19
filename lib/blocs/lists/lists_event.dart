@@ -1,24 +1,59 @@
 part of 'lists_bloc.dart';
 
-@immutable
-abstract class ListsEvent {}
+sealed class ListsEvent extends Equatable {
+  const ListsEvent();
 
-class LoadLists extends ListsEvent {}
-
-class AddLists extends ListsEvent {
-  final ListsModel listsModel;
-
-  AddLists(this.listsModel);
+  @override
+  List<Object> get props => [];
 }
 
-class UpdateLists extends ListsEvent {
-  final ListsModel listsModel;
-
-  UpdateLists(this.listsModel);
+final class LoadLists extends ListsEvent {
+  const LoadLists();
 }
 
-class DeleteLists extends ListsEvent {
+final class ListItemToggled extends ListsEvent {
+  const ListItemToggled({required this.listsModel, required this.isEnabled});
+
+  final ListsModel listsModel;
+  final bool isEnabled;
+
+  @override
+  List<Object> get props => [listsModel, isEnabled];
+}
+
+final class UpdateListsItem extends ListsEvent {
+  const UpdateListsItem({
+    required this.listsModel,
+    required this.type,
+    required this.comment,
+    required this.enabled,
+    required this.groups,
+  });
+
+  final ListsModel listsModel;
+  final String type;
+  final String comment;
+  final bool enabled;
+  final List<int> groups;
+
+  @override
+  List<Object> get props => [listsModel, type, comment, enabled, groups];
+}
+
+final class AddListsItem extends ListsEvent {
+  const AddListsItem({required this.listsModel});
+
   final ListsModel listsModel;
 
-  DeleteLists(this.listsModel);
+  @override
+  List<Object> get props => [listsModel];
+}
+
+final class DeleteListsItem extends ListsEvent {
+  const DeleteListsItem({required this.listsModel});
+
+  final ListsModel listsModel;
+
+  @override
+  List<Object> get props => [listsModel];
 }
