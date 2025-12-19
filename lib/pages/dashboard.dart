@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pi_block/blocs/dashboard/dashboard_bloc.dart';
 import 'package:pi_block/widgets/blocking_info_stats.dart';
 
 import 'package:pi_block/widgets/host_info_stats.dart';
@@ -15,6 +19,23 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  Timer? timer;
+
+  @override
+  void initState() {
+    super.initState();
+    timer = Timer.periodic(Duration(seconds: 15), (Timer t) {
+      // log('timer ${t.tick}');
+      context.read<DashboardBloc>().add(LoadSummaryInfo());
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

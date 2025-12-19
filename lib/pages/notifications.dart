@@ -35,18 +35,29 @@ class _NotificationsPageState extends State<NotificationsPage> {
             ),
           ],
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(message.type, style: TextStyle(fontWeight: FontWeight.normal)),
-          ],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              PiUtils.getTimeAgo((message.timestamp).toInt(), "milliseconds"),
-              style: KTextStyle.listHeaderTimeTitle,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  message.type,
+                  style: TextStyle(fontWeight: FontWeight.normal),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  PiUtils.getTimeAgo(
+                    (message.timestamp).toInt(),
+                    "milliseconds",
+                  ),
+                  style: KTextStyle.listHeaderTimeTitle,
+                ),
+              ],
             ),
           ],
         ),
