@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -12,10 +9,12 @@ import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/widgets/circular_loader_in_button.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/widgets/custom_toggle_switch.dart';
+import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
 
 import 'package:pi_block/components/pi_http_client.dart';
@@ -45,6 +44,7 @@ class _DomainsPageState extends State<DomainsPage> {
 
     TextEditingController commentController = TextEditingController();
     TextEditingController domainController = TextEditingController();
+    bool isLoading = false;
     showModalBottomSheet(
       isScrollControlled: true,
       elevation: 5,
@@ -145,33 +145,52 @@ class _DomainsPageState extends State<DomainsPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            FilledButton(
-                              onPressed: () {
-                                if (Form.of(ctx).validate()) {
-                                  /// #TODO refactor
-                                  DomainModel domainModel =
-                                      DomainModel.fromJson(
-                                        jsonDecode("{\"groups\":[0]}"),
-                                      );
-                                  DomainModel tempDomainModel = domainModel
-                                      .copyWith(
+                            BlocConsumer<DomainsBloc, DomainsState>(
+                              listener: (context, state) {
+                                if (state.itemStatus ==
+                                    DomainsItemStateStatus.loading) {
+                                  isLoading = true;
+                                } else if (state.itemStatus ==
+                                    DomainsItemStateStatus.success) {
+                                  isLoading = false;
+                                  if (Navigator.canPop(ctx)) {
+                                    Navigator.pop(ctx);
+                                  }
+                                } else if (state.itemStatus ==
+                                    DomainsItemStateStatus.failure) {
+                                  isLoading = false;
+                                  if (Navigator.canPop(ctx)) {
+                                    Navigator.pop(ctx);
+                                  }
+                                }
+                              },
+                              builder: (context, state) {
+                                return FilledButton(
+                                  onPressed: () {
+                                    if (Form.of(ctx).validate()) {
+                                      DomainModel domainModel = DomainModel(
                                         domain: domainController.text,
                                         comment: commentController.text,
                                         type: type,
                                         kind: kind,
                                       );
-                                  context.read<DomainsBloc>().add(
-                                    AddDomains(tempDomainModel),
-                                  );
-                                  Navigator.pop(ctx);
-                                }
+                                      context.read<DomainsBloc>().add(
+                                        AddDomainsItem(
+                                          domainModel: domainModel,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  child: isLoading
+                                      ? CircularLoaderInButton()
+                                      : Text("Save"),
+                                );
                               },
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              child: Text("Save"),
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -209,6 +228,7 @@ class _DomainsPageState extends State<DomainsPage> {
     TextEditingController commentController = TextEditingController(
       text: comment,
     );
+    bool isLoading = false;
     showModalBottomSheet(
       isScrollControlled: true,
       elevation: 5,
@@ -290,34 +310,51 @@ class _DomainsPageState extends State<DomainsPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            FilledButton(
-                              onPressed: () {
-                                if (Form.of(ctx).validate()) {
-                                  DomainModel tempDomainModel = domainModel
-                                      .copyWith(
-                                        type: type,
-                                        kind: kind,
-                                        comment: commentController.text,
-                                        enabled: enabled,
-                                        groups: groups,
-                                      );
-                                  log(tempDomainModel.toString());
-                                  context.read<DomainsBloc>().add(
-                                    UpdateDomains(
-                                      tempDomainModel,
-                                      domainModel.type,
-                                      domainModel.kind,
-                                    ),
-                                  );
-                                  Navigator.pop(ctx);
+                            BlocConsumer<DomainsBloc, DomainsState>(
+                              listener: (context, state) {
+                                if (state.itemStatus ==
+                                    DomainsItemStateStatus.loading) {
+                                  isLoading = true;
+                                } else if (state.itemStatus ==
+                                    DomainsItemStateStatus.success) {
+                                  isLoading = false;
+                                  if (Navigator.canPop(ctx)) {
+                                    Navigator.pop(ctx);
+                                  }
+                                } else if (state.itemStatus ==
+                                    DomainsItemStateStatus.failure) {
+                                  isLoading = false;
+                                  if (Navigator.canPop(ctx)) {
+                                    Navigator.pop(ctx);
+                                  }
                                 }
                               },
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              child: Text("Save"),
+                              builder: (context, state) {
+                                return FilledButton(
+                                  onPressed: () {
+                                    if (Form.of(ctx).validate()) {
+                                      context.read<DomainsBloc>().add(
+                                        UpdateDomainsItem(
+                                          domainModel: domainModel,
+                                          type: type,
+                                          kind: kind,
+                                          comment: commentController.text,
+                                          enabled: enabled,
+                                          groups: groups,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  child: isLoading
+                                      ? CircularLoaderInButton()
+                                      : Text("Save"),
+                                );
+                              },
                             ),
                             ElevatedButton(
                               onPressed: () {
@@ -379,33 +416,21 @@ class _DomainsPageState extends State<DomainsPage> {
                       ),
                     ),
 
-                    BlocBuilder<DomainsBloc, DomainsState>(
-                      builder: (context, state) {
-                        if (state is DomainsLoaded) {
-                          return FlutterSwitch(
-                            height: 25.0,
-                            width: 45.0,
-                            padding: 4.0,
-                            toggleSize: 15.0,
-                            borderRadius: 20.0,
-                            activeColor: Colors.green,
-                            value: item.enabled,
-                            onToggle: (value) {
-                              final updatedDomainItem = item.copyWith(
-                                enabled: value,
-                              );
-                              context.read<DomainsBloc>().add(
-                                UpdateDomains(
-                                  updatedDomainItem,
-                                  item.type,
-                                  item.kind,
-                                ),
-                              );
-                            },
-                          );
-                        } else {
-                          return SizedBox();
-                        }
+                    FlutterSwitch(
+                      height: 25.0,
+                      width: 45.0,
+                      padding: 4.0,
+                      toggleSize: 15.0,
+                      borderRadius: 20.0,
+                      activeColor: Colors.green,
+                      value: item.enabled,
+                      onToggle: (value) {
+                        context.read<DomainsBloc>().add(
+                          DomainItemToggled(
+                            domainModel: item,
+                            isEnabled: value,
+                          ),
+                        );
                       },
                     ),
                   ],
@@ -511,7 +536,7 @@ class _DomainsPageState extends State<DomainsPage> {
                       cancelFunction: () => Navigator.pop(ctx),
                       primaryFunction: () => {
                         ctx.read<DomainsBloc>().add(
-                          DeleteDomains(selectedPageItem),
+                          DeleteDomainsItem(domainModel: selectedPageItem),
                         ),
                         Navigator.pop(ctx),
                       },
@@ -559,29 +584,32 @@ class _DomainsPageState extends State<DomainsPage> {
             child: Column(
               children: [
                 BlocConsumer<DomainsBloc, DomainsState>(
-                  buildWhen: (previous, current) {
-                    return true;
-                  },
                   listener: (context, state) {
-                    if (state is DomainsError) {
+                    if (state.status == DomainsStateStatus.failure) {
                       PiUtils.handleGeneralException(
                         context,
-                        state.errorMessage,
+                        "An Error Occured",
                       );
-                    } else if (state is DomainsItemOperationSuccess) {
+                    } else if (state.itemStatus ==
+                        DomainsItemStateStatus.failure) {
+                      PiUtils.handleGeneralException(
+                        context,
+                        "An Error Occured",
+                      );
+                    } else if (state.itemStatus ==
+                        DomainsItemStateStatus.success) {
                       GlobalSnackbar.info(context, state.message, "");
                     }
                   },
                   builder: (context, state) {
                     Widget widget = SizedBox();
-                    if (state is DomainsError) {
-                      widget = CustomErrorWidget(message: "Error loading data");
-                    } else if (state is DomainsLoading) {
+                    if (state.status == DomainsStateStatus.loading) {
                       widget = Center(child: CircularProgressIndicator());
-                    } else if (state is DomainsOperationSuccess) {
-                      context.read<DomainsBloc>().add(LoadDomains());
-                      return SizedBox();
-                    } else if (state is DomainsLoaded) {
+                    } else if (state.status == DomainsStateStatus.failure) {
+                      widget = CustomErrorWidget(message: "Error loading data");
+                    } else if (state.domains.isEmpty) {
+                      widget = Center(child: EmptyWidget(message: "No data"));
+                    } else if (state.status == DomainsStateStatus.success) {
                       List<DomainModel> domainModels = state.domains;
                       widget = Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

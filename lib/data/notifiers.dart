@@ -18,3 +18,7 @@ ValueNotifier<TextStyle> listHeaderTitleAllow = ValueNotifier(TextStyle());
 ValueNotifier<TextStyle> listHeaderTitleBlock = ValueNotifier(TextStyle());
 ValueNotifier<Color> slidePrimary = ValueNotifier(Colors.transparent);
 ValueNotifier<Color> slideError = ValueNotifier(Colors.transparent);
+ValueNotifier<Color> circularLoadingOnPrimary = ValueNotifier(
+  Colors.transparent,
+);
+ValueNotifier<Color> circularLoadingOnError = ValueNotifier(Colors.transparent);

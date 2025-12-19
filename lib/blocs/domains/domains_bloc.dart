@@ -1,66 +1,207 @@
-import 'package:flutter/foundation.dart';
+import 'dart:async';
+
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
+import 'package:pi_block/models/domain_update_model.dart';
+import 'package:rxdart/subjects.dart';
 
 part 'domains_event.dart';
 part 'domains_state.dart';
 
 class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
   final PiholeRepository piholeRepository;
-  DomainsBloc(this.piholeRepository) : super(DomainsInitial()) {
-    on<LoadDomains>(_getDomains);
-    on<UpdateDomains>(_updateDomains);
-    on<DeleteDomains>(_deleteDomains);
-    on<AddDomains>(_addDomains);
+
+  late final _domainstreamController =
+      BehaviorSubject<List<DomainModel>>.seeded(const []);
+
+  DomainsBloc(this.piholeRepository) : super(DomainsState()) {
+    on<LoadDomains>(_loadDomains);
+    on<DomainItemToggled>(_onDomainToggled);
+    on<UpdateDomainsItem>(_updateDomainsItem);
+    on<AddDomainsItem>(_addDomainsItem);
+    on<DeleteDomainsItem>(_deleteDomainsItem);
+    _domainstreamController.add(const []);
   }
 
-  void _getDomains(LoadDomains event, Emitter<DomainsState> emit) async {
-    emit(DomainsLoading());
+  Stream<List<DomainModel>> getDomains() =>
+      _domainstreamController.asBroadcastStream();
+
+  void _loadDomains(LoadDomains event, Emitter<DomainsState> emit) async {
+    emit(
+      state.copyWith(
+        status: DomainsStateStatus.loading,
+        itemStatus: DomainsItemStateStatus.initial,
+      ),
+    );
     try {
       final domains = await piholeRepository.getDomainsData();
-      emit(DomainsLoaded(domains));
-    } catch (e) {
-      emit(DomainsError(e.toString()));
-    }
-  }
-
-  void _updateDomains(UpdateDomains event, Emitter<DomainsState> emit) async {
-    emit(DomainsLoading());
-    try {
-      await piholeRepository.updateDomainItem(
-        event.domainModel,
-        event.previousType,
-        event.previousKind,
+      _domainstreamController.add(domains);
+      await emit.forEach<List<DomainModel>>(
+        getDomains(),
+        onData: (domains) => state.copyWith(
+          status: DomainsStateStatus.success,
+          domains: domains,
+        ),
+        onError: (_, _) => state.copyWith(status: DomainsStateStatus.failure),
       );
-      emit(DomainsItemOperationSuccess("Successfully Updated"));
-
-      /// #TODO update item inline without loading whole list again
-      emit(DomainsOperationSuccess(""));
     } catch (e) {
-      emit(DomainsError(e.toString()));
+      emit(
+        state.copyWith(status: DomainsStateStatus.failure, error: e.toString()),
+      );
     }
   }
 
-  void _deleteDomains(DeleteDomains event, Emitter<DomainsState> emit) async {
-    emit(DomainsLoading());
+  Future<void> _onDomainToggled(
+    DomainItemToggled event,
+    Emitter<DomainsState> emit,
+  ) async {
+    emit(state.copyWith(itemStatus: DomainsItemStateStatus.loading));
     try {
-      await piholeRepository.deleteDomainsItem(event.domainModel);
-      emit(DomainsItemOperationSuccess("Successfully Deleted"));
-      emit(DomainsOperationSuccess(""));
+      final newDomain = event.domainModel.copyWith(enabled: event.isEnabled);
+      DomainUpdateModel domainUpdateModel = await piholeRepository
+          .updateDomainItem(
+            newDomain,
+            event.domainModel.type,
+            event.domainModel.kind,
+          );
+      final domains = [..._domainstreamController.value];
+      final domainIndex = domains.indexWhere(
+        (t) => t.id == event.domainModel.id,
+      );
+      if (domainIndex >= 0) {
+        domains[domainIndex] = domainUpdateModel.domains[0];
+      }
+      _domainstreamController.add(domains);
     } catch (e) {
-      emit(DomainsError(e.toString()));
+      emit(
+        state.copyWith(
+          itemStatus: DomainsItemStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
     }
   }
 
-  void _addDomains(AddDomains event, Emitter<DomainsState> emit) async {
-    emit(DomainsLoading());
+  Future<void> _updateDomainsItem(
+    UpdateDomainsItem event,
+    Emitter<DomainsState> emit,
+  ) async {
+    emit(state.copyWith(itemStatus: DomainsItemStateStatus.loading));
     try {
-      await piholeRepository.addDomainsItem(event.domainModel);
-      emit(DomainsItemOperationSuccess("Successfully Added"));
-      emit(DomainsOperationSuccess(""));
+      final newDomain = event.domainModel.copyWith(
+        type: event.type,
+        kind: event.kind,
+        comment: event.comment,
+        enabled: event.enabled,
+        groups: event.groups,
+      );
+
+      DomainUpdateModel domainUpdateModel = await piholeRepository
+          .updateDomainItem(
+            newDomain,
+            event.domainModel.type,
+            event.domainModel.kind,
+          );
+      final domains = [..._domainstreamController.value];
+      final domainIndex = domains.indexWhere(
+        (t) => t.id == event.domainModel.id,
+      );
+      if (domainIndex >= 0) {
+        domains[domainIndex] = domainUpdateModel.domains[0];
+      }
+      _domainstreamController.add(domains);
+      emit(
+        state.copyWith(
+          itemStatus: DomainsItemStateStatus.success,
+          message: "Successfully Updated",
+        ),
+      );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: DomainsItemStateStatus.initial));
     } catch (e) {
-      emit(DomainsError(e.toString()));
+      emit(
+        state.copyWith(
+          itemStatus: DomainsItemStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
     }
+  }
+
+  Future<void> _addDomainsItem(
+    AddDomainsItem event,
+    Emitter<DomainsState> emit,
+  ) async {
+    emit(state.copyWith(itemStatus: DomainsItemStateStatus.loading));
+    try {
+      DomainUpdateModel domainUpdateModel = await piholeRepository
+          .addDomainsItem(event.domainModel);
+      final domains = [..._domainstreamController.value];
+      domains.add(domainUpdateModel.domains[0]);
+      _domainstreamController.add(domains);
+      emit(
+        state.copyWith(
+          itemStatus: DomainsItemStateStatus.success,
+          message: "Successfully Added",
+        ),
+      );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: DomainsItemStateStatus.initial));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          itemStatus: DomainsItemStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
+  Future<void> _deleteDomainsItem(
+    DeleteDomainsItem event,
+    Emitter<DomainsState> emit,
+  ) async {
+    emit(state.copyWith(itemStatus: DomainsItemStateStatus.loading));
+    try {
+      bool isDeleted = await piholeRepository.deleteDomainsItem(
+        event.domainModel,
+      );
+      if (isDeleted) {
+        final domains = [..._domainstreamController.value];
+        final domainIndex = domains.indexWhere(
+          (t) => t.id == event.domainModel.id,
+        );
+        if (domainIndex >= 0) {
+          domains.removeAt(domainIndex);
+        }
+        _domainstreamController.add(domains);
+        emit(
+          state.copyWith(
+            itemStatus: DomainsItemStateStatus.success,
+            message: "Successfully Deleted",
+          ),
+        );
+      }
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: DomainsItemStateStatus.initial));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          itemStatus: DomainsItemStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<void> close() {
+    _domainstreamController.close();
+    return super.close();
   }
 }

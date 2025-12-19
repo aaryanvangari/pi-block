@@ -18,16 +18,16 @@ class DomainModel extends Equatable {
   final int date_modified;
 
   const DomainModel({
-    required this.domain,
-    required this.unicode,
-    required this.type,
-    required this.kind,
-    required this.comment,
-    required this.groups,
-    required this.enabled,
-    required this.id,
-    required this.date_added,
-    required this.date_modified,
+    this.domain = '',
+    this.unicode = '',
+    this.type = '',
+    this.kind = '',
+    this.comment = '',
+    this.groups = const [0],
+    this.enabled = false,
+    this.id = 0,
+    this.date_added = 0,
+    this.date_modified = 0,
   });
 
   factory DomainModel.fromJson(Map<String, dynamic> json) {

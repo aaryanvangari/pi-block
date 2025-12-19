@@ -1,26 +1,61 @@
 part of 'domains_bloc.dart';
 
-@immutable
-abstract class DomainsEvent {}
+sealed class DomainsEvent extends Equatable {
+  const DomainsEvent();
 
-class LoadDomains extends DomainsEvent {}
-
-class AddDomains extends DomainsEvent {
-  final DomainModel domainModel;
-
-  AddDomains(this.domainModel);
+  @override
+  List<Object> get props => [];
 }
 
-class UpdateDomains extends DomainsEvent {
-  final DomainModel domainModel;
-  final String previousType;
-  final String previousKind;
-
-  UpdateDomains(this.domainModel, this.previousType, this.previousKind);
+final class LoadDomains extends DomainsEvent {
+  const LoadDomains();
 }
 
-class DeleteDomains extends DomainsEvent {
+final class DomainItemToggled extends DomainsEvent {
+  const DomainItemToggled({required this.domainModel, required this.isEnabled});
+
+  final DomainModel domainModel;
+  final bool isEnabled;
+
+  @override
+  List<Object> get props => [domainModel, isEnabled];
+}
+
+final class UpdateDomainsItem extends DomainsEvent {
+  const UpdateDomainsItem({
+    required this.domainModel,
+    required this.type,
+    required this.kind,
+    required this.comment,
+    required this.enabled,
+    required this.groups,
+  });
+
+  final DomainModel domainModel;
+  final String type;
+  final String kind;
+  final String comment;
+  final bool enabled;
+  final List<int> groups;
+
+  @override
+  List<Object> get props => [domainModel, type, kind, comment, enabled, groups];
+}
+
+final class AddDomainsItem extends DomainsEvent {
+  const AddDomainsItem({required this.domainModel});
+
   final DomainModel domainModel;
 
-  DeleteDomains(this.domainModel);
+  @override
+  List<Object> get props => [domainModel];
+}
+
+final class DeleteDomainsItem extends DomainsEvent {
+  const DeleteDomainsItem({required this.domainModel});
+
+  final DomainModel domainModel;
+
+  @override
+  List<Object> get props => [domainModel];
 }

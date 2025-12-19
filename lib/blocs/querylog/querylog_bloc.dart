@@ -1,69 +1,105 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/domain_update_model.dart';
 import 'package:pi_block/models/query_model.dart';
+import 'package:rxdart/subjects.dart';
 
 part 'querylog_event.dart';
 part 'querylog_state.dart';
 
 class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
   final PiholeRepository piholeRepository;
-  QuerylogBloc(this.piholeRepository) : super(QuerylogInitial()) {
-    on<LoadQuerylog>(_getQuerylog);
+  late final _querylogStreamController =
+      BehaviorSubject<List<QueryModel>>.seeded(const []);
+
+  QuerylogBloc(this.piholeRepository) : super(QuerylogState()) {
+    on<LoadQuerylog>(_loadQuerylog);
     on<AllowDenyQuerylogDomain>(_allowdenyQuerylogDomain);
+    _querylogStreamController.add(const []);
   }
 
-  void _getQuerylog(LoadQuerylog event, Emitter<QuerylogState> emit) async {
-    emit(QuerylogLoading());
+  Stream<List<QueryModel>> getQuerylog() =>
+      _querylogStreamController.asBroadcastStream();
+
+  void _loadQuerylog(LoadQuerylog event, Emitter<QuerylogState> emit) async {
+    emit(
+      state.copyWith(
+        status: QuerylogStateStatus.loading,
+        itemStatus: QuerylogItemStateStatus.initial,
+      ),
+    );
     try {
       QueryListModel queryListModel = await piholeRepository.getQuerylogPage(
         event.start,
         event.pageSize,
       );
-      if (queryListModel.queries.isEmpty) {
-        emit(QuerylogEmpty());
-      } else {
-        emit(QuerylogLoaded(queryListModel, event.start));
-      }
+      final queries = queryListModel.queries;
+      _querylogStreamController.add(queries);
+      await emit.forEach<List<QueryModel>>(
+        getQuerylog(),
+        onData: (queries) => state.copyWith(
+          status: QuerylogStateStatus.success,
+          queries: queries,
+          recordsFiltered: queryListModel.recordsFiltered,
+          page: event.start,
+        ),
+        onError: (_, _) => state.copyWith(status: QuerylogStateStatus.failure),
+      );
     } catch (e) {
-      emit(QuerylogError(e.toString()));
+      emit(
+        state.copyWith(
+          status: QuerylogStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
     }
   }
 
-  void _allowdenyQuerylogDomain(
+  Future<void> _allowdenyQuerylogDomain(
     AllowDenyQuerylogDomain event,
     Emitter<QuerylogState> emit,
   ) async {
-    emit(QuerylogItemOperationLoading());
+    emit(state.copyWith(itemStatus: QuerylogItemStateStatus.loading));
     try {
-      /// #TODO refactor
-      DomainModel domainModel = DomainModel.fromJson(
-        jsonDecode("{\"groups\":[0]}"),
-      );
-      DomainModel tempDomainModel = domainModel.copyWith(
+      DomainModel domainModel = DomainModel(
         comment: "Added from Query Log",
         domain: event.queryModel.domain,
         kind: "exact",
         type: event.type,
       );
-
       DomainUpdateModel domainUpdateModel = await piholeRepository
-          .addDomainsItem(tempDomainModel);
+          .addDomainsItem(domainModel);
+
       if (domainUpdateModel.processed.errors.isNotEmpty) {
         emit(
-          QuerylogItemOperationFailure(
-            domainUpdateModel.processed.errors[0].error,
+          state.copyWith(
+            itemStatus: QuerylogItemStateStatus.failure,
+            error: domainUpdateModel.processed.errors[0].error,
           ),
         );
       } else {
-        emit(QuerylogItemOperationSuccess("Successfully Added"));
+        final queries = [..._querylogStreamController.value];
+        _querylogStreamController.add(queries);
+
+        emit(
+          state.copyWith(
+            itemStatus: QuerylogItemStateStatus.success,
+            message: "Successfully Updated",
+          ),
+        );
+
+        /// Notification shows second time if we did not reset it
+        emit(state.copyWith(itemStatus: QuerylogItemStateStatus.initial));
       }
     } catch (e) {
-      emit(QuerylogItemOperationFailure(e.toString()));
+      emit(
+        state.copyWith(
+          itemStatus: QuerylogItemStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
     }
   }
 }

@@ -47,19 +47,19 @@ class ListsModel extends Equatable {
   final int status;
 
   const ListsModel({
-    required this.address,
-    required this.comment,
-    required this.groups,
-    required this.enabled,
-    required this.id,
-    required this.date_added,
-    required this.date_modified,
-    required this.type,
-    required this.date_updated,
-    required this.number,
-    required this.invalid_domains,
-    required this.abp_entries,
-    required this.status,
+    this.address = '',
+    this.comment = '',
+    this.groups = const [0],
+    this.enabled = false,
+    this.id = 0,
+    this.date_added = 0,
+    this.date_modified = 0,
+    this.type = '',
+    this.date_updated = 0,
+    this.number = 0,
+    this.invalid_domains = 0,
+    this.abp_entries = 0,
+    this.status = 0,
   });
 
   factory ListsModel.fromJson(Map<String, dynamic> json) {

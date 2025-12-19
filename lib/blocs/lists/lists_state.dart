@@ -1,111 +1,39 @@
 part of 'lists_bloc.dart';
 
-@immutable
-abstract class ListsState {}
+enum ListsStateStatus { initial, loading, success, failure, empty }
 
-class ListsInitial extends ListsState {}
+enum ListsItemStateStatus { initial, loading, success, failure }
 
-class ListsLoading extends ListsState {}
-
-class ListsLoaded extends ListsState {
+class ListsState extends Equatable {
   final List<ListsModel> lists;
-
-  ListsLoaded(this.lists);
-}
-
-class ListsOperationSuccess extends ListsState {
+  final ListsStateStatus status;
+  final ListsItemStateStatus itemStatus;
+  final String error;
   final String message;
+  const ListsState({
+    this.lists = const [],
+    this.status = ListsStateStatus.initial,
+    this.itemStatus = ListsItemStateStatus.initial,
+    this.error = "",
+    this.message = "",
+  });
 
-  ListsOperationSuccess(this.message);
+  ListsState copyWith({
+    List<ListsModel>? lists,
+    ListsStateStatus? status,
+    ListsItemStateStatus? itemStatus,
+    String? error,
+    String? message,
+  }) {
+    return ListsState(
+      lists: lists ?? this.lists,
+      status: status ?? this.status,
+      itemStatus: itemStatus ?? this.itemStatus,
+      error: error ?? this.error,
+      message: message ?? this.message,
+    );
+  }
+
+  @override
+  List<Object?> get props => [lists, status, itemStatus, error, message];
 }
-
-class ListsItemOperationSuccess extends ListsState {
-  final String message;
-
-  ListsItemOperationSuccess(this.message);
-}
-
-class ListsError extends ListsState {
-  final String errorMessage;
-
-  ListsError(this.errorMessage);
-}
-
-// enum ListsStateStatus { initial, loading, success, failure, empty }
-
-// class ListsState extends Equatable {
-//   final List<ListsModel> lists;
-//   final ListsStateStatus status;
-//   final String error;
-//   const ListsState({
-//     this.lists = const [],
-//     this.status = ListsStateStatus.initial,
-//     this.error = ""
-//   });
-
-//   ListsState copyWith({
-//     List<ListsModel>? lists,
-//     ListsStateStatus? status,
-//     String? error,
-//   }) {
-//     return ListsState(
-//       lists: lists ?? this.lists,
-//       status: status ?? this.status,
-//       error: error ?? this.error
-//     );
-//   }
-
-//   @override
-//   List<Object?> get props => [lists, status, error];
-// }
-
-// final class ListsModified extends ListsState {
-//   const ListsModified({required super.lists, required super.status});
-// }
-
-// @immutable
-// sealed class ListsState {}
-
-// class ListsInitial extends ListsState {
-//   const ListsInitial({required super.lists});
-
-//   @override
-//   List<Object?> get props => [lists];
-// }
-
-// final class ListsLoading extends ListsState {}
-
-// class ListsSuccess extends ListsState {
-//   // @override
-//   // final List<ListsModel> lists;
-
-//   // const ListsSuccess({required this.lists});
-//   const ListsSuccess({required super.lists});
-// }
-
-// final class ListsFailure extends ListsState {
-//   final String error;
-
-//   const ListsFailure(this.error);
-// }
-
-// final class ListsEmpty extends ListsState {
-//   // final List<ListsModel> lists;
-
-//   const ListsEmpty({required super.lists});
-// }
-
-/// Lists Item
-// final class ListsItemLoading extends ListsState {}
-
-// final class ListsItemSuccess extends ListsState {
-//   final ListUpdateModel listUpdateModel;
-
-//   ListsItemSuccess({required this.listUpdateModel});
-// }
-
-// final class ListsItemFailure extends ListsState {
-//   final String error;
-
-//   ListsItemFailure(this.error);
-// }

@@ -49,7 +49,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
             26 + // query log label
             10 + // sizedbox
             20 + // android differences (maybe top status bar affecting)
-            // 75 +
+            25 +
             pagerHeight +
             kBottomNavigationBarHeight);
     int itemsCanFit = (heightForListView / individualRowHeight).toInt();
@@ -280,7 +280,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
                 cancelFunction: () => Navigator.pop(ctx),
                 primaryFunction: () {
                   ctx.read<QuerylogBloc>().add(
-                    AllowDenyQuerylogDomain(item, "allow"),
+                    AllowDenyQuerylogDomain(queryModel: item, type: "allow"),
                   );
                   Navigator.pop(ctx);
                 },
@@ -316,7 +316,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
                 cancelFunction: () => Navigator.pop(ctx),
                 primaryFunction: () async {
                   ctx.read<QuerylogBloc>().add(
-                    AllowDenyQuerylogDomain(item, "deny"),
+                    AllowDenyQuerylogDomain(queryModel: item, type: "deny"),
                   );
                   Navigator.pop(ctx);
                 },
@@ -332,11 +332,11 @@ class _QueryLogPageState extends State<QueryLogPage> {
     );
   }
 
-  Widget generateQueryLogData(QueryListModel queryListModel) {
+  Widget generateQueryLogData(List<QueryModel> queryModels) {
     ListView listView = ListView.separated(
-      itemCount: queryListModel.queries.length,
+      itemCount: queryModels.length,
       itemBuilder: (context, index) {
-        var selectedPageItem = queryListModel.queries[index];
+        var selectedPageItem = queryModels[index];
         bool isBlocked = false;
         isBlocked =
             KConstants.queryStatus[selectedPageItem.status].containsKey(
@@ -358,41 +358,6 @@ class _QueryLogPageState extends State<QueryLogPage> {
     return listView;
   }
 
-  Widget getQueryLog() {
-    return BlocConsumer<QuerylogBloc, QuerylogState>(
-      buildWhen: (previous, current) {
-        return true;
-      },
-      listener: (context, state) {
-        if (state is QuerylogError) {
-          PiUtils.handleGeneralException(context, state.errorMessage);
-        } else if (state is QuerylogItemOperationSuccess) {
-          GlobalSnackbar.info(context, state.message, "");
-        } else if (state is QuerylogItemOperationFailure) {
-          GlobalSnackbar.error(context, state.errorMessage, "");
-        }
-      },
-      builder: (context, state) {
-        Widget widget = SizedBox();
-        if (state is QuerylogError) {
-          widget = CustomErrorWidget(message: "Error loading data");
-        } else if (state is QuerylogEmpty) {
-          widget = EmptyWidget(message: "No data");
-        } else if (state is QuerylogLoading) {
-          widget = Center(child: CircularProgressIndicator());
-        } else if (state is QuerylogItemOperationSuccess) {
-          context.read<QuerylogBloc>().add(
-            LoadQuerylog(_currentPage, pageSize),
-          );
-        } else if (state is QuerylogLoaded) {
-          QueryListModel queryListModel = state.queryListModel;
-          widget = generateQueryLogData(queryListModel);
-        }
-        return widget;
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     determinePageSizes();
@@ -408,56 +373,84 @@ class _QueryLogPageState extends State<QueryLogPage> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(
-                      "Query Log",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        // color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  SizedBox(
-                    height: heightForListView,
-                    width: MediaQuery.sizeOf(context).width * 0.99,
-                    child: LayoutBuilder(
-                      builder:
-                          (BuildContext context, BoxConstraints constraints) {
-                            return getQueryLog();
-                          },
-                    ),
-                  ),
                   BlocConsumer<QuerylogBloc, QuerylogState>(
-                    listener: (context, state) {},
-                    builder: (context, state) {
-                      if (state is QuerylogLoaded) {
-                        QueryListModel queryListModel = state.queryListModel;
-                        _currentPage = state.page;
-                        _totalPages =
-                            (queryListModel.recordsFiltered / pageSize).ceil();
+                    listener: (context, state) {
+                      if (state.status == QuerylogStateStatus.failure) {
+                        PiUtils.handleGeneralException(
+                          context,
+                          "An Error Occured",
+                        );
+                      } else if (state.itemStatus ==
+                          QuerylogItemStateStatus.failure) {
+                        PiUtils.handleGeneralException(
+                          context,
+                          "An Error Occured",
+                        );
+                      } else if (state.itemStatus ==
+                          QuerylogItemStateStatus.success) {
+                        GlobalSnackbar.info(context, state.message, "");
                       }
-                      return Center(
-                        child: Pager(
-                          currentItemsPerPage: pageSize,
-                          currentPage: _currentPage,
-                          totalPages: _totalPages,
-                          onPageChanged: (page) {
-                            context.read<QuerylogBloc>().add(
-                              LoadQuerylog(page, pageSize),
-                            );
-                          },
-                          pagesView: pagesPerView,
-                          numberButtonSelectedColor: Theme.of(
-                            context,
-                          ).colorScheme.primary,
-                          numberTextUnselectedColor: Theme.of(
-                            context,
-                          ).colorScheme.secondary,
-                        ),
-                      );
+                    },
+                    builder: (context, state) {
+                      Widget widget = SizedBox();
+                      if (state.status == QuerylogStateStatus.loading) {
+                        widget = Center(child: CircularProgressIndicator());
+                      } else if (state.status == QuerylogStateStatus.failure) {
+                        widget = CustomErrorWidget(
+                          message: "Error loading data",
+                        );
+                      } else if (state.queries.isEmpty) {
+                        widget = Center(child: EmptyWidget(message: "No data"));
+                      } else if (state.status == QuerylogStateStatus.success) {
+                        List<QueryModel> queryModels = state.queries;
+                        _currentPage = state.page;
+                        _totalPages = (state.recordsFiltered / pageSize).ceil();
+                        widget = Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
+                              child: Text(
+                                "Query Log",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  // color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 10),
+                            SizedBox(
+                              height: heightForListView,
+                              width: MediaQuery.sizeOf(context).width * 0.99,
+                              child: generateQueryLogData(queryModels),
+                            ),
+                            SizedBox(height: 10),
+                            Center(
+                              child: Pager(
+                                currentItemsPerPage: pageSize,
+                                currentPage: _currentPage,
+                                totalPages: _totalPages,
+                                onPageChanged: (page) {
+                                  context.read<QuerylogBloc>().add(
+                                    LoadQuerylog(page, pageSize),
+                                  );
+                                },
+                                pagesView: pagesPerView,
+                                numberButtonSelectedColor: Theme.of(
+                                  context,
+                                ).colorScheme.primary,
+                                numberTextUnselectedColor: Theme.of(
+                                  context,
+                                ).colorScheme.secondary,
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return widget;
                     },
                   ),
                 ],
