@@ -1,7 +1,7 @@
 name: pi_block
 description: "Application to manage Pi-Hole instance"
 publish_to: 'none'
-version: 2.1.0+8
+version: 3.0.0+9
 
 environment:
   sdk: ^3.9.2

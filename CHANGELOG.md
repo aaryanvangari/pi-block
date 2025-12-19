@@ -1,5 +1,11 @@
 # Changelog
 
+## [3.0.0](https://github.com/aaryanvangari/pi-block/compare/2.1.0...3.0.0) (2025-12-19)
+
+### Features
+
+* implement streams in major components ([55f201b](https://github.com/aaryanvangari/pi-block/commit/55f201b))
+
 ## [2.1.0](https://github.com/aaryanvangari/pi-block/compare/2.0.0...2.1.0) (2025-12-15)
 
 ### Bug Fixes
