@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/aaryanvangari/pi-block/compare/3.1.0...3.2.0) (2025-12-20)
+
+### Features
+
+* implement BLoC for auth ([3814f74](https://github.com/aaryanvangari/pi-block/commit/3814f74))
+* move stats fetch timer to its own widget ([660f760](https://github.com/aaryanvangari/pi-block/commit/660f760))
+
 ## [3.1.0](https://github.com/aaryanvangari/pi-block/compare/3.0.0...3.1.0) (2025-12-19)
 
 ### Bug Fixes
