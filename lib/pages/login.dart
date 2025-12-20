@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pi_block/blocs/auth/auth_bloc.dart';
+import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
-import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
-import 'package:pi_block/provider/auth_provider.dart';
-import 'package:pi_block/widgets/logo.dart';
-import 'package:provider/provider.dart';
+import 'package:pi_block/widgets/circular_loader_in_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,49 +18,9 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   final _serverUrlController = TextEditingController();
   bool loading = false;
-  bool passwordVisible = false;
+  bool passwordVisible = true;
   PiValidators piValidators = PiValidators();
 
-  void doLogin() async {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    try {
-      Uri url = Uri.parse(_serverUrlController.text);
-      setState(() {
-        loading = true;
-      });
-      await auth.login(url, _passwordController.text);
-      setState(() {
-        loading = false;
-      });
-      if (!mounted) return;
-      context.go("/home");
-    } catch (e) {
-      if (!mounted) return;
-      PiUtils.handleGeneralException(context, e);
-    }
-  }
-
-  void clearPassword() {
-    _passwordController.clear();
-  }
-
-  void clearServerUrl() {
-    _serverUrlController.clear();
-  }
-
-  void clearInputs() {
-    clearPassword();
-    clearServerUrl();
-  }
-
-  @override
-  void initState() {
-    // clearInputs();
-    super.initState();
-    passwordVisible = true;
-  }
-
-  // cleanup
   @override
   void dispose() {
     _passwordController.dispose();
@@ -82,132 +42,155 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  LogoWidget(type: "login"),
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(
-                      "Login to Pi-Hole instance",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(height: MediaQuery.sizeOf(context).height * 0.15),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Text(
+                    "Sign In",
+                    style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 20),
-                  Form(
-                    child: Builder(
-                      builder: (context) {
-                        return Column(
-                          children: [
-                            Tooltip(
-                              message:
-                                  "Pi-Hole server url. \nExamples \nhttps://pihole.example.com \nhttp://pihole.local \nhttp://192.168.1.2:8053",
-                              padding: EdgeInsets.all(10.0),
-                              margin: EdgeInsets.all(20),
-                              verticalOffset: 10,
-                              preferBelow: false,
-                              child: TextFormField(
-                                controller: _serverUrlController,
-                                validator: (value) =>
-                                    piValidators.serverUrlValidator(value),
-                                onChanged: (value) {
-                                  Form.of(context).validate();
-                                },
-                                decoration: InputDecoration(
-                                  labelText: "Pi-Hole Server Url",
-                                  border: KInputStyle.inputBorder,
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(color: Colors.grey),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(color: Colors.grey),
-                                  ),
-                                  suffixIcon: IconButton(
-                                    onPressed: clearServerUrl,
-                                    icon: Icon(Icons.clear),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            Tooltip(
-                              message:
-                                  "API Token which is used for FTLCONF_webserver_api_password in environment file",
-                              padding: EdgeInsets.all(10.0),
-                              margin: EdgeInsets.all(20),
-                              verticalOffset: 10,
-                              preferBelow: false,
-                              child: TextFormField(
-                                controller: _passwordController,
-                                obscureText: passwordVisible,
-                                enableSuggestions: false,
-                                autocorrect: false,
-                                validator: (value) =>
-                                    piValidators.apiTokenValidator(value),
-                                onChanged: (value) {
-                                  Form.of(context).validate();
-                                },
-                                decoration: InputDecoration(
-                                  labelText: "API Token",
-                                  border: KInputStyle.inputBorder,
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(color: Colors.grey),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(color: Colors.grey),
-                                  ),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      passwordVisible
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        passwordVisible = !passwordVisible;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                keyboardType: TextInputType.visiblePassword,
-                                textInputAction: TextInputAction.done,
-                              ),
-                            ),
-                            SizedBox(height: 20),
-                            FilledButton(
-                              onPressed: () {
-                                if (Form.of(context).validate()) {
-                                  doLogin();
-                                }
+                ),
+                SizedBox(height: 40),
+                Form(
+                  child: Builder(
+                    builder: (context) {
+                      return Column(
+                        children: [
+                          Tooltip(
+                            message:
+                                "Pi-Hole server url. \nExamples \nhttps://pihole.example.com \nhttp://pihole.local \nhttp://192.168.1.2:8053",
+                            padding: EdgeInsets.all(10.0),
+                            margin: EdgeInsets.all(20),
+                            verticalOffset: 10,
+                            preferBelow: false,
+                            child: TextFormField(
+                              controller: _serverUrlController,
+                              validator: (value) =>
+                                  piValidators.serverUrlValidator(value),
+                              onChanged: (value) {
+                                Form.of(context).validate();
                               },
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: Size(double.infinity, 50),
-                                shape: RoundedRectangleBorder(
+                              decoration: InputDecoration(
+                                labelText: "Pi-Hole Server Url",
+                                border: KInputStyle.inputBorder,
+                                focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                suffixIcon: IconButton(
+                                  onPressed: _serverUrlController.clear,
+                                  icon: Icon(Icons.clear),
                                 ),
                               ),
-                              child: Text("Login"),
                             ),
-                          ],
-                        );
-                      },
-                    ),
+                          ),
+                          SizedBox(height: 20),
+                          Tooltip(
+                            message:
+                                "API Token which is used for FTLCONF_webserver_api_password in environment file",
+                            padding: EdgeInsets.all(10.0),
+                            margin: EdgeInsets.all(20),
+                            verticalOffset: 10,
+                            preferBelow: false,
+                            child: TextFormField(
+                              controller: _passwordController,
+                              obscureText: passwordVisible,
+                              enableSuggestions: false,
+                              autocorrect: false,
+                              validator: (value) =>
+                                  piValidators.apiTokenValidator(value),
+                              onChanged: (value) {
+                                Form.of(context).validate();
+                              },
+                              decoration: InputDecoration(
+                                labelText: "API Token",
+                                border: KInputStyle.inputBorder,
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(color: Colors.grey),
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    passwordVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      passwordVisible = !passwordVisible;
+                                    });
+                                  },
+                                ),
+                              ),
+                              keyboardType: TextInputType.visiblePassword,
+                              textInputAction: TextInputAction.done,
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                          BlocConsumer<AuthBloc, AuthState>(
+                            listener: (context, state) {
+                              if (state.status == AuthStateStatus.loggedIn) {
+                                context.go("/home");
+                              } else if (state.status ==
+                                  AuthStateStatus.failure) {
+                                GlobalSnackbar.error(
+                                  context,
+                                  state.error,
+                                  state.errorDescription,
+                                );
+                              }
+                            },
+                            builder: (context, state) {
+                              if (state.status == AuthStateStatus.loading) {
+                                loading = true;
+                              } else if (state.status ==
+                                  AuthStateStatus.failure) {
+                                loading = false;
+                              }
+                              return FilledButton(
+                                onPressed: () {
+                                  if (Form.of(context).validate()) {
+                                    context.read<AuthBloc>().add(
+                                      Login(
+                                        serverUrl: _serverUrlController.text,
+                                        apiToken: _passwordController.text,
+                                      ),
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: Size(double.infinity, 50),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: loading
+                                    ? CircularLoaderInButton()
+                                    : Text("Login"),
+                              );
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

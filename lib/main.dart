@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/app_bloc_observer.dart';
+import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/blocs/blocking_bloc.dart';
 import 'package:pi_block/blocs/stats/charts/client_history_barchart_bloc.dart';
 import 'package:pi_block/blocs/stats/charts/query_history_barchart_bloc.dart';
@@ -20,6 +21,7 @@ import 'package:pi_block/blocs/lists/lists_bloc.dart';
 import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
 import 'package:pi_block/blocs/pihole_config/pihole_config_bloc.dart';
 import 'package:pi_block/blocs/querylog/querylog_bloc.dart';
+import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/data_provider/pihole_data_provider.dart';
@@ -35,10 +37,8 @@ import 'package:pi_block/pages/querylog.dart';
 import 'package:pi_block/pages/settings.dart';
 import 'package:pi_block/pages/stats.dart';
 import 'package:pi_block/pages/welcome.dart';
-import 'package:pi_block/provider/auth_provider.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 // import 'package:pi_block/theme/theme.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -46,12 +46,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   runApp(
-    MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
-      child: Directionality(
-        textDirection: TextDirection.ltr,
-        child: MainApp(prefs: sharedPreferences),
-      ),
+    Directionality(
+      textDirection: TextDirection.ltr,
+      child: MainApp(prefs: sharedPreferences),
     ),
   );
   // runApp(const MainApp());
@@ -187,6 +184,10 @@ class _MainAppState extends State<MainApp> {
         create: (context) =>
             ClientHistoryBarchartBloc(context.read<PiholeRepository>()),
       ),
+      BlocProvider<AuthBloc>(
+        create: (context) => AuthBloc(context.read<PiholeRepository>()),
+        lazy: false,
+      ),
     ];
     return blocProviders;
   }
@@ -253,10 +254,18 @@ class _MainAppState extends State<MainApp> {
         ),
       ],
       redirect: (context, state) {
-        final auth = Provider.of<AuthProvider>(context, listen: false);
+        AuthState authState = context.read<AuthBloc>().state;
+        bool isSessionValid = context.read<AuthBloc>().checkSessionValidity();
+        if (!isSessionValid && authState.status == AuthStateStatus.loggedIn) {
+          context.read<AuthBloc>().add(Logout());
+          GlobalSnackbar.error(context, "Session Expired", "");
+        }
         final isLoginRoute = state.matchedLocation == "/login";
         log(state.matchedLocation);
-        bool isAuthenticated = auth.isAuthenticated;
+        bool isAuthenticated =
+            authState.sid.isNotEmpty &&
+            authState.status == AuthStateStatus.loggedIn &&
+            isSessionValid;
         if (!isAuthenticated && isLoginRoute) {
           return state.namedLocation("login");
         } else if (isAuthenticated && isLoginRoute) {

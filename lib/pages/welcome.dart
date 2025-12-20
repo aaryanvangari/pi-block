@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/widgets/gradient_background.dart';
-import 'package:pi_block/provider/auth_provider.dart';
 import 'package:pi_block/widgets/logo.dart';
-import 'package:provider/provider.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -24,24 +21,6 @@ class _WelcomePageState extends State<WelcomePage> {
         border: index >= 2 ? Border.all(color: color, width: 1) : null,
       ),
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _checkAuth();
-  }
-
-  Future<void> _checkAuth() async {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    await auth.loadAuthInfo();
-    if (!mounted) return;
-    if (auth.isAuthenticated) {
-      context.go("/home");
-    } else if (auth.sid != null && !auth.isAuthenticated) {
-      GlobalSnackbar.error(context, "Session Expired", "");
-      context.go("/");
-    }
   }
 
   @override
