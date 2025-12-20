@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/pages/domains.dart';
@@ -15,8 +16,6 @@ import 'package:pi_block/pages/dashboard.dart';
 import 'package:pi_block/pages/querylog.dart';
 import 'package:pi_block/pages/stats.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:pi_block/provider/auth_provider.dart';
-import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -40,24 +39,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     context.read<NotificationsBloc>().add(NotificationsFetched());
-  }
-
-  void doLogout() async {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    try {
-      setState(() {
-        loading = true;
-      });
-      await auth.logout(auth);
-      setState(() {
-        loading = false;
-      });
-      if (!mounted) return;
-      context.go("/");
-    } catch (e) {
-      if (!mounted) return;
-      PiUtils.handleGeneralException(context, e);
-    }
   }
 
   @override
@@ -138,7 +119,18 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        drawer: DrawerWidget(onLogout: doLogout),
+        drawer: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state.status == AuthStateStatus.loggedOut) {
+              context.go("/");
+            }
+          },
+          builder: (context, state) {
+            return DrawerWidget(
+              onLogout: () => context.read<AuthBloc>().add(Logout()),
+            );
+          },
+        ),
         bottomNavigationBar: NavbarWidget(),
         body: ValueListenableBuilder(
           valueListenable: selectedPageNotifier,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/data/constants.dart';
-import 'package:pi_block/provider/auth_provider.dart';
-import 'package:provider/provider.dart';
 
 class SessionInfoStats extends StatelessWidget {
   const SessionInfoStats({super.key});
@@ -46,31 +46,37 @@ class SessionInfoStats extends StatelessWidget {
               ),
             ),
             SizedBox(height: 10),
-            Consumer<AuthProvider>(
-              builder: (context, auth, child) => Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                Widget widget = SizedBox();
+                if (state.status == AuthStateStatus.loggedIn) {
+                  widget = Column(
                     children: [
-                      Text("Server"),
-                      Text(
-                        '${auth.scheme}://${auth.server}:${auth.port}',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Server"),
+                          Text(
+                            '${state.scheme}://${state.server}:${state.port}',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("Expires In"),
+                          Text(
+                            getSessionExpiresIn(state.sessionValidUntil),
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Expires In"),
-                      Text(
-                        getSessionExpiresIn(auth.sessionValidUntil!),
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                  );
+                }
+                return widget;
+              },
             ),
           ],
         ),

@@ -15,6 +15,7 @@ import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/models/lists_update_model.dart';
 import 'package:pi_block/models/pihole_config_model.dart';
 import 'package:pi_block/models/query_model.dart';
+import 'package:pi_block/models/session_model.dart';
 import 'package:pi_block/models/summary_model.dart';
 import 'package:pi_block/models/system_model.dart';
 import 'package:pi_block/models/upstreams_model.dart';
@@ -24,6 +25,43 @@ class PiholeRepository {
   final PiholeDataProvider piholeDataProvider;
 
   PiholeRepository(this.piholeDataProvider);
+
+  Future<SessionModel> login(Uri uri, String password) async {
+    try {
+      var result = await piholeDataProvider.login(uri, password);
+      SessionModel sessionModel = SessionModel.fromJson(result);
+
+      log(
+        sessionModel.toString(),
+        level: Level.FINE.value,
+        name: "PiholeRepository.login",
+      );
+
+      return sessionModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> logout() async {
+    try {
+      var result = await piholeDataProvider.logout();
+      bool isDeleted = false;
+      if (result.containsKey("deleted") && result["deleted"]) {
+        isDeleted = true;
+      }
+
+      log(
+        result.toString(),
+        level: Level.FINE.value,
+        name: "PiholeRepository.logout",
+      );
+
+      return isDeleted;
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   Future<List<DiagnosticMessageModel>> getDiagnosticMessages() async {
     try {

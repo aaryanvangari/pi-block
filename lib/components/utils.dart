@@ -10,8 +10,6 @@ import 'package:pi_block/components/api_exception.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/session_exception.dart';
 import 'package:pi_block/data/notifiers.dart';
-import 'package:pi_block/provider/auth_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class PiUtils {
@@ -173,12 +171,5 @@ class PiUtils {
       default:
     }
     return isDarkMode;
-  }
-
-  static checkSession(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    if (!auth.isAuthenticated) {
-      throw SessionException("Session Expired", "");
-    }
   }
 }

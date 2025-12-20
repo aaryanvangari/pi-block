@@ -11,6 +11,51 @@ import 'package:pi_block/models/lists_model.dart';
 class PiholeDataProvider {
   PiHttpClient piHttpClient = PiHttpClient();
 
+  Future<Map<String, dynamic>> login(Uri uri, String password) async {
+    try {
+      var body = jsonEncode(<String, String>{'password': password});
+      var result = await piHttpClient.post(
+        KUrls.auth,
+        null,
+        body,
+        uri.scheme,
+        uri.host,
+        uri.port,
+        password,
+      );
+
+      PiUtils.handleAPIException(result, true);
+
+      log(
+        result.toString(),
+        level: Level.FINE.value,
+        name: "PiholeDataProvider.login",
+      );
+
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> logout() async {
+    try {
+      var result = await piHttpClient.delete(KUrls.auth, false);
+
+      PiUtils.handleAPIException(result, true);
+
+      log(
+        result.toString(),
+        level: Level.FINE.value,
+        name: "PiholeDataProvider.logout",
+      );
+
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Map<String, dynamic>> getDiagnosticMessages() async {
     try {
       var result = await piHttpClient.get(KUrls.messages);
@@ -492,7 +537,5 @@ class PiholeDataProvider {
     }
   }
 
-  void close() {
-    piHttpClient.close();
-  }
+  void close() => piHttpClient.close();
 }
