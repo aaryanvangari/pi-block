@@ -7,7 +7,7 @@ class SessionInfoStats extends StatelessWidget {
   const SessionInfoStats({super.key});
 
   Stream<DateTime> getTimeStream() {
-    return Stream.periodic(Duration(seconds: 1), (_) => DateTime.now());
+    return Stream.periodic(Duration(seconds: KTimers.session), (_) => DateTime.now());
   }
 
   String getSessionExpiresIn(int sessionValidUntil) {

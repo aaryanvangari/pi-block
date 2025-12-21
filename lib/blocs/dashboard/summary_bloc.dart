@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/summary_model.dart';
 
@@ -67,7 +68,7 @@ class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
   void _startPolling() {
     _timer?.cancel();
     _timer = Timer.periodic(
-      const Duration(seconds: 15),
+      const Duration(seconds: KTimers.summary),
       (_) => add(SummaryTick()),
     );
   }

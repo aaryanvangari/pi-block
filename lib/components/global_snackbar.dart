@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pi_block/data/constants.dart';
 
 class GlobalSnackbar {
   GlobalSnackbar._();
@@ -91,7 +92,7 @@ class GlobalSnackbar {
       // SnackBar as transparent
       backgroundColor: Colors.transparent,
       // SnackBar duration
-      duration: const Duration(seconds: 5),
+      duration: const Duration(seconds: KTimers.snackbarError),
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -188,7 +189,7 @@ class GlobalSnackbar {
       // SnackBar as transparent
       backgroundColor: Colors.transparent,
       // SnackBar duration
-      duration: const Duration(seconds: 5),
+      duration: const Duration(seconds: KTimers.snackbarInfo),
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
