@@ -12,14 +12,9 @@ import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 
-class NotificationsPage extends StatefulWidget {
+class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
 
-  @override
-  State<NotificationsPage> createState() => _NotificationsPageState();
-}
-
-class _NotificationsPageState extends State<NotificationsPage> {
   Widget _diagnosticsMessagesRow(DiagnosticMessageModel message) {
     return CustomExpansionTileWidget(
       isHeaderARow: false,
@@ -112,12 +107,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
       },
     );
     return listView;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<NotificationsBloc>().add(NotificationsFetched());
   }
 
   @override
