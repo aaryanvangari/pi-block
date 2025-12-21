@@ -6,24 +6,21 @@ import 'package:pi_block/data/constants.dart';
 class SessionInfoStats extends StatelessWidget {
   const SessionInfoStats({super.key});
 
-  String getSessionExpiresIn(int sessionValidUntil) {
-    // Current timestamp
-    DateTime currentTimestamp = DateTime.now();
+  Stream<DateTime> getTimeStream() {
+    return Stream.periodic(Duration(seconds: 1), (_) => DateTime.now());
+  }
 
-    // Old timestamp (example: 1 hour ago)
-    DateTime oldTimestamp = DateTime.fromMillisecondsSinceEpoch(
+  String getSessionExpiresIn(int sessionValidUntil) {
+    DateTime expiryTimestamp = DateTime.fromMillisecondsSinceEpoch(
       sessionValidUntil,
     );
+    DateTime currentTimestamp = DateTime.now();
+    Duration difference = expiryTimestamp.difference(currentTimestamp);
 
-    if (currentTimestamp.millisecondsSinceEpoch >
-        oldTimestamp.millisecondsSinceEpoch) {
+    if (currentTimestamp.isAfter(expiryTimestamp)) {
       return "Session Expired";
     } else {
-      // Calculate the difference
-      Duration difference = currentTimestamp.difference(oldTimestamp);
-      int seconds = difference.inMinutes.abs() * 60;
-      int differenceInSeconds = (seconds - difference.inSeconds.abs()).abs();
-      return "${difference.inMinutes.abs().toString()} Mins ${differenceInSeconds.toString()} Secs";
+      return "${difference.inMinutes} Mins ${difference.inSeconds % 60} Secs";
     }
   }
 
@@ -66,9 +63,14 @@ class SessionInfoStats extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text("Expires In"),
-                          Text(
-                            getSessionExpiresIn(state.sessionValidUntil),
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                          StreamBuilder(
+                            stream: getTimeStream(),
+                            builder: (context, asyncSnapshot) {
+                              return Text(
+                                getSessionExpiresIn(state.sessionValidUntil),
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              );
+                            }
                           ),
                         ],
                       ),
