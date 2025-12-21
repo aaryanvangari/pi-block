@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:equatable/equatable.dart';
+import 'package:logging/logging.dart';
 
 /// Root model representing the full upstream statistics response
 class UpstreamsModel extends Equatable {
@@ -23,6 +26,11 @@ class UpstreamsModel extends Equatable {
 
   /// Create an UpstreamModel instance from JSON
   factory UpstreamsModel.fromJson(Map<String, dynamic> json) {
+    log(
+      json.toString(),
+      level: Level.FINEST.value,
+      name: "UpstreamsModel.fromJson",
+    );
     return UpstreamsModel(
       upstreams: (json['upstreams'] as List<dynamic>)
           .map((e) => Upstream.fromJson(e))
