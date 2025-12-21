@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pi_block/blocs/dashboard/dashboard_bloc.dart';
+import 'package:pi_block/blocs/dashboard/summary_bloc.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/models/summary_model.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
@@ -17,7 +17,7 @@ class _SummaryInfoStatsState extends State<SummaryInfoStats> {
   @override
   void initState() {
     super.initState();
-    context.read<DashboardBloc>().add(LoadSummaryInfo());
+    context.read<SummaryBloc>().add(LoadSummary());
   }
 
   Widget _buildStatCard(
@@ -84,32 +84,22 @@ class _SummaryInfoStatsState extends State<SummaryInfoStats> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<DashboardBloc, DashboardState>(
-      buildWhen: (previous, current) {
-        if ((current is SummaryInfoInitial ||
-                current is SummaryInfoLoaded ||
-                current is SummaryInfoLoading ||
-                current is SummaryInfoError) &&
-            previous != current) {
-          return true;
-        }
-        return false;
-      },
+    return BlocConsumer<SummaryBloc, SummaryState>(
       listener: (context, state) {
-        if (state is SummaryInfoError) {
-          PiUtils.handleGeneralException(context, state.errorMessage);
+        if (state.status == SummaryStateStatus.failure) {
+          PiUtils.handleGeneralException(context, state.error);
         }
       },
       builder: (context, state) {
         Widget widget = SizedBox();
-        if (state is SummaryInfoError) {
+        if (state.status == SummaryStateStatus.failure) {
           widget = ErrorCardWidget(
             header: "Summary",
             message: "Error loading data",
           );
-        } else if (state is SummaryInfoLoading) {
+        } else if (state.status == SummaryStateStatus.loading) {
           widget = Center(child: CircularProgressIndicator());
-        } else if (state is SummaryInfoLoaded) {
+        } else if (state.status == SummaryStateStatus.success) {
           SummaryModel summaryModel = state.summaryModel;
 
           widget = GridView.count(
