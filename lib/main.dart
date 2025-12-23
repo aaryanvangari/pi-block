@@ -190,8 +190,7 @@ class _MainAppState extends State<MainApp> {
         lazy: false,
       ),
       BlocProvider<SummaryBloc>(
-        create: (context) =>
-            SummaryBloc(context.read<PiholeRepository>()),
+        create: (context) => SummaryBloc(context.read<PiholeRepository>()),
       ),
     ];
     return blocProviders;

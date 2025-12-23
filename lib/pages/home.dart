@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
-            NotificationsWidget()
+            NotificationsWidget(),
           ],
           title: Row(
             children: [

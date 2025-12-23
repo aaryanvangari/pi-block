@@ -6,7 +6,6 @@ import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/summary_model.dart';
 
-
 class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
   final PiholeRepository piholeRepository;
   Timer? _timer;
@@ -80,7 +79,6 @@ class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
   }
 }
 
-
 sealed class SummaryEvent extends Equatable {
   const SummaryEvent();
 
@@ -92,11 +90,9 @@ final class LoadSummary extends SummaryEvent {
   const LoadSummary();
 }
 
-
 final class SummaryTick extends SummaryEvent {
   const SummaryTick();
 }
-
 
 enum SummaryStateStatus { initial, loading, success, failure, empty }
 
@@ -129,4 +125,3 @@ class SummaryState extends Equatable {
   @override
   List<Object?> get props => [summaryModel, status, error, message];
 }
-
