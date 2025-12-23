@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/aaryanvangari/pi-block/compare/3.3.0...4.0.0) (2025-12-23)
+
+### Bug Fixes
+
+* correct wording for validations ([03c7ab9](https://github.com/aaryanvangari/pi-block/commit/03c7ab9))
+* fix login form validations happening to entire form on user interaction ([3a3a316](https://github.com/aaryanvangari/pi-block/commit/3a3a316))
+
+### Features
+
+* complete rewrite with proper BLoC architecture ([821c4d8](https://github.com/aaryanvangari/pi-block/commit/821c4d8))
+
 ## [3.3.0](https://github.com/aaryanvangari/pi-block/compare/3.2.0...3.3.0) (2025-12-23)
 
 ### Bug Fixes
