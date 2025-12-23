@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.3.0](https://github.com/aaryanvangari/pi-block/compare/3.2.0...3.3.0) (2025-12-23)
+
+### Bug Fixes
+
+* remove loading summary in system info widget ([241eaed](https://github.com/aaryanvangari/pi-block/commit/241eaed))
+
+### Features
+
+* add logging to models ([17271b0](https://github.com/aaryanvangari/pi-block/commit/17271b0))
+* convert notifications page as stateless widget and remove fetch data ([06a3222](https://github.com/aaryanvangari/pi-block/commit/06a3222))
+* expires in of session updates every second ([622ccf6](https://github.com/aaryanvangari/pi-block/commit/622ccf6))
+* implement summary bloc with automatic refresh ([a87927e](https://github.com/aaryanvangari/pi-block/commit/a87927e))
+* move notifications to a widget ([a1b9ed0](https://github.com/aaryanvangari/pi-block/commit/a1b9ed0))
+* standardize timers throughout application ([32d4bfe](https://github.com/aaryanvangari/pi-block/commit/32d4bfe))
+
 ## [3.2.0](https://github.com/aaryanvangari/pi-block/compare/3.1.0...3.2.0) (2025-12-20)
 
 ### Features
