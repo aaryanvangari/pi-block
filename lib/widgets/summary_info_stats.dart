@@ -50,7 +50,11 @@ class SummaryInfoStatsView extends StatelessWidget {
               top: -20,
               child: Opacity(
                 opacity: 0.3,
-                child: Icon(icon, size: 80, color: KSummaryStatsColors.summaryStatIcons),
+                child: Icon(
+                  icon,
+                  size: 80,
+                  color: KSummaryStatsColors.summaryStatIcons,
+                ),
               ),
             ),
             Padding(
@@ -59,7 +63,11 @@ class SummaryInfoStatsView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon, size: 30, color: KSummaryStatsColors.summaryStatIcons),
+                  Icon(
+                    icon,
+                    size: 30,
+                    color: KSummaryStatsColors.summaryStatIcons,
+                  ),
                   const SizedBox(height: 10),
                   Text(
                     title,
