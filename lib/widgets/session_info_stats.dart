@@ -37,41 +37,38 @@ class SessionInfoStats extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Session",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                // color: Theme.of(context).colorScheme.primary,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
-                Widget widget = SizedBox();
                 if (state.status == AuthStateStatus.loggedIn) {
-                  widget = Column(
+                  return Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Server"),
+                          const Text("Server"),
                           Text(
                             '${state.scheme}://${state.server}:${state.port}',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Expires In"),
+                          const Text("Expires In"),
                           StreamBuilder(
                             stream: getTimeStream(),
                             builder: (context, asyncSnapshot) {
                               return Text(
                                 getSessionExpiresIn(state.sessionValidUntil),
-                                style: TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               );
                             },
                           ),
@@ -80,7 +77,7 @@ class SessionInfoStats extends StatelessWidget {
                     ],
                   );
                 }
-                return widget;
+                return const SizedBox.shrink();
               },
             ),
           ],

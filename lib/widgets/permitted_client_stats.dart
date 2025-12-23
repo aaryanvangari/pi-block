@@ -1,30 +1,33 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/clients_stats/clients_permitted_bloc.dart';
 import 'package:pi_block/components/utils.dart';
+import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/clients_model.dart';
 import 'package:pi_block/widgets/empty_card_widget.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/row_with_progressbar.dart';
 import 'package:pi_block/widgets/square_card_list_widget.dart';
 
-class PermittedClientStats extends StatefulWidget {
+class PermittedClientStats extends StatelessWidget {
   const PermittedClientStats({super.key});
 
   @override
-  State<PermittedClientStats> createState() => _PermittedClientStatsState();
-}
-
-class _PermittedClientStatsState extends State<PermittedClientStats> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<ClientsPermittedBloc>().add(
-      LoadPermittedClients(jsonDecode('{}')),
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          ClientsPermittedBloc(context.read<PiholeRepository>())
+            ..add(LoadPermittedClients({})),
+      child: const PermittedClientsListView(),
     );
   }
+}
+
+class PermittedClientsListView extends StatelessWidget {
+  const PermittedClientsListView({super.key});
+
+  static const _title = "Top Clients (Total)";
 
   Widget generateTopClientsData(
     List<ClientModel> clients,
@@ -32,7 +35,7 @@ class _PermittedClientStatsState extends State<PermittedClientStats> {
     Color progressBarColor,
     bool isBlocked,
   ) {
-    ListView listView = ListView.builder(
+    return ListView.builder(
       itemCount: clients.length,
       itemBuilder: (context, index) {
         String name = clients[index].name;
@@ -46,35 +49,26 @@ class _PermittedClientStatsState extends State<PermittedClientStats> {
         );
       },
     );
-
-    return listView;
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<ClientsPermittedBloc, ClientsPermittedState>(
-      buildWhen: (previous, current) {
-        return true;
-      },
       listener: (context, state) {
         if (state is ClientsPermittedError) {
           PiUtils.handleGeneralException(context, state.errorMessage);
         }
       },
       builder: (context, state) {
-        Widget widget = SizedBox();
         if (state is ClientsPermittedError) {
-          widget = ErrorCardWidget(
-            header: "Top Clients (Total)",
+          return const ErrorCardWidget(
+            header: _title,
             message: "Error loading data",
           );
         } else if (state is ClientsPermittedEmpty) {
-          widget = EmptyCardWidget(
-            header: "Top Clients (Total)",
-            message: "No data",
-          );
+          return const EmptyCardWidget(header: _title, message: "No data");
         } else if (state is ClientsPermittedLoading) {
-          widget = Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (state is ClientsPermittedLoaded) {
           ClientsModel clientsModel = state.clients;
           List<ClientModel> clients = clientsModel.clients;
@@ -82,15 +76,12 @@ class _PermittedClientStatsState extends State<PermittedClientStats> {
           var topClientsList = generateTopClientsData(
             clients,
             totalQueries,
-            Color(0xFF00a65a),
+            KProgressBarColors.permitted,
             false,
           );
-          widget = SquareCardListWidget(
-            title: "Top Clients (Total)",
-            items: topClientsList,
-          );
+          return SquareCardListWidget(title: _title, items: topClientsList);
         }
-        return widget;
+        return const SizedBox.shrink();
       },
     );
   }

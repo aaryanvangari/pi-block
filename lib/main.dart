@@ -6,22 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/app_bloc_observer.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
-import 'package:pi_block/blocs/blocking_bloc.dart';
-import 'package:pi_block/blocs/dashboard/summary_bloc.dart';
-import 'package:pi_block/blocs/stats/charts/client_history_barchart_bloc.dart';
-import 'package:pi_block/blocs/stats/charts/query_history_barchart_bloc.dart';
-import 'package:pi_block/blocs/stats/charts/query_types_piechart_bloc.dart';
-import 'package:pi_block/blocs/stats/charts/upstreams_piechart_bloc.dart';
-import 'package:pi_block/blocs/stats/clients_stats/clients_blocked_bloc.dart';
-import 'package:pi_block/blocs/stats/clients_stats/clients_permitted_bloc.dart';
-import 'package:pi_block/blocs/dashboard/dashboard_bloc.dart';
-import 'package:pi_block/blocs/domains/domains_bloc.dart';
-import 'package:pi_block/blocs/stats/domains_stats/domains_blocked_bloc.dart';
-import 'package:pi_block/blocs/stats/domains_stats/domains_permitted_bloc.dart';
-import 'package:pi_block/blocs/lists/lists_bloc.dart';
-import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
-import 'package:pi_block/blocs/pihole_config/pihole_config_bloc.dart';
-import 'package:pi_block/blocs/querylog/querylog_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
@@ -131,66 +115,9 @@ class _MainAppState extends State<MainApp> {
 
   List<BlocProvider> getBlocProviders() {
     List<BlocProvider> blocProviders = [
-      BlocProvider<NotificationsBloc>(
-        create: (context) =>
-            NotificationsBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<ListsBloc>(
-        create: (context) => ListsBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<DomainsBloc>(
-        create: (context) => DomainsBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<ClientsPermittedBloc>(
-        create: (context) =>
-            ClientsPermittedBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<ClientsBlockedBloc>(
-        create: (context) =>
-            ClientsBlockedBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<DomainsPermittedBloc>(
-        create: (context) =>
-            DomainsPermittedBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<DomainsBlockedBloc>(
-        create: (context) =>
-            DomainsBlockedBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<QueryTypesPiechartBloc>(
-        create: (context) =>
-            QueryTypesPiechartBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<UpstreamsPiechartBloc>(
-        create: (context) =>
-            UpstreamsPiechartBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<DashboardBloc>(
-        create: (context) => DashboardBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<BlockingBloc>(
-        create: (context) => BlockingBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<QuerylogBloc>(
-        create: (context) => QuerylogBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<PiholeConfigBloc>(
-        create: (context) => PiholeConfigBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<QueryHistoryBarchartBloc>(
-        create: (context) =>
-            QueryHistoryBarchartBloc(context.read<PiholeRepository>()),
-      ),
-      BlocProvider<ClientHistoryBarchartBloc>(
-        create: (context) =>
-            ClientHistoryBarchartBloc(context.read<PiholeRepository>()),
-      ),
       BlocProvider<AuthBloc>(
         create: (context) => AuthBloc(context.read<PiholeRepository>()),
         lazy: false,
-      ),
-      BlocProvider<SummaryBloc>(
-        create: (context) => SummaryBloc(context.read<PiholeRepository>()),
       ),
     ];
     return blocProviders;

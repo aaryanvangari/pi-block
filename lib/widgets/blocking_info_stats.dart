@@ -3,15 +3,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:pi_block/blocs/blocking_bloc.dart';
 import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 
-class BlockingInfoStats extends StatefulWidget {
+class BlockingInfoStats extends StatelessWidget {
   const BlockingInfoStats({super.key});
 
   @override
-  State<BlockingInfoStats> createState() => _BlockingInfoStatsState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          BlockingBloc(context.read<PiholeRepository>())..add(LoadBlocking()),
+      child: const BlockingInfoView(),
+    );
+  }
 }
 
-class _BlockingInfoStatsState extends State<BlockingInfoStats> {
+class BlockingInfoView extends StatefulWidget {
+  const BlockingInfoView({super.key});
+
+  @override
+  State<BlockingInfoView> createState() => _BlockingInfoViewState();
+}
+
+class _BlockingInfoViewState extends State<BlockingInfoView> {
   bool isBlockingEnabled = false;
   bool blockingExpansionTileEnabled = true;
   List blockingTimes = [
@@ -25,12 +39,6 @@ class _BlockingInfoStatsState extends State<BlockingInfoStats> {
     ["5 Hours", 18000],
   ];
   ExpansibleController blockingExpansibleController = ExpansibleController();
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<BlockingBloc>().add(LoadBlocking());
-  }
 
   @override
   void dispose() {
@@ -78,10 +86,9 @@ class _BlockingInfoStatsState extends State<BlockingInfoStats> {
                 children: [
                   Column(
                     children: [
-                      Text(
+                      const Text(
                         "Blocking",
                         style: TextStyle(
-                          // color: Theme.of(context).colorScheme.primary,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),

@@ -7,6 +7,7 @@ import 'package:pi_block/blocs/lists/lists_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
 import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
@@ -18,21 +19,23 @@ import 'package:pi_block/widgets/custom_toggle_switch.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
 
-class ListsPage extends StatefulWidget {
+class ListsPage extends StatelessWidget {
   const ListsPage({super.key});
 
   @override
-  State<ListsPage> createState() => _ListsPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          ListsBloc(context.read<PiholeRepository>())..add(LoadLists()),
+      child: ListsView(),
+    );
+  }
 }
 
-class _ListsPageState extends State<ListsPage> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<ListsBloc>().add(LoadLists());
-  }
+class ListsView extends StatelessWidget {
+  const ListsView({super.key});
 
-  Widget _listRow(ListsModel item) {
+  Widget _listRow(ListsModel item, BuildContext context) {
     return CustomExpansionTileWidget(
       isHeaderARow: true,
       headerItems: [
@@ -42,8 +45,7 @@ class _ListsPageState extends State<ListsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Flex(
-                  direction: Axis.horizontal,
+                Row(
                   children: [
                     Expanded(
                       child: Column(
@@ -82,7 +84,7 @@ class _ListsPageState extends State<ListsPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -134,14 +136,23 @@ class _ListsPageState extends State<ListsPage> {
         ),
       ],
       contentTitleItems: [
-        Text('Comment: ', style: KTextStyle.listExpandedTitle),
-        Text('Address: ', style: KTextStyle.listExpandedTitle),
-        Text('Database ID: ', style: KTextStyle.listExpandedTitle),
-        Text('Number of entries: ', style: KTextStyle.listExpandedTitle),
-        Text('Number of non-domains: ', style: KTextStyle.listExpandedTitle),
-        Text('Added to Pi-Hole: ', style: KTextStyle.listExpandedTitle),
-        Text('Database last modified: ', style: KTextStyle.listExpandedTitle),
-        Text('Content last updated on: ', style: KTextStyle.listExpandedTitle),
+        const Text('Comment: ', style: KTextStyle.listExpandedTitle),
+        const Text('Address: ', style: KTextStyle.listExpandedTitle),
+        const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
+        const Text('Number of entries: ', style: KTextStyle.listExpandedTitle),
+        const Text(
+          'Number of non-domains: ',
+          style: KTextStyle.listExpandedTitle,
+        ),
+        const Text('Added to Pi-Hole: ', style: KTextStyle.listExpandedTitle),
+        const Text(
+          'Database last modified: ',
+          style: KTextStyle.listExpandedTitle,
+        ),
+        const Text(
+          'Content last updated on: ',
+          style: KTextStyle.listExpandedTitle,
+        ),
       ],
       contentValueItems: [
         Text(item.comment, style: KTextStyle.listExpandedValue),
@@ -175,7 +186,8 @@ class _ListsPageState extends State<ListsPage> {
     TextEditingController commentController = TextEditingController(
       text: comment,
     );
-    bool isLoading = false;
+    final listsBloc = ctx.read<ListsBloc>();
+    final formKey = GlobalKey<FormState>();
     showModalBottomSheet(
       isScrollControlled: true,
       elevation: 5,
@@ -184,130 +196,129 @@ class _ListsPageState extends State<ListsPage> {
       showDragHandle: true,
       useSafeArea: true,
       shape: KBottomSheetStyle.shape,
-      builder: (ctx) => SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(
-            top: 15,
-            left: 15,
-            right: 15,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Form(
-                child: Builder(
-                  builder: (ctx) {
-                    return Column(
-                      children: [
-                        TextFormField(
-                          controller: commentController,
-                          maxLines: 3,
-                          validator: (value) =>
-                              piValidators.listsCommentValidator(value),
-                          onChanged: (value) {
-                            Form.of(ctx).validate();
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Comment",
-                            border: KInputStyle.inputBorder,
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () => commentController.clear(),
-                              icon: Icon(Icons.clear),
+      builder: (ctx) => BlocProvider.value(
+        value: listsBloc,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 15,
+              left: 15,
+              right: 15,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Form(
+                  key: formKey,
+                  child: Builder(
+                    builder: (ctx) {
+                      return Column(
+                        children: [
+                          TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            controller: commentController,
+                            maxLines: 3,
+                            validator: (value) =>
+                                piValidators.listsCommentValidator(value),
+                            decoration: InputDecoration(
+                              labelText: "Comment",
+                              border: KInputStyle.inputBorder,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () => commentController.clear(),
+                                icon: Icon(Icons.clear),
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 10),
-                        Wrap(
-                          spacing: 16,
-                          runSpacing: 10,
-                          children: [
-                            CustomToggleSwitch(
-                              initialLabelIndex: (enabled) ? 0 : 1,
-                              labels: ['Enabled', 'Disabled'],
-                              onToggle: (index) => (index == 0)
-                                  ? enabled = true
-                                  : enabled = false,
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 15),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            BlocConsumer<ListsBloc, ListsState>(
-                              listener: (context, state) {
-                                if (state.itemStatus ==
-                                    ListsItemStateStatus.loading) {
-                                  isLoading = true;
-                                } else if (state.itemStatus ==
-                                    ListsItemStateStatus.success) {
-                                  isLoading = false;
-                                  if (Navigator.canPop(ctx)) {
-                                    Navigator.pop(ctx);
-                                  }
-                                } else if (state.itemStatus ==
-                                    ListsItemStateStatus.failure) {
-                                  isLoading = false;
-                                  if (Navigator.canPop(ctx)) {
-                                    Navigator.pop(ctx);
-                                  }
-                                }
-                              },
-                              builder: (context, state) {
-                                return FilledButton(
-                                  onPressed: () {
-                                    if (Form.of(ctx).validate()) {
-                                      context.read<ListsBloc>().add(
-                                        UpdateListsItem(
-                                          listsModel: listsModel,
-                                          type: type,
-                                          comment: commentController.text,
-                                          enabled: enabled,
-                                          groups: groups,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  ),
-                                  child: isLoading
-                                      ? CircularLoaderInButton()
-                                      : Text("Save"),
-                                );
-                              },
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(ctx);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
+                          const SizedBox(height: 10),
+                          Wrap(
+                            spacing: 16,
+                            runSpacing: 10,
+                            children: [
+                              CustomToggleSwitch(
+                                initialLabelIndex: enabled ? 0 : 1,
+                                labels: ['Enabled', 'Disabled'],
+                                onToggle: (index) => enabled = index == 0,
                               ),
-                              child: Text("Cancel"),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
+                            ],
+                          ),
+                          const SizedBox(height: 15),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              BlocConsumer<ListsBloc, ListsState>(
+                                listener: (context, state) {
+                                  if (state.itemStatus ==
+                                      ListsItemStateStatus.success) {
+                                    if (Navigator.canPop(ctx)) {
+                                      Navigator.pop(ctx);
+                                    }
+                                  } else if (state.itemStatus ==
+                                      ListsItemStateStatus.failure) {
+                                    if (Navigator.canPop(ctx)) {
+                                      Navigator.pop(ctx);
+                                    }
+                                  }
+                                },
+                                builder: (context, state) {
+                                  final isLoading =
+                                      state.itemStatus ==
+                                      ListsItemStateStatus.loading;
+                                  return FilledButton(
+                                    onPressed: () {
+                                      if (formKey.currentState!.validate()) {
+                                        listsBloc.add(
+                                          UpdateListsItem(
+                                            listsModel: listsModel,
+                                            type: type,
+                                            comment: commentController.text,
+                                            enabled: enabled,
+                                            groups: groups,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ),
+                                    child: isLoading
+                                        ? CircularLoaderInButton()
+                                        : Text("Save"),
+                                  );
+                                },
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(ctx);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                child: Text("Cancel"),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -320,7 +331,8 @@ class _ListsPageState extends State<ListsPage> {
 
     TextEditingController commentController = TextEditingController();
     TextEditingController addressController = TextEditingController();
-    bool isLoading = false;
+    final listsBloc = ctx.read<ListsBloc>();
+    final formKey = GlobalKey<FormState>();
     showModalBottomSheet(
       isScrollControlled: true,
       elevation: 5,
@@ -329,155 +341,154 @@ class _ListsPageState extends State<ListsPage> {
       showDragHandle: true,
       useSafeArea: true,
       shape: KBottomSheetStyle.shape,
-      builder: (ctx) => SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(
-            top: 15,
-            left: 15,
-            right: 15,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Form(
-                child: Builder(
-                  builder: (ctx) {
-                    return Column(
-                      children: [
-                        TextFormField(
-                          controller: addressController,
-                          maxLines: 1,
-                          validator: (value) =>
-                              piValidators.listsAddressValidator(value),
-                          onChanged: (value) {
-                            Form.of(ctx).validate();
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Address",
-                            border: KInputStyle.inputBorder,
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () => addressController.clear(),
-                              icon: Icon(Icons.clear),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          controller: commentController,
-                          maxLines: 2,
-                          validator: (value) =>
-                              piValidators.listsCommentValidator(value),
-                          onChanged: (value) {
-                            Form.of(ctx).validate();
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Comment",
-                            border: KInputStyle.inputBorder,
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () => commentController.clear(),
-                              icon: Icon(Icons.clear),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Wrap(
-                          spacing: 16,
-                          runSpacing: 10,
-                          children: [
-                            CustomToggleSwitch(
-                              initialLabelIndex: (type == "allow") ? 0 : 1,
-                              labels: ['Allow', 'BLock'],
-                              onToggle: (index) => (index == 0)
-                                  ? type = "allow"
-                                  : type = "block",
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            BlocConsumer<ListsBloc, ListsState>(
-                              listener: (context, state) {
-                                if (state.itemStatus ==
-                                    ListsItemStateStatus.loading) {
-                                  isLoading = true;
-                                } else if (state.itemStatus ==
-                                    ListsItemStateStatus.success) {
-                                  isLoading = false;
-                                  if (Navigator.canPop(ctx)) {
-                                    Navigator.pop(ctx);
-                                  }
-                                } else if (state.itemStatus ==
-                                    ListsItemStateStatus.failure) {
-                                  isLoading = false;
-                                  if (Navigator.canPop(ctx)) {
-                                    Navigator.pop(ctx);
-                                  }
-                                }
-                              },
-                              builder: (context, state) {
-                                return FilledButton(
-                                  onPressed: () {
-                                    if (Form.of(ctx).validate()) {
-                                      ListsModel listsModel = ListsModel(
-                                        type: type,
-                                        comment: commentController.text,
-                                        address: addressController.text,
-                                      );
-                                      context.read<ListsBloc>().add(
-                                        AddListsItem(listsModel: listsModel),
-                                      );
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  ),
-                                  child: isLoading
-                                      ? CircularLoaderInButton()
-                                      : Text("Save"),
-                                );
-                              },
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(ctx);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
+      builder: (ctx) => BlocProvider.value(
+        value: listsBloc,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 15,
+              left: 15,
+              right: 15,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Form(
+                  key: formKey,
+                  child: Builder(
+                    builder: (ctx) {
+                      return Column(
+                        children: [
+                          TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            controller: addressController,
+                            maxLines: 1,
+                            validator: (value) =>
+                                piValidators.listsAddressValidator(value),
+                            decoration: InputDecoration(
+                              labelText: "Address",
+                              border: KInputStyle.inputBorder,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
                               ),
-                              child: Text("Cancel"),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () => addressController.clear(),
+                                icon: Icon(Icons.clear),
+                              ),
                             ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            controller: commentController,
+                            maxLines: 2,
+                            validator: (value) =>
+                                piValidators.listsCommentValidator(value),
+                            decoration: InputDecoration(
+                              labelText: "Comment",
+                              border: KInputStyle.inputBorder,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () => commentController.clear(),
+                                icon: Icon(Icons.clear),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Wrap(
+                            spacing: 16,
+                            runSpacing: 10,
+                            children: [
+                              CustomToggleSwitch(
+                                initialLabelIndex: type == "allow" ? 0 : 1,
+                                labels: ['Allow', 'BLock'],
+                                onToggle: (index) =>
+                                    type = index == 0 ? "allow" : "block",
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              BlocConsumer<ListsBloc, ListsState>(
+                                listener: (context, state) {
+                                  if (state.itemStatus ==
+                                      ListsItemStateStatus.success) {
+                                    if (Navigator.canPop(ctx)) {
+                                      Navigator.pop(ctx);
+                                    }
+                                  } else if (state.itemStatus ==
+                                      ListsItemStateStatus.failure) {
+                                    if (Navigator.canPop(ctx)) {
+                                      Navigator.pop(ctx);
+                                    }
+                                  }
+                                },
+                                builder: (context, state) {
+                                  final isLoading =
+                                      state.itemStatus ==
+                                      ListsItemStateStatus.loading;
+                                  return FilledButton(
+                                    onPressed: () {
+                                      if (formKey.currentState!.validate()) {
+                                        ListsModel listsModel = ListsModel(
+                                          type: type,
+                                          comment: commentController.text,
+                                          address: addressController.text,
+                                        );
+                                        context.read<ListsBloc>().add(
+                                          AddListsItem(listsModel: listsModel),
+                                        );
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ),
+                                    child: isLoading
+                                        ? CircularLoaderInButton()
+                                        : const Text("Save"),
+                                  );
+                                },
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(ctx);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                child: const Text("Cancel"),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -497,6 +508,7 @@ class _ListsPageState extends State<ListsPage> {
             children: [
               SlidableAction(
                 onPressed: (context) {
+                  final listsBloc = context.read<ListsBloc>();
                   showModalBottomSheet(
                     isScrollControlled: true,
                     elevation: 5,
@@ -506,10 +518,9 @@ class _ListsPageState extends State<ListsPage> {
                     shape: KBottomSheetStyle.shape,
                     builder: (ctx) => SimpleBottomSheet(
                       primaryTitle: "Delete",
-                      context: context,
                       cancelFunction: () => Navigator.pop(ctx),
                       primaryFunction: () => {
-                        ctx.read<ListsBloc>().add(
+                        listsBloc.add(
                           DeleteListsItem(listsModel: selectedPageItem),
                         ),
                         Navigator.pop(ctx),
@@ -540,7 +551,7 @@ class _ListsPageState extends State<ListsPage> {
               ),
             ],
           ),
-          child: _listRow(selectedPageItem),
+          child: _listRow(selectedPageItem, context),
         );
       },
       separatorBuilder: (context, index) {
@@ -554,84 +565,85 @@ class _ListsPageState extends State<ListsPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                BlocConsumer<ListsBloc, ListsState>(
-                  listener: (context, state) {
-                    if (state.status == ListsStateStatus.failure) {
-                      PiUtils.handleGeneralException(
-                        context,
-                        "An Error Occured",
-                      );
-                    } else if (state.itemStatus ==
-                        ListsItemStateStatus.failure) {
-                      PiUtils.handleGeneralException(
-                        context,
-                        "An Error Occured",
-                      );
-                    } else if (state.itemStatus ==
-                        ListsItemStateStatus.success) {
-                      GlobalSnackbar.info(context, state.message, "");
-                    }
-                  },
-                  builder: (context, state) {
-                    Widget widget = SizedBox();
-                    if (state.status == ListsStateStatus.loading) {
-                      widget = Center(child: CircularProgressIndicator());
-                    } else if (state.status == ListsStateStatus.failure) {
-                      widget = CustomErrorWidget(message: "Error loading data");
-                    } else if (state.lists.isEmpty) {
-                      widget = Center(child: EmptyWidget(message: "No data"));
-                    } else if (state.status == ListsStateStatus.success) {
-                      List<ListsModel> listsModels = state.lists;
-                      widget = Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Subscribed Lists",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return BlocConsumer<ListsBloc, ListsState>(
+                      listener: (context, state) {
+                        if (state.status == ListsStateStatus.failure) {
+                          PiUtils.handleGeneralException(
+                            context,
+                            "An Error Occured",
+                          );
+                        } else if (state.itemStatus ==
+                            ListsItemStateStatus.failure) {
+                          PiUtils.handleGeneralException(
+                            context,
+                            "An Error Occured",
+                          );
+                        } else if (state.itemStatus ==
+                            ListsItemStateStatus.success) {
+                          GlobalSnackbar.info(context, state.message, "");
+                        }
+                      },
+                      builder: (context, state) {
+                        if (state.status == ListsStateStatus.loading) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (state.status == ListsStateStatus.failure) {
+                          return const CustomErrorWidget(
+                            message: "Error loading data",
+                          );
+                        } else if (state.lists.isEmpty) {
+                          return const Center(
+                            child: EmptyWidget(message: "No data"),
+                          );
+                        } else if (state.status == ListsStateStatus.success) {
+                          List<ListsModel> listsModels = state.lists;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8.0,
                                 ),
-                                IconButton.filled(
-                                  onPressed: () {
-                                    _addListSheet(context);
-                                  },
-                                  icon: Icon(Icons.add, size: 15),
-                                  visualDensity: VisualDensity.compact,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Subscribed Lists",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    IconButton.filled(
+                                      onPressed: () {
+                                        _addListSheet(context);
+                                      },
+                                      icon: Icon(Icons.add, size: 15),
+                                      visualDensity: VisualDensity.compact,
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          SizedBox(
-                            height:
-                                MediaQuery.sizeOf(context).height * 0.9 -
-                                kToolbarHeight -
-                                8 -
-                                kBottomNavigationBarHeight,
-                            width: MediaQuery.sizeOf(context).width * 0.99,
-                            child: getLists(listsModels),
-                          ),
-                        ],
-                      );
-                    }
-                    return widget;
+                              ),
+                              Expanded(child: getLists(listsModels)),
+                            ],
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    );
                   },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

@@ -5,6 +5,10 @@ import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
+/// ---------------------------------------------------------------------------
+/// SYSTEM MODEL
+/// ---------------------------------------------------------------------------
+
 class SystemModel extends Equatable {
   final SystemInfo system;
 
@@ -12,6 +16,9 @@ class SystemModel extends Equatable {
   final double took;
 
   const SystemModel({required this.system, required this.took});
+
+  factory SystemModel.empty() =>
+      SystemModel(system: SystemInfo.empty(), took: 0);
 
   factory SystemModel.fromJson(Map<String, dynamic> json) {
     log(
@@ -34,9 +41,9 @@ class SystemModel extends Equatable {
   List<Object?> get props => [system, took];
 }
 
-// ---------------------------------------------------------------------------
-// SYSTEM INFO
-// ---------------------------------------------------------------------------
+/// ---------------------------------------------------------------------------
+/// SYSTEM INFO
+/// ---------------------------------------------------------------------------
 
 class SystemInfo extends Equatable {
   final int uptime;
@@ -52,6 +59,14 @@ class SystemInfo extends Equatable {
     required this.cpu,
     required this.ftl,
   });
+
+  factory SystemInfo.empty() => SystemInfo(
+    uptime: 0,
+    memory: Memory.empty(),
+    procs: 0,
+    cpu: Cpu.empty(),
+    ftl: Ftl.empty(),
+  );
 
   factory SystemInfo.fromJson(Map<String, dynamic> json) => SystemInfo(
     uptime: json['uptime'] ?? 0,
@@ -87,15 +102,17 @@ class SystemInfo extends Equatable {
   List<Object?> get props => [uptime, memory, procs, cpu, ftl];
 }
 
-// ---------------------------------------------------------------------------
-// MEMORY (RAM + SWAP)
-// ---------------------------------------------------------------------------
+/// ---------------------------------------------------------------------------
+/// MEMORY (RAM + SWAP)
+/// ---------------------------------------------------------------------------
 
 class Memory extends Equatable {
   final Ram ram;
   final Swap swap;
 
   const Memory({required this.ram, required this.swap});
+
+  factory Memory.empty() => Memory(ram: Ram.empty(), swap: Swap.empty());
 
   factory Memory.fromJson(Map<String, dynamic> json) =>
       Memory(ram: Ram.fromJson(json['ram']), swap: Swap.fromJson(json['swap']));
@@ -123,6 +140,9 @@ class Ram extends Equatable {
     required this.available,
     required this.percentUsed,
   });
+
+  factory Ram.empty() =>
+      const Ram(total: 0, free: 0, used: 0, available: 0, percentUsed: 0);
 
   factory Ram.fromJson(Map<String, dynamic> json) => Ram(
     total: json['total'] ?? 0,
@@ -171,6 +191,9 @@ class Swap extends Equatable {
     required this.percentUsed,
   });
 
+  factory Swap.empty() =>
+      const Swap(total: 0, used: 0, free: 0, percentUsed: 0);
+
   factory Swap.fromJson(Map<String, dynamic> json) => Swap(
     total: json['total'] ?? 0,
     used: json['used'] ?? 0,
@@ -197,9 +220,9 @@ class Swap extends Equatable {
   List<Object?> get props => [total, used, free, percentUsed];
 }
 
-// ---------------------------------------------------------------------------
-// CPU + LOAD
-// ---------------------------------------------------------------------------
+/// ---------------------------------------------------------------------------
+/// CPU + LOAD
+/// ---------------------------------------------------------------------------
 
 class Cpu extends Equatable {
   final int nprocs;
@@ -211,6 +234,8 @@ class Cpu extends Equatable {
     required this.percentCpu,
     required this.load,
   });
+
+  factory Cpu.empty() => Cpu(nprocs: 0, percentCpu: 0, load: Load.empty());
 
   factory Cpu.fromJson(Map<String, dynamic> json) => Cpu(
     nprocs: json['nprocs'] ?? 0,
@@ -240,6 +265,8 @@ class Load extends Equatable {
 
   const Load({required this.raw, required this.percent});
 
+  factory Load.empty() => const Load(raw: [], percent: []);
+
   factory Load.fromJson(Map<String, dynamic> json) => Load(
     raw: (json['raw'] as List).map((e) => (e as num).toDouble()).toList(),
     percent: (json['percent'] as List)
@@ -256,15 +283,17 @@ class Load extends Equatable {
   List<Object?> get props => [raw, percent];
 }
 
-// ---------------------------------------------------------------------------
-// FTL PROCESS INFO
-// ---------------------------------------------------------------------------
+/// ---------------------------------------------------------------------------
+/// FTL PROCESS INFO
+/// ---------------------------------------------------------------------------
 
 class Ftl extends Equatable {
   final double percentMem;
   final double percentCpu;
 
   const Ftl({required this.percentMem, required this.percentCpu});
+
+  factory Ftl.empty() => const Ftl(percentMem: 0, percentCpu: 0);
 
   factory Ftl.fromJson(Map<String, dynamic> json) => Ftl(
     percentMem: (json['%mem'] as num?)?.toDouble() ?? 0,

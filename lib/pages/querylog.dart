@@ -5,6 +5,7 @@ import 'package:pager/pager.dart';
 import 'package:pi_block/blocs/querylog/querylog_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/query_model.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
@@ -14,59 +15,70 @@ import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 
-class QueryLogPage extends StatefulWidget {
+class QueryLogPage extends StatelessWidget {
   const QueryLogPage({super.key});
 
   @override
-  State<QueryLogPage> createState() => _QueryLogPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => QuerylogBloc(context.read<PiholeRepository>()),
+      child: _QueryLogView(),
+    );
+  }
 }
 
-class _QueryLogPageState extends State<QueryLogPage> {
-  int pageSize = 0;
-  int pagesPerView = 2;
-  late int _totalPages = 1;
-  int _currentPage = 1;
-  int pagerHeight = 40;
-  double heightForListView = 0;
+class _QueryLogView extends StatefulWidget {
+  const _QueryLogView();
 
-  determinePageSizes() {
-    /// #TODO refactor
-    double height = MediaQuery.sizeOf(context).height;
-    double width = MediaQuery.sizeOf(context).width;
-    double pagerButtonWidth = 40;
-    double pagerNumberButtonWidth = 56;
-    double individualRowHeight = 71;
-    double mandatoryNavigationButtons = 4 * pagerButtonWidth;
-    double remainingWidth = width - mandatoryNavigationButtons;
-    int maxButtons = (remainingWidth / pagerNumberButtonWidth).toInt() - 1;
+  @override
+  State<_QueryLogView> createState() => _QueryLogViewState();
+}
 
-    /// Limiting pages view to 5 pages as more than that would be awkward
-    pagesPerView = (maxButtons > 5) ? 5 : maxButtons;
-    heightForListView =
-        height -
-        (kToolbarHeight +
-            20 + // card paddings
-            26 + // query log label
-            10 + // sizedbox
-            20 + // android differences (maybe top status bar affecting)
-            25 +
-            pagerHeight +
-            kBottomNavigationBarHeight);
-    int itemsCanFit = (heightForListView / individualRowHeight).toInt();
-    pageSize = itemsCanFit;
-    // if (height < 600) {
-    //   pageSize = 4;
-    // } else if (height < 800) {
-    //   pageSize = 6;
-    // } else if (height < 900) {
-    //   pageSize = 7;
-    // } else if (height < 1000) {
-    //   pageSize = 8;
-    // } else if (height < 1100) {
-    //   pageSize = 9;
-    // } else if (height < 1200) {
-    //   pageSize = 11;
-    // }
+class _QueryLogViewState extends State<_QueryLogView> {
+  static const double _rowHeight = 71;
+  static const double _reservedHeight = 80;
+  static const double _reservedWidth = 30;
+
+  int _lastItemsPerPage = 0;
+  int _lastPagesPerView = 0;
+
+  int calculatePagesPerView({
+    required double availableWidth,
+    required double reservedWidth,
+  }) {
+    const double pagerButtonWidth = 40;
+    const double pagerNumberButtonWidth = 56;
+    const int mandatoryButtonsCount = 4;
+    const int maxPagesView = 5;
+
+    final double mandatoryWidth = mandatoryButtonsCount * pagerButtonWidth;
+
+    final double remainingWidth =
+        availableWidth - mandatoryWidth - reservedWidth;
+
+    if (remainingWidth <= pagerNumberButtonWidth) {
+      return 1;
+    }
+
+    final int maxButtons = (remainingWidth / pagerNumberButtonWidth).floor();
+
+    return maxButtons.clamp(1, maxPagesView);
+  }
+
+  int calculateItemsPerPage({
+    required double availableHeight,
+    required double reservedHeight,
+    required double rowHeight,
+    int minItems = 1,
+    int maxItems = 100,
+  }) {
+    final double usableHeight = availableHeight - reservedHeight;
+
+    if (usableHeight <= 0 || rowHeight <= 0) {
+      return minItems;
+    }
+
+    return (usableHeight / rowHeight).floor().clamp(minItems, maxItems);
   }
 
   String getDomainName(query) {
@@ -230,12 +242,12 @@ class _QueryLogPageState extends State<QueryLogPage> {
         ),
       ],
       contentTitleItems: [
-        Text('Domain: ', style: KTextStyle.listExpandedTitle),
-        Text('Received on: ', style: KTextStyle.listExpandedTitle),
-        Text('Client: ', style: KTextStyle.listExpandedTitle),
-        Text('Reply: ', style: KTextStyle.listExpandedTitle),
-        Text('Database ID: ', style: KTextStyle.listExpandedTitle),
-        Text('Query Status: ', style: KTextStyle.listExpandedTitle),
+        const Text('Domain: ', style: KTextStyle.listExpandedTitle),
+        const Text('Received on: ', style: KTextStyle.listExpandedTitle),
+        const Text('Client: ', style: KTextStyle.listExpandedTitle),
+        const Text('Reply: ', style: KTextStyle.listExpandedTitle),
+        const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
+        const Text('Query Status: ', style: KTextStyle.listExpandedTitle),
       ],
       contentValueItems: [
         Text(
@@ -266,6 +278,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
       children: [
         SlidableAction(
           onPressed: (context) {
+            final querylogBloc = BlocProvider.of<QuerylogBloc>(context);
             showModalBottomSheet(
               isScrollControlled: true,
               elevation: 5,
@@ -275,11 +288,10 @@ class _QueryLogPageState extends State<QueryLogPage> {
               shape: KBottomSheetStyle.shape,
               builder: (ctx) => SimpleBottomSheet(
                 primaryTitle: "Allow",
-                context: context,
                 backgroundColor: Theme.of(ctx).colorScheme.primary,
                 cancelFunction: () => Navigator.pop(ctx),
                 primaryFunction: () {
-                  ctx.read<QuerylogBloc>().add(
+                  querylogBloc.add(
                     AllowDenyQuerylogDomain(queryModel: item, type: "allow"),
                   );
                   Navigator.pop(ctx);
@@ -303,6 +315,7 @@ class _QueryLogPageState extends State<QueryLogPage> {
       children: [
         SlidableAction(
           onPressed: (context) {
+            final querylogBloc = BlocProvider.of<QuerylogBloc>(context);
             showModalBottomSheet(
               isScrollControlled: true,
               elevation: 5,
@@ -310,18 +323,19 @@ class _QueryLogPageState extends State<QueryLogPage> {
               isDismissible: true,
               showDragHandle: true,
               shape: KBottomSheetStyle.shape,
-              builder: (ctx) => SimpleBottomSheet(
-                primaryTitle: "Deny",
-                context: context,
-                cancelFunction: () => Navigator.pop(ctx),
-                primaryFunction: () async {
-                  ctx.read<QuerylogBloc>().add(
-                    AllowDenyQuerylogDomain(queryModel: item, type: "deny"),
-                  );
-                  Navigator.pop(ctx);
-                },
-                confirmationText: "Do you want to deny domain?",
-              ),
+              builder: (ctx) {
+                return SimpleBottomSheet(
+                  primaryTitle: "Deny",
+                  cancelFunction: () => Navigator.pop(ctx),
+                  primaryFunction: () {
+                    querylogBloc.add(
+                      AllowDenyQuerylogDomain(queryModel: item, type: "deny"),
+                    );
+                    Navigator.pop(ctx);
+                  },
+                  confirmationText: "Do you want to deny domain?",
+                );
+              },
             );
           },
           autoClose: true,
@@ -360,20 +374,44 @@ class _QueryLogPageState extends State<QueryLogPage> {
 
   @override
   Widget build(BuildContext context) {
-    determinePageSizes();
-    context.read<QuerylogBloc>().add(LoadQuerylog(1, pageSize));
     return Scaffold(
-      // appBar: AppBar(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  BlocConsumer<QuerylogBloc, QuerylogState>(
+      body: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // log('sizes: constraints: ${constraints.maxHeight}');
+                  final itemsPerPage = calculateItemsPerPage(
+                    availableHeight: constraints.maxHeight,
+                    reservedHeight: _reservedHeight,
+                    rowHeight: _rowHeight,
+                  );
+                  final pagesPerView = calculatePagesPerView(
+                    availableWidth: constraints.maxWidth,
+                    reservedWidth: _reservedWidth,
+                  );
+
+                  // Notify Bloc ONLY if sizes changes
+                  if (_lastItemsPerPage != itemsPerPage) {
+                    _lastItemsPerPage = itemsPerPage;
+
+                    context.read<QuerylogBloc>().add(
+                      UpdateItemsPerPage(itemsPerPage),
+                    );
+                  }
+
+                  if (_lastPagesPerView != pagesPerView) {
+                    _lastPagesPerView = pagesPerView;
+
+                    context.read<QuerylogBloc>().add(
+                      UpdatePagesPerView(pagesPerView),
+                    );
+                  }
+
+                  return BlocConsumer<QuerylogBloc, QuerylogState>(
                     listener: (context, state) {
                       if (state.status == QuerylogStateStatus.failure) {
                         PiUtils.handleGeneralException(
@@ -392,53 +430,47 @@ class _QueryLogPageState extends State<QueryLogPage> {
                       }
                     },
                     builder: (context, state) {
-                      Widget widget = SizedBox();
                       if (state.status == QuerylogStateStatus.loading) {
-                        widget = Center(child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator());
                       } else if (state.status == QuerylogStateStatus.failure) {
-                        widget = CustomErrorWidget(
+                        return const CustomErrorWidget(
                           message: "Error loading data",
                         );
                       } else if (state.queries.isEmpty) {
-                        widget = Center(child: EmptyWidget(message: "No data"));
+                        return const Center(
+                          child: EmptyWidget(message: "No data"),
+                        );
                       } else if (state.status == QuerylogStateStatus.success) {
                         List<QueryModel> queryModels = state.queries;
-                        _currentPage = state.page;
-                        _totalPages = (state.recordsFiltered / pageSize).ceil();
-                        widget = Column(
+                        return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8.0,
                               ),
-                              child: Text(
+                              child: const Text(
                                 "Query Log",
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  // color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                             ),
-                            SizedBox(height: 10),
-                            SizedBox(
-                              height: heightForListView,
-                              width: MediaQuery.sizeOf(context).width * 0.99,
-                              child: generateQueryLogData(queryModels),
-                            ),
-                            SizedBox(height: 10),
+                            Expanded(child: generateQueryLogData(queryModels)),
                             Center(
                               child: Pager(
-                                currentItemsPerPage: pageSize,
-                                currentPage: _currentPage,
-                                totalPages: _totalPages,
+                                currentItemsPerPage: state.itemsPerPage,
+                                currentPage: state.page,
+                                totalPages:
+                                    (state.recordsFiltered / state.itemsPerPage)
+                                        .ceil(),
                                 onPageChanged: (page) {
                                   context.read<QuerylogBloc>().add(
-                                    LoadQuerylog(page, pageSize),
+                                    LoadQuerylog(page, state.itemsPerPage),
                                   );
                                 },
-                                pagesView: pagesPerView,
+                                pagesView: state.pagesPerView,
                                 numberButtonSelectedColor: Theme.of(
                                   context,
                                 ).colorScheme.primary,
@@ -450,13 +482,13 @@ class _QueryLogPageState extends State<QueryLogPage> {
                           ],
                         );
                       }
-                      return widget;
+                      return const SizedBox.shrink();
                     },
-                  ),
-                ],
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
