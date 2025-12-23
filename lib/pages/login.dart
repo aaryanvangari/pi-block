@@ -20,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   bool loading = false;
   bool passwordVisible = true;
   PiValidators piValidators = PiValidators();
+  final formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -57,8 +58,9 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Form(
+                  key: formKey,
                   child: Builder(
                     builder: (context) {
                       return Column(
@@ -71,12 +73,11 @@ class _LoginPageState extends State<LoginPage> {
                             verticalOffset: 10,
                             preferBelow: false,
                             child: TextFormField(
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
                               controller: _serverUrlController,
                               validator: (value) =>
                                   piValidators.serverUrlValidator(value),
-                              onChanged: (value) {
-                                Form.of(context).validate();
-                              },
                               decoration: InputDecoration(
                                 labelText: "Pi-Hole Server Url",
                                 border: KInputStyle.inputBorder,
@@ -95,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Tooltip(
                             message:
                                 "API Token which is used for FTLCONF_webserver_api_password in environment file",
@@ -104,15 +105,14 @@ class _LoginPageState extends State<LoginPage> {
                             verticalOffset: 10,
                             preferBelow: false,
                             child: TextFormField(
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
                               controller: _passwordController,
                               obscureText: passwordVisible,
                               enableSuggestions: false,
                               autocorrect: false,
                               validator: (value) =>
                                   piValidators.apiTokenValidator(value),
-                              onChanged: (value) {
-                                Form.of(context).validate();
-                              },
                               decoration: InputDecoration(
                                 labelText: "API Token",
                                 border: KInputStyle.inputBorder,
@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                               textInputAction: TextInputAction.done,
                             ),
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           BlocConsumer<AuthBloc, AuthState>(
                             listener: (context, state) {
                               if (state.status == AuthStateStatus.loggedIn) {
@@ -164,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                               }
                               return FilledButton(
                                 onPressed: () {
-                                  if (Form.of(context).validate()) {
+                                  if (formKey.currentState!.validate()) {
                                     context.read<AuthBloc>().add(
                                       Login(
                                         serverUrl: _serverUrlController.text,

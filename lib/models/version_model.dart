@@ -5,6 +5,10 @@ import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
+/// ---------------------------------------------------------------------------
+/// VERSION MODEL
+/// ---------------------------------------------------------------------------
+
 class VersionModel extends Equatable {
   final Version version;
 
@@ -12,6 +16,9 @@ class VersionModel extends Equatable {
   final double took;
 
   const VersionModel({required this.version, required this.took});
+
+  factory VersionModel.empty() =>
+      VersionModel(version: Version.empty(), took: 0);
 
   factory VersionModel.fromJson(Map<String, dynamic> json) {
     log(
@@ -34,7 +41,10 @@ class VersionModel extends Equatable {
   List<Object?> get props => [version, took];
 }
 
-/// -------------------- Version --------------------
+/// ---------------------------------------------------------------------------
+/// VERSION
+/// ---------------------------------------------------------------------------
+
 class Version extends Equatable {
   final Component core;
   final Component web;
@@ -47,6 +57,13 @@ class Version extends Equatable {
     required this.ftl,
     required this.docker,
   });
+
+  factory Version.empty() => Version(
+    core: Component.empty(),
+    web: Component.empty(),
+    ftl: ComponentFtl.empty(),
+    docker: Docker.empty(),
+  );
 
   factory Version.fromJson(Map<String, dynamic> json) => Version(
     core: Component.fromJson(json['core']),
@@ -78,12 +95,18 @@ class Version extends Equatable {
   List<Object?> get props => [core, web, ftl, docker];
 }
 
-/// -------------------- Component (Core/Web) --------------------
+/// ---------------------------------------------------------------------------
+/// COMPONENT (CORE / WEB)
+/// ---------------------------------------------------------------------------
+
 class Component extends Equatable {
   final LocalComponent local;
   final RemoteComponent remote;
 
   const Component({required this.local, required this.remote});
+
+  factory Component.empty() =>
+      Component(local: LocalComponent.empty(), remote: RemoteComponent.empty());
 
   factory Component.fromJson(Map<String, dynamic> json) => Component(
     local: LocalComponent.fromJson(json['local']),
@@ -112,6 +135,9 @@ class LocalComponent extends Equatable {
     required this.version,
     required this.hash,
   });
+
+  factory LocalComponent.empty() =>
+      const LocalComponent(branch: "", version: "", hash: "");
 
   factory LocalComponent.fromJson(Map<String, dynamic> json) => LocalComponent(
     branch: json['branch'] ?? "",
@@ -142,6 +168,9 @@ class RemoteComponent extends Equatable {
 
   const RemoteComponent({required this.version, required this.hash});
 
+  factory RemoteComponent.empty() =>
+      const RemoteComponent(version: "", hash: "");
+
   factory RemoteComponent.fromJson(Map<String, dynamic> json) =>
       RemoteComponent(version: json['version'] ?? "", hash: json['hash'] ?? "");
 
@@ -156,12 +185,18 @@ class RemoteComponent extends Equatable {
   List<Object?> get props => [version, hash];
 }
 
-/// -------------------- FTL Component --------------------
+/// ---------------------------------------------------------------------------
+/// FTL COMPONENT
+/// ---------------------------------------------------------------------------
+
 class ComponentFtl extends Equatable {
   final LocalFtl local;
   final RemoteComponent remote;
 
   const ComponentFtl({required this.local, required this.remote});
+
+  factory ComponentFtl.empty() =>
+      ComponentFtl(local: LocalFtl.empty(), remote: RemoteComponent.empty());
 
   factory ComponentFtl.fromJson(Map<String, dynamic> json) => ComponentFtl(
     local: LocalFtl.fromJson(json['local']),
@@ -193,6 +228,9 @@ class LocalFtl extends Equatable {
     required this.date,
   });
 
+  factory LocalFtl.empty() =>
+      const LocalFtl(branch: "", version: "", hash: "", date: "");
+
   factory LocalFtl.fromJson(Map<String, dynamic> json) => LocalFtl(
     branch: json['branch'] ?? "",
     version: json['version'] ?? "",
@@ -223,12 +261,17 @@ class LocalFtl extends Equatable {
   List<Object?> get props => [branch, version, hash, date];
 }
 
-/// -------------------- Docker --------------------
+/// ---------------------------------------------------------------------------
+/// DOCKER
+/// ---------------------------------------------------------------------------
+
 class Docker extends Equatable {
   final String local;
   final String remote;
 
   const Docker({required this.local, required this.remote});
+
+  factory Docker.empty() => const Docker(local: "", remote: "");
 
   factory Docker.fromJson(Map<String, dynamic> json) =>
       Docker(local: json['local'] ?? "", remote: json['remote'] ?? "");

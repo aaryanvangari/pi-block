@@ -9,11 +9,11 @@ sealed class QuerylogEvent extends Equatable {
 
 final class LoadQuerylog extends QuerylogEvent {
   final int start;
-  final int pageSize;
-  const LoadQuerylog(this.start, this.pageSize);
+  final int itemsPerPage;
+  const LoadQuerylog(this.start, this.itemsPerPage);
 
   @override
-  List<Object> get props => [start, pageSize];
+  List<Object> get props => [start, itemsPerPage];
 }
 
 final class AllowDenyQuerylogDomain extends QuerylogEvent {
@@ -24,4 +24,20 @@ final class AllowDenyQuerylogDomain extends QuerylogEvent {
 
   @override
   List<Object> get props => [queryModel, type];
+}
+
+class UpdateItemsPerPage extends QuerylogEvent {
+  final int itemsPerPage;
+  const UpdateItemsPerPage(this.itemsPerPage);
+
+  @override
+  List<Object> get props => [itemsPerPage];
+}
+
+class UpdatePagesPerView extends QuerylogEvent {
+  final int pagesPerView;
+  const UpdatePagesPerView(this.pagesPerView);
+
+  @override
+  List<Object> get props => [pagesPerView];
 }

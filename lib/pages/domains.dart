@@ -7,6 +7,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:pi_block/blocs/domains/domains_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
@@ -16,26 +17,24 @@ import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/widgets/custom_toggle_switch.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
-
-import 'package:pi_block/components/pi_http_client.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
 
-class DomainsPage extends StatefulWidget {
+class DomainsPage extends StatelessWidget {
   const DomainsPage({super.key});
 
   @override
-  State<DomainsPage> createState() => _DomainsPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          DomainsBloc(context.read<PiholeRepository>())..add(LoadDomains()),
+      child: DomainsView(),
+    );
+  }
 }
 
-class _DomainsPageState extends State<DomainsPage> {
-  PiHttpClient piHttpClient = PiHttpClient();
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<DomainsBloc>().add(LoadDomains());
-  }
+class DomainsView extends StatelessWidget {
+  const DomainsView({super.key});
 
   void _addDomainSheet(BuildContext ctx) {
     String type = "allow";
@@ -44,7 +43,8 @@ class _DomainsPageState extends State<DomainsPage> {
 
     TextEditingController commentController = TextEditingController();
     TextEditingController domainController = TextEditingController();
-    bool isLoading = false;
+    final domainsBloc = ctx.read<DomainsBloc>();
+    final formKey = GlobalKey<FormState>();
     showModalBottomSheet(
       isScrollControlled: true,
       elevation: 5,
@@ -53,164 +53,163 @@ class _DomainsPageState extends State<DomainsPage> {
       showDragHandle: true,
       useSafeArea: true,
       shape: KBottomSheetStyle.shape,
-      builder: (ctx) => SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(
-            top: 15,
-            left: 15,
-            right: 15,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Form(
-                child: Builder(
-                  builder: (ctx) {
-                    return Column(
-                      children: [
-                        TextFormField(
-                          controller: domainController,
-                          maxLines: 1,
-                          validator: (value) =>
-                              piValidators.domainsDomainValidator(value),
-                          onChanged: (value) {
-                            Form.of(ctx).validate();
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Domain",
-                            border: KInputStyle.inputBorder,
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () => domainController.clear(),
-                              icon: Icon(Icons.clear),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          controller: commentController,
-                          maxLines: 2,
-                          validator: (value) =>
-                              piValidators.listsCommentValidator(value),
-                          onChanged: (value) {
-                            Form.of(ctx).validate();
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Comment",
-                            border: KInputStyle.inputBorder,
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () => commentController.clear(),
-                              icon: Icon(Icons.clear),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Wrap(
-                          spacing: 16,
-                          runSpacing: 10,
-                          children: [
-                            CustomToggleSwitch(
-                              initialLabelIndex: (kind == "regex") ? 0 : 1,
-                              labels: ['Regex', 'Exact'],
-                              onToggle: (index) => (index == 0)
-                                  ? kind = "regex"
-                                  : kind = "exact",
-                            ),
-                            CustomToggleSwitch(
-                              initialLabelIndex: (type == "allow") ? 0 : 1,
-                              labels: ['Allow', 'Deny'],
-                              onToggle: (index) =>
-                                  (index == 0) ? type = "allow" : type = "deny",
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            BlocConsumer<DomainsBloc, DomainsState>(
-                              listener: (context, state) {
-                                if (state.itemStatus ==
-                                    DomainsItemStateStatus.loading) {
-                                  isLoading = true;
-                                } else if (state.itemStatus ==
-                                    DomainsItemStateStatus.success) {
-                                  isLoading = false;
-                                  if (Navigator.canPop(ctx)) {
-                                    Navigator.pop(ctx);
-                                  }
-                                } else if (state.itemStatus ==
-                                    DomainsItemStateStatus.failure) {
-                                  isLoading = false;
-                                  if (Navigator.canPop(ctx)) {
-                                    Navigator.pop(ctx);
-                                  }
-                                }
-                              },
-                              builder: (context, state) {
-                                return FilledButton(
-                                  onPressed: () {
-                                    if (Form.of(ctx).validate()) {
-                                      DomainModel domainModel = DomainModel(
-                                        domain: domainController.text,
-                                        comment: commentController.text,
-                                        type: type,
-                                        kind: kind,
-                                      );
-                                      context.read<DomainsBloc>().add(
-                                        AddDomainsItem(
-                                          domainModel: domainModel,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  ),
-                                  child: isLoading
-                                      ? CircularLoaderInButton()
-                                      : Text("Save"),
-                                );
-                              },
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(ctx);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
+      builder: (ctx) => BlocProvider.value(
+        value: domainsBloc,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 15,
+              left: 15,
+              right: 15,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Form(
+                  key: formKey,
+                  child: Builder(
+                    builder: (ctx) {
+                      return Column(
+                        children: [
+                          TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            controller: domainController,
+                            maxLines: 1,
+                            validator: (value) =>
+                                piValidators.domainsDomainValidator(value),
+                            decoration: InputDecoration(
+                              labelText: "Domain",
+                              border: KInputStyle.inputBorder,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
                               ),
-                              child: Text("Cancel"),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () => domainController.clear(),
+                                icon: Icon(Icons.clear),
+                              ),
                             ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            controller: commentController,
+                            maxLines: 2,
+                            validator: (value) =>
+                                piValidators.listsCommentValidator(value),
+                            decoration: InputDecoration(
+                              labelText: "Comment",
+                              border: KInputStyle.inputBorder,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () => commentController.clear(),
+                                icon: Icon(Icons.clear),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          Wrap(
+                            spacing: 16,
+                            runSpacing: 10,
+                            children: [
+                              CustomToggleSwitch(
+                                initialLabelIndex: kind == "regex" ? 0 : 1,
+                                labels: ['Regex', 'Exact'],
+                                onToggle: (index) =>
+                                    kind = (index == 0) ? "regex" : "exact",
+                              ),
+                              CustomToggleSwitch(
+                                initialLabelIndex: type == "allow" ? 0 : 1,
+                                labels: ['Allow', 'Deny'],
+                                onToggle: (index) =>
+                                    type = (index == 0) ? "allow" : "deny",
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              BlocConsumer<DomainsBloc, DomainsState>(
+                                listener: (context, state) {
+                                  if (state.itemStatus ==
+                                      DomainsItemStateStatus.success) {
+                                    if (Navigator.canPop(ctx)) {
+                                      Navigator.pop(ctx);
+                                    }
+                                  } else if (state.itemStatus ==
+                                      DomainsItemStateStatus.failure) {
+                                    if (Navigator.canPop(ctx)) {
+                                      Navigator.pop(ctx);
+                                    }
+                                  }
+                                },
+                                builder: (context, state) {
+                                  final isLoading =
+                                      state.itemStatus ==
+                                      DomainsItemStateStatus.loading;
+                                  return FilledButton(
+                                    onPressed: () {
+                                      if (formKey.currentState!.validate()) {
+                                        DomainModel domainModel = DomainModel(
+                                          domain: domainController.text,
+                                          comment: commentController.text,
+                                          type: type,
+                                          kind: kind,
+                                        );
+                                        context.read<DomainsBloc>().add(
+                                          AddDomainsItem(
+                                            domainModel: domainModel,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ),
+                                    child: isLoading
+                                        ? CircularLoaderInButton()
+                                        : const Text("Save"),
+                                  );
+                                },
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(ctx);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                child: const Text("Cancel"),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -228,7 +227,8 @@ class _DomainsPageState extends State<DomainsPage> {
     TextEditingController commentController = TextEditingController(
       text: comment,
     );
-    bool isLoading = false;
+    final domainsBloc = ctx.read<DomainsBloc>();
+    final formKey = GlobalKey<FormState>();
     showModalBottomSheet(
       isScrollControlled: true,
       elevation: 5,
@@ -237,151 +237,150 @@ class _DomainsPageState extends State<DomainsPage> {
       showDragHandle: true,
       useSafeArea: true,
       shape: KBottomSheetStyle.shape,
-      builder: (ctx) => SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(
-            top: 15,
-            left: 15,
-            right: 15,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Form(
-                child: Builder(
-                  builder: (ctx) {
-                    return Column(
-                      children: [
-                        TextFormField(
-                          controller: commentController,
-                          maxLines: 3,
-                          validator: (value) =>
-                              piValidators.listsCommentValidator(value),
-                          onChanged: (value) {
-                            Form.of(ctx).validate();
-                          },
-                          decoration: InputDecoration(
-                            labelText: "Comment",
-                            border: KInputStyle.inputBorder,
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(color: Colors.grey),
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () => commentController.clear(),
-                              icon: Icon(Icons.clear),
+      builder: (ctx) => BlocProvider.value(
+        value: domainsBloc,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              top: 15,
+              left: 15,
+              right: 15,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Form(
+                  key: formKey,
+                  child: Builder(
+                    builder: (ctx) {
+                      return Column(
+                        children: [
+                          TextFormField(
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            controller: commentController,
+                            maxLines: 3,
+                            validator: (value) =>
+                                piValidators.listsCommentValidator(value),
+                            decoration: InputDecoration(
+                              labelText: "Comment",
+                              border: KInputStyle.inputBorder,
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide(color: Colors.grey),
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () => commentController.clear(),
+                                icon: const Icon(Icons.clear),
+                              ),
                             ),
                           ),
-                        ),
-                        SizedBox(height: 10),
-                        Wrap(
-                          spacing: 16,
-                          runSpacing: 10,
-                          children: [
-                            CustomToggleSwitch(
-                              initialLabelIndex: (enabled) ? 0 : 1,
-                              labels: ['Enabled', 'Disabled'],
-                              onToggle: (index) => (index == 0)
-                                  ? enabled = true
-                                  : enabled = false,
-                            ),
-                            CustomToggleSwitch(
-                              initialLabelIndex: (kind == "regex") ? 0 : 1,
-                              labels: ['Regex', 'Exact'],
-                              onToggle: (index) => (index == 0)
-                                  ? kind = "regex"
-                                  : kind = "exact",
-                            ),
-                            CustomToggleSwitch(
-                              initialLabelIndex: (type == "allow") ? 0 : 1,
-                              labels: ['Allow', 'Deny'],
-                              onToggle: (index) =>
-                                  (index == 0) ? type = "allow" : type = "deny",
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            BlocConsumer<DomainsBloc, DomainsState>(
-                              listener: (context, state) {
-                                if (state.itemStatus ==
-                                    DomainsItemStateStatus.loading) {
-                                  isLoading = true;
-                                } else if (state.itemStatus ==
-                                    DomainsItemStateStatus.success) {
-                                  isLoading = false;
-                                  if (Navigator.canPop(ctx)) {
-                                    Navigator.pop(ctx);
-                                  }
-                                } else if (state.itemStatus ==
-                                    DomainsItemStateStatus.failure) {
-                                  isLoading = false;
-                                  if (Navigator.canPop(ctx)) {
-                                    Navigator.pop(ctx);
-                                  }
-                                }
-                              },
-                              builder: (context, state) {
-                                return FilledButton(
-                                  onPressed: () {
-                                    if (Form.of(ctx).validate()) {
-                                      context.read<DomainsBloc>().add(
-                                        UpdateDomainsItem(
-                                          domainModel: domainModel,
-                                          type: type,
-                                          kind: kind,
-                                          comment: commentController.text,
-                                          enabled: enabled,
-                                          groups: groups,
-                                        ),
-                                      );
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  ),
-                                  child: isLoading
-                                      ? CircularLoaderInButton()
-                                      : Text("Save"),
-                                );
-                              },
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pop(ctx);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
+                          const SizedBox(height: 10),
+                          Wrap(
+                            spacing: 16,
+                            runSpacing: 10,
+                            children: [
+                              CustomToggleSwitch(
+                                initialLabelIndex: enabled ? 0 : 1,
+                                labels: ['Enabled', 'Disabled'],
+                                onToggle: (index) =>
+                                    enabled = (index == 0) ? true : false,
                               ),
-                              child: Text("Cancel"),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
+                              CustomToggleSwitch(
+                                initialLabelIndex: kind == "regex" ? 0 : 1,
+                                labels: ['Regex', 'Exact'],
+                                onToggle: (index) =>
+                                    kind = (index == 0) ? "regex" : "exact",
+                              ),
+                              CustomToggleSwitch(
+                                initialLabelIndex: type == "allow" ? 0 : 1,
+                                labels: ['Allow', 'Deny'],
+                                onToggle: (index) =>
+                                    type = (index == 0) ? "allow" : "deny",
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              BlocConsumer<DomainsBloc, DomainsState>(
+                                listener: (context, state) {
+                                  if (state.itemStatus ==
+                                      DomainsItemStateStatus.success) {
+                                    if (Navigator.canPop(ctx)) {
+                                      Navigator.pop(ctx);
+                                    }
+                                  } else if (state.itemStatus ==
+                                      DomainsItemStateStatus.failure) {
+                                    if (Navigator.canPop(ctx)) {
+                                      Navigator.pop(ctx);
+                                    }
+                                  }
+                                },
+                                builder: (context, state) {
+                                  final isLoading =
+                                      state.itemStatus ==
+                                      DomainsItemStateStatus.loading;
+                                  return FilledButton(
+                                    onPressed: () {
+                                      if (formKey.currentState!.validate()) {
+                                        context.read<DomainsBloc>().add(
+                                          UpdateDomainsItem(
+                                            domainModel: domainModel,
+                                            type: type,
+                                            kind: kind,
+                                            comment: commentController.text,
+                                            enabled: enabled,
+                                            groups: groups,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ),
+                                    child: isLoading
+                                        ? CircularLoaderInButton()
+                                        : const Text("Save"),
+                                  );
+                                },
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(ctx);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                                child: const Text("Cancel"),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _domainRow(DomainModel item) {
+  Widget _domainRow(DomainModel item, BuildContext context) {
     return CustomExpansionTileWidget(
       isHeaderARow: true,
       headerItems: [
@@ -391,8 +390,7 @@ class _DomainsPageState extends State<DomainsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Flex(
-                  direction: Axis.horizontal,
+                Row(
                   children: [
                     Expanded(
                       child: Column(
@@ -435,7 +433,7 @@ class _DomainsPageState extends State<DomainsPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -443,22 +441,22 @@ class _DomainsPageState extends State<DomainsPage> {
                       spacing: 3,
                       children: [
                         CustomTagWidget(
-                          iconData: (item.type == "deny")
+                          iconData: item.type == "deny"
                               ? Icons.block
                               : FontAwesomeIcons.check,
-                          color: (item.type == "deny")
+                          color: item.type == "deny"
                               ? Colors.red
                               : Colors.green,
-                          title: (item.type == "deny") ? "Deny" : "Allow",
+                          title: item.type == "deny" ? "Deny" : "Allow",
                         ),
                         CustomTagWidget(
-                          iconData: (item.kind == "regex")
+                          iconData: item.kind == "regex"
                               ? Symbols.regular_expression
                               : Symbols.match_word,
-                          color: (item.type == "deny")
+                          color: item.type == "deny"
                               ? Colors.red
                               : Colors.green,
-                          title: (item.kind == "regex") ? "Regex" : "Exact",
+                          title: item.kind == "regex" ? "Regex" : "Exact",
                         ),
                       ],
                     ),
@@ -467,7 +465,7 @@ class _DomainsPageState extends State<DomainsPage> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: Icon(Icons.update, size: 16),
+                          child: const Icon(Icons.update, size: 16),
                         ),
                         Text(
                           PiUtils.getTimeAgo(
@@ -486,12 +484,12 @@ class _DomainsPageState extends State<DomainsPage> {
         ),
       ],
       contentTitleItems: [
-        Text('Domain: ', style: KTextStyle.listExpandedTitle),
-        Text('Unicode: ', style: KTextStyle.listExpandedTitle),
-        Text('Comment: ', style: KTextStyle.listExpandedTitle),
-        Text('Database ID: ', style: KTextStyle.listExpandedTitle),
-        Text('Added: ', style: KTextStyle.listExpandedTitle),
-        Text('Modified: ', style: KTextStyle.listExpandedTitle),
+        const Text('Domain: ', style: KTextStyle.listExpandedTitle),
+        const Text('Unicode: ', style: KTextStyle.listExpandedTitle),
+        const Text('Comment: ', style: KTextStyle.listExpandedTitle),
+        const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
+        const Text('Added: ', style: KTextStyle.listExpandedTitle),
+        const Text('Modified: ', style: KTextStyle.listExpandedTitle),
       ],
       contentValueItems: [
         Text(item.domain, style: KTextStyle.listExpandedValue),
@@ -523,6 +521,7 @@ class _DomainsPageState extends State<DomainsPage> {
             children: [
               SlidableAction(
                 onPressed: (context) {
+                  final domainsBloc = context.read<DomainsBloc>();
                   showModalBottomSheet(
                     isScrollControlled: true,
                     elevation: 5,
@@ -532,10 +531,9 @@ class _DomainsPageState extends State<DomainsPage> {
                     shape: KBottomSheetStyle.shape,
                     builder: (ctx) => SimpleBottomSheet(
                       primaryTitle: "Delete",
-                      context: context,
                       cancelFunction: () => Navigator.pop(ctx),
                       primaryFunction: () => {
-                        ctx.read<DomainsBloc>().add(
+                        domainsBloc.add(
                           DeleteDomainsItem(domainModel: selectedPageItem),
                         ),
                         Navigator.pop(ctx),
@@ -564,7 +562,7 @@ class _DomainsPageState extends State<DomainsPage> {
               ),
             ],
           ),
-          child: _domainRow(selectedPageItem),
+          child: _domainRow(selectedPageItem, context),
         );
       },
       separatorBuilder: (context, index) {
@@ -578,12 +576,12 @@ class _DomainsPageState extends State<DomainsPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                BlocConsumer<DomainsBloc, DomainsState>(
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: BlocConsumer<DomainsBloc, DomainsState>(
                   listener: (context, state) {
                     if (state.status == DomainsStateStatus.failure) {
                       PiUtils.handleGeneralException(
@@ -602,16 +600,19 @@ class _DomainsPageState extends State<DomainsPage> {
                     }
                   },
                   builder: (context, state) {
-                    Widget widget = SizedBox();
                     if (state.status == DomainsStateStatus.loading) {
-                      widget = Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     } else if (state.status == DomainsStateStatus.failure) {
-                      widget = CustomErrorWidget(message: "Error loading data");
+                      return const CustomErrorWidget(
+                        message: "Error loading data",
+                      );
                     } else if (state.domains.isEmpty) {
-                      widget = Center(child: EmptyWidget(message: "No data"));
+                      return const Center(
+                        child: EmptyWidget(message: "No data"),
+                      );
                     } else if (state.status == DomainsStateStatus.success) {
                       List<DomainModel> domainModels = state.domains;
-                      widget = Column(
+                      return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Padding(
@@ -621,7 +622,7 @@ class _DomainsPageState extends State<DomainsPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
+                                const Text(
                                   "Domains",
                                   style: TextStyle(
                                     fontSize: 18,
@@ -638,24 +639,15 @@ class _DomainsPageState extends State<DomainsPage> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 10),
-                          SizedBox(
-                            height:
-                                MediaQuery.sizeOf(context).height * 0.9 -
-                                kToolbarHeight -
-                                8 -
-                                kBottomNavigationBarHeight,
-                            width: MediaQuery.sizeOf(context).width * 0.99,
-                            child: getDomains(domainModels),
-                          ),
+                          Expanded(child: getDomains(domainModels)),
                         ],
                       );
                     }
-                    return widget;
+                    return const SizedBox.shrink();
                   },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

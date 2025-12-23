@@ -1,92 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pi_block/blocs/dashboard/dashboard_bloc.dart';
+import 'package:pi_block/blocs/dashboard/system_info_bloc.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/system_model.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/load_text.dart';
 
-class SystemInfoStats extends StatefulWidget {
+class SystemInfoStats extends StatelessWidget {
   const SystemInfoStats({super.key});
 
   @override
-  State<SystemInfoStats> createState() => _SystemInfoStatsState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          SystemInfoBloc(context.read<PiholeRepository>())
+            ..add(LoadSystemInfo()),
+      child: const SystemInfoStatsView(),
+    );
+  }
 }
 
-class _SystemInfoStatsState extends State<SystemInfoStats> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<DashboardBloc>().add(LoadSystemInfo());
-  }
+enum MemoryType { ram, swap }
 
-  String getMemoryInfo(String type, SystemModel systemModel) {
+class SystemInfoStatsView extends StatelessWidget {
+  const SystemInfoStatsView({super.key});
+
+  String getMemoryInfo(MemoryType type, SystemModel systemModel) {
     String memoryInfo = "";
-    int free = 0;
-    int total = 0;
-    double usedPercentage = 0.0;
-    if (type == "ram") {
-      free = systemModel.system.memory.ram.used;
-      total = systemModel.system.memory.ram.total;
-      usedPercentage = systemModel.system.memory.ram.percentUsed;
-    } else if (type == "swap") {
-      free = systemModel.system.memory.swap.used;
-      total = systemModel.system.memory.swap.total;
-      usedPercentage = systemModel.system.memory.swap.percentUsed;
+    const int bytesToGb = 1024 * 1024;
+    final dynamic memory;
+
+    if (type == MemoryType.ram) {
+      memory = systemModel.system.memory.ram;
+    } else {
+      memory = systemModel.system.memory.swap;
     }
-    String freeString = (free / (1024 * 1024)).toStringAsFixed(1);
-    String totalString = (total / (1024 * 1024)).toStringAsFixed(1);
+
+    String toGb(int value) => (value / bytesToGb).toStringAsFixed(1);
+    final usedGb = toGb(memory.used);
+    final totalGb = toGb(memory.total);
     memoryInfo =
-        "${freeString}GB / ${totalString}GB (${usedPercentage.toStringAsFixed(2)}%)";
+        "${usedGb}GB / ${totalGb}GB (${memory.percentUsed.toStringAsFixed(2)}%)";
     return memoryInfo;
   }
 
   List<Widget> getSystemLoad(List<double> loads) {
-    List<Widget> loadList = [];
-    for (var load in loads) {
-      if (load > 1 && load < 2) {
-        loadList.add(LoadTextWidget(title: load, color: Colors.orange));
-      } else if (load < 1) {
-        loadList.add(LoadTextWidget(title: load, color: Colors.green));
-      } else if (load > 2) {
-        loadList.add(LoadTextWidget(title: load, color: Colors.red));
+    return loads.map((load) {
+      final Color color;
+
+      if (load < 1) {
+        color = Colors.green;
+      } else if (load < 2) {
+        color = Colors.orange;
+      } else {
+        color = Colors.red;
       }
-    }
-    return loadList;
+
+      return LoadTextWidget(title: load, color: color);
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<DashboardBloc, DashboardState>(
-      buildWhen: (previous, current) {
-        if ((current is SystemInfoInitial ||
-                current is SystemInfoLoaded ||
-                current is SystemInfoLoading ||
-                current is SystemInfoError) &&
-            previous != current) {
-          return true;
-        }
-        return false;
-      },
+    return BlocConsumer<SystemInfoBloc, SystemInfoState>(
       listener: (context, state) {
-        if (state is SystemInfoError) {
-          PiUtils.handleGeneralException(context, state.errorMessage);
+        if (state.status == SystemStateStatus.failure) {
+          PiUtils.handleGeneralException(context, state.error);
         }
       },
       builder: (context, state) {
-        Widget widget = SizedBox();
-        if (state is SystemInfoError) {
-          widget = ErrorCardWidget(
+        if (state.status == SystemStateStatus.failure) {
+          return const ErrorCardWidget(
             header: "System",
             message: "Error loading data",
           );
-        } else if (state is SystemInfoLoading) {
-          widget = Center(child: CircularProgressIndicator());
-        } else if (state is SystemInfoLoaded) {
+        } else if (state.status == SystemStateStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state.status == SystemStateStatus.success) {
           SystemModel systemModel = state.systemModel;
 
-          widget = Card(
+          return Card(
             elevation: 4,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
@@ -96,64 +91,60 @@ class _SystemInfoStatsState extends State<SystemInfoStats> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "System",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      // color: Theme.of(context).colorScheme.primary,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Uptime"),
+                          const Text("Uptime"),
                           Text(
                             PiUtils.getTimeAgo(
                               systemModel.system.uptime,
                               "seconds",
                             ),
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Ram"),
+                          const Text("Ram"),
                           Text(
-                            getMemoryInfo("ram", systemModel),
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            getMemoryInfo(MemoryType.ram, systemModel),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Swap"),
+                          const Text("Swap"),
                           Text(
-                            getMemoryInfo("swap", systemModel),
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            getMemoryInfo(MemoryType.swap, systemModel),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Cpu"),
+                          const Text("Cpu"),
                           Text(
                             "${systemModel.system.cpu.nprocs} cores (${systemModel.system.cpu.percentCpu.toStringAsFixed(2)}%)",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Load"),
+                          const Text("Load"),
                           Row(
                             children: getSystemLoad(
                               systemModel.system.cpu.load.raw,
@@ -168,7 +159,7 @@ class _SystemInfoStatsState extends State<SystemInfoStats> {
             ),
           );
         }
-        return widget;
+        return const SizedBox.shrink();
       },
     );
   }

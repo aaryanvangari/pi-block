@@ -4,37 +4,55 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/charts/query_history_barchart_bloc.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/history_model.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/legend_widget.dart';
 
-class QueriesBarchartStats extends StatefulWidget {
+class QueriesBarchartStats extends StatelessWidget {
   const QueriesBarchartStats({super.key});
 
   @override
-  State<QueriesBarchartStats> createState() => _QueriesBarchartStatsState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          QueryHistoryBarchartBloc(context.read<PiholeRepository>())
+            ..add(LoadQueryHistoryBarchart()),
+      child: QueriesBarchartView(),
+    );
+  }
 }
 
-class _QueriesBarchartStatsState extends State<QueriesBarchartStats> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<QueryHistoryBarchartBloc>().add(LoadQueryHistoryBarchart());
+class QueriesBarchartView extends StatelessWidget {
+  const QueriesBarchartView({super.key});
+
+  /// We get 145 items of data and we are not interested in all of them
+  /// as it does not fit into mobile screen.
+  /// So we limit it to maybe 20-25 (barItemsNeeded) depending on screen width.
+  /// Sorting by timestamp.millisecondsSinceEpoch didnt work so
+  /// Iterating from 145-125 and decreasing one at a time
+  List<HistoryEntry> _visibleHistory(
+    List<HistoryEntry> history,
+    int barItemsNeeded,
+  ) {
+    final start = (history.length - 1 - barItemsNeeded).clamp(
+      0,
+      history.length,
+    );
+    return history.sublist(start);
   }
 
-  List<BarChartGroupData> generateBarChartData(
+  List<BarChartGroupData> generateBarChartGroupData(
     List<HistoryEntry> history,
     double barsWidth,
     double barsSpace,
     int barItemsNeeded,
   ) {
     List<BarChartGroupData> barGroups = [];
-    for (
-      var i = (history.length - 1 - barItemsNeeded);
-      i < (history.length);
-      i++
-    ) {
-      HistoryEntry historyItem = history[i];
+    final visibleHistory = _visibleHistory(history, barItemsNeeded);
+
+    for (var i = 0; i < visibleHistory.length; i++) {
+      HistoryEntry historyItem = visibleHistory[i];
       List<BarChartRodStackItem> rodStackItems = [];
 
       double total = historyItem.total.toDouble();
@@ -45,26 +63,29 @@ class _QueriesBarchartStatsState extends State<QueriesBarchartStats> {
       double blockedStart = others;
       double cachedStart = others + blocked;
       double forwardedStart = others + blocked + cached;
-      rodStackItems.add(BarChartRodStackItem(0, others, Colors.grey));
+
+      rodStackItems.add(
+        BarChartRodStackItem(0, others, KBarChartQueryColors.others),
+      );
       rodStackItems.add(
         BarChartRodStackItem(
           blockedStart,
           blockedStart + blocked,
-          const Color.fromARGB(255, 211, 81, 72).withAlpha(250),
+          KBarChartQueryColors.blocked,
         ),
       );
       rodStackItems.add(
         BarChartRodStackItem(
           cachedStart,
           cachedStart + cached,
-          const Color.fromARGB(255, 35, 176, 241).withAlpha(200),
+          KBarChartQueryColors.cached,
         ),
       );
       rodStackItems.add(
         BarChartRodStackItem(
           forwardedStart,
           forwardedStart + forwarded,
-          const Color.fromARGB(255, 160, 205, 109).withAlpha(200),
+          KBarChartQueryColors.forwarded,
         ),
       );
 
@@ -88,6 +109,68 @@ class _QueriesBarchartStatsState extends State<QueriesBarchartStats> {
     return barGroups;
   }
 
+  List<List<TextSpan>> generateBarChartTooltipsData(
+    List<HistoryEntry> history,
+    double barsWidth,
+    double barsSpace,
+    int barItemsNeeded,
+    Color tooltipTextColor,
+  ) {
+    List<List<TextSpan>> tooltips = [];
+    final visibleHistory = _visibleHistory(history, barItemsNeeded);
+
+    for (var i = 0; i < visibleHistory.length; i++) {
+      HistoryEntry historyItem = visibleHistory[i];
+      List<TextSpan> tooltipStackItems = [];
+
+      double total = historyItem.total.toDouble();
+      double blocked = historyItem.blocked.toDouble();
+      double cached = historyItem.cached.toDouble();
+      double forwarded = historyItem.forwarded.toDouble();
+      double others = total - (blocked + cached + forwarded);
+
+      tooltipStackItems.add(
+        _tooltipLine(
+          'Others',
+          others.toInt(),
+          total.toInt(),
+          KBarChartQueryColors.others,
+          tooltipTextColor,
+        ),
+      );
+      tooltipStackItems.add(
+        _tooltipLine(
+          'Blocked',
+          blocked.toInt(),
+          total.toInt(),
+          KBarChartQueryColors.blocked,
+          tooltipTextColor,
+        ),
+      );
+      tooltipStackItems.add(
+        _tooltipLine(
+          'Cached',
+          cached.toInt(),
+          total.toInt(),
+          KBarChartQueryColors.cached,
+          tooltipTextColor,
+        ),
+      );
+      tooltipStackItems.add(
+        _tooltipLine(
+          'Forwarded',
+          forwarded.toInt(),
+          total.toInt(),
+          KBarChartQueryColors.forwarded,
+          tooltipTextColor,
+        ),
+      );
+
+      tooltips.add(tooltipStackItems);
+    }
+    return tooltips;
+  }
+
   Widget bottomTitles(double value, TitleMeta meta) {
     const style = TextStyle(fontSize: 8);
     DateTime xDateTime = DateTime.fromMillisecondsSinceEpoch(
@@ -96,7 +179,7 @@ class _QueriesBarchartStatsState extends State<QueriesBarchartStats> {
     String xHourMinText = '${xDateTime.hour}:${xDateTime.minute}';
     return SideTitleWidget(
       meta: meta,
-      angle: 99,
+      angle: -90 * 3.14 / 180,
       fitInside: SideTitleFitInsideData(
         enabled: true,
         axisPosition: 0,
@@ -118,30 +201,56 @@ class _QueriesBarchartStatsState extends State<QueriesBarchartStats> {
     );
   }
 
+  String _percent(int value, int total) {
+    if (total == 0) return '0%';
+    return '${((value / total) * 100).toStringAsFixed(1)}%';
+  }
+
+  TextSpan _tooltipLine(
+    String label,
+    int value,
+    int total,
+    Color color,
+    Color textColor,
+  ) {
+    return TextSpan(
+      children: [
+        TextSpan(
+          text: '$label: ',
+          style: TextStyle(
+            color: color,
+            fontWeight: FontWeight.w600,
+            fontSize: 12,
+          ),
+        ),
+        TextSpan(
+          text: '$value (${_percent(value, total)})\n',
+          style: TextStyle(color: textColor, fontSize: 12),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<QueryHistoryBarchartBloc, QueryHistoryBarchartState>(
-      buildWhen: (previous, current) {
-        return true;
-      },
       listener: (context, state) {
         if (state is QueryHistoryBarchartError) {
           PiUtils.handleGeneralException(context, state.errorMessage);
         }
       },
       builder: (context, state) {
-        Widget widget = SizedBox();
         if (state is QueryHistoryBarchartError) {
-          widget = ErrorCardWidget(
+          return const ErrorCardWidget(
             header: "Total Queries",
             message: "Error loading data",
           );
         } else if (state is QueryHistoryBarchartLoading) {
-          widget = Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (state is QueryHistoryBarchartLoaded) {
           HistoryModel historyModel = state.historyModel;
           List<HistoryEntry> history = historyModel.history;
-          widget = Card(
+          return Card(
             elevation: 4,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
@@ -156,25 +265,24 @@ class _QueriesBarchartStatsState extends State<QueriesBarchartStats> {
                       horizontal: 8.0,
                       vertical: 2,
                     ),
-                    child: Text(
+                    child: const Text(
                       "Total Queries",
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        // color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   LegendsListWidget(
                     legends: [
-                      Legend('Others', Colors.grey),
-                      Legend('BLocked', Colors.red),
-                      Legend('Cached', Colors.blue),
-                      Legend('Forwarded', Colors.green),
+                      Legend('Others', KBarChartQueryColors.others),
+                      Legend('BLocked', KBarChartQueryColors.blocked),
+                      Legend('Cached', KBarChartQueryColors.cached),
+                      Legend('Forwarded', KBarChartQueryColors.forwarded),
                     ],
                   ),
-                  SizedBox(height: 15),
+                  const SizedBox(height: 15),
                   AspectRatio(
                     aspectRatio: 1.5,
                     child: LayoutBuilder(
@@ -182,19 +290,61 @@ class _QueriesBarchartStatsState extends State<QueriesBarchartStats> {
                         final barsSpace = 15.0 * constraints.maxWidth / 1000;
                         final barsWidth = 40.0 * constraints.maxWidth / 1000;
                         final itemWidth = (barsSpace + barsWidth).toInt();
+                        final chartTooltipWidth = constraints.maxWidth * 0.6;
                         final barItemsNeeded =
                             (constraints.maxWidth / itemWidth).toInt();
                         List<BarChartGroupData> barGroups =
-                            generateBarChartData(
+                            generateBarChartGroupData(
                               history,
                               barsWidth,
                               barsSpace,
                               barItemsNeeded,
                             );
+                        List<List<TextSpan>> toolTips =
+                            generateBarChartTooltipsData(
+                              history,
+                              barsWidth,
+                              barsSpace,
+                              barItemsNeeded,
+                              Theme.of(context).colorScheme.surface,
+                            );
                         return BarChart(
                           BarChartData(
                             alignment: BarChartAlignment.start,
-                            // barTouchData: BarTouchData(enabled: false),
+                            barTouchData: BarTouchData(
+                              enabled: true,
+                              touchTooltipData: BarTouchTooltipData(
+                                maxContentWidth: chartTooltipWidth,
+                                getTooltipColor: (group) =>
+                                    Theme.of(context).colorScheme.onSurface,
+                                tooltipBorderRadius: BorderRadius.circular(8),
+                                getTooltipItem:
+                                    (group, groupIndex, rod, rodIndex) {
+                                      final tooltipItems = toolTips[groupIndex];
+                                      final total = rod.toY.toInt();
+
+                                      return BarTooltipItem(
+                                        textAlign: TextAlign.start,
+                                        '',
+                                        const TextStyle(), // required but unused
+                                        children: [
+                                          ...tooltipItems,
+                                          const TextSpan(text: '\n'),
+                                          TextSpan(
+                                            text: 'Total: $total',
+                                            style: TextStyle(
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.surface,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 13,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                              ),
+                            ),
                             titlesData: FlTitlesData(
                               show: true,
                               bottomTitles: AxisTitles(
@@ -243,7 +393,7 @@ class _QueriesBarchartStatsState extends State<QueriesBarchartStats> {
             ),
           );
         }
-        return widget;
+        return const SizedBox.shrink();
       },
     );
   }

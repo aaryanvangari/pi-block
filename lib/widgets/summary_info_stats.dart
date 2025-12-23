@@ -3,22 +3,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pi_block/blocs/dashboard/summary_bloc.dart';
 import 'package:pi_block/components/utils.dart';
+import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/summary_model.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 
-class SummaryInfoStats extends StatefulWidget {
+class SummaryInfoStats extends StatelessWidget {
   const SummaryInfoStats({super.key});
 
   @override
-  State<SummaryInfoStats> createState() => _SummaryInfoStatsState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          SummaryBloc(context.read<PiholeRepository>())..add(LoadSummary()),
+      child: const SummaryInfoStatsView(),
+    );
+  }
 }
 
-class _SummaryInfoStatsState extends State<SummaryInfoStats> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<SummaryBloc>().add(LoadSummary());
-  }
+class SummaryInfoStatsView extends StatelessWidget {
+  const SummaryInfoStatsView({super.key});
 
   Widget _buildStatCard(
     BuildContext context, {
@@ -56,10 +60,10 @@ class _SummaryInfoStatsState extends State<SummaryInfoStats> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(icon, size: 30, color: Colors.white),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Colors.white,
                       fontWeight: FontWeight.w500,
@@ -67,7 +71,7 @@ class _SummaryInfoStatsState extends State<SummaryInfoStats> {
                   ),
                   Text(
                     value,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 22,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -91,18 +95,17 @@ class _SummaryInfoStatsState extends State<SummaryInfoStats> {
         }
       },
       builder: (context, state) {
-        Widget widget = SizedBox();
         if (state.status == SummaryStateStatus.failure) {
-          widget = ErrorCardWidget(
+          return const ErrorCardWidget(
             header: "Summary",
             message: "Error loading data",
           );
         } else if (state.status == SummaryStateStatus.loading) {
-          widget = Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (state.status == SummaryStateStatus.success) {
           SummaryModel summaryModel = state.summaryModel;
 
-          widget = GridView.count(
+          return GridView.count(
             crossAxisCount: 2,
             shrinkWrap: true,
             childAspectRatio: 1.1,
@@ -113,14 +116,14 @@ class _SummaryInfoStatsState extends State<SummaryInfoStats> {
                 title: "Total Queries",
                 value: summaryModel.queries.total.toString(),
                 icon: FontAwesomeIcons.earthAmericas,
-                color: Color(0xFF00c0ef),
+                color: KSummaryStatsColors.totalQueries,
               ),
               _buildStatCard(
                 context,
                 title: "Queries Blocked",
                 value: summaryModel.queries.blocked.toString(),
                 icon: FontAwesomeIcons.hand,
-                color: Color(0xFFdd4b39),
+                color: KSummaryStatsColors.queriesBlocked,
               ),
               _buildStatCard(
                 context,
@@ -128,19 +131,19 @@ class _SummaryInfoStatsState extends State<SummaryInfoStats> {
                 value:
                     '${summaryModel.queries.percentBlocked.toStringAsFixed(2)}%',
                 icon: FontAwesomeIcons.chartPie,
-                color: Color(0xFFf39c12),
+                color: KSummaryStatsColors.percentBlocked,
               ),
               _buildStatCard(
                 context,
                 title: "Domains on Lists",
                 value: summaryModel.gravity.domainsBeingBlocked.toString(),
                 icon: FontAwesomeIcons.list,
-                color: Color(0xFF00a65a),
+                color: KSummaryStatsColors.domainsOnList,
               ),
             ],
           );
         }
-        return widget;
+        return const SizedBox.shrink();
       },
     );
   }

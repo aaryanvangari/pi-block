@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_json/flutter_json.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/pihole_config/pihole_config_bloc.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/pihole_config_model.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/components/utils.dart';
@@ -13,29 +14,76 @@ import 'package:re_highlight/languages/json.dart';
 import 'package:re_highlight/styles/atom-one-dark.dart';
 import 'package:re_highlight/styles/atom-one-light.dart';
 
-class PiholeConfigurationPage extends StatefulWidget {
+class PiholeConfigurationPage extends StatelessWidget {
   const PiholeConfigurationPage({super.key});
 
   @override
-  State<PiholeConfigurationPage> createState() =>
-      _PiholeConfigurationPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          PiholeConfigBloc(context.read<PiholeRepository>())
+            ..add(PiholeConfigFetched()),
+      child: _PiholeConfigurationView(),
+    );
+  }
 }
 
-class _PiholeConfigurationPageState extends State<PiholeConfigurationPage> {
+class _PiholeConfigurationView extends StatefulWidget {
+  const _PiholeConfigurationView();
   @override
-  void initState() {
-    super.initState();
-    context.read<PiholeConfigBloc>().add(PiholeConfigFetched());
-  }
+  State<_PiholeConfigurationView> createState() =>
+      _PiholeConfigurationViewState();
+}
 
+class _PiholeConfigurationViewState extends State<_PiholeConfigurationView> {
   final controller = JsonController();
   int _selectedIndex = 0;
-  late CodeLineEditingController codeEditorController;
+  CodeLineEditingController? codeEditorController;
 
   @override
   void dispose() {
-    codeEditorController.dispose();
+    codeEditorController?.dispose();
+    controller.dispose();
     super.dispose();
+  }
+
+  Widget jsonViewWidget(Map<String, dynamic> jsonData) {
+    return JsonWidget(
+      controller: controller,
+      json: jsonData,
+      initialExpandDepth: 1,
+    );
+  }
+
+  Widget codeEditorViewWidget() {
+    return CodeEditor(
+      controller: codeEditorController,
+      readOnly: true,
+      indicatorBuilder:
+          (context, editingController, chunkController, notifier) {
+            return Row(
+              children: [
+                DefaultCodeLineNumber(
+                  controller: editingController,
+                  notifier: notifier,
+                ),
+                DefaultCodeChunkIndicator(
+                  width: 20,
+                  controller: chunkController,
+                  notifier: notifier,
+                ),
+              ],
+            );
+          },
+      style: CodeEditorStyle(
+        codeTheme: CodeHighlightTheme(
+          languages: {'json': CodeHighlightThemeMode(mode: langJson)},
+          theme: PiUtils.getDarkMode(context)
+              ? atomOneDarkTheme
+              : atomOneLightTheme,
+        ),
+      ),
+    );
   }
 
   @override
@@ -52,35 +100,39 @@ class _PiholeConfigurationPageState extends State<PiholeConfigurationPage> {
             },
           ),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                BlocConsumer<PiholeConfigBloc, PiholeConfigState>(
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Expanded(
+                child: BlocConsumer<PiholeConfigBloc, PiholeConfigState>(
                   listener: (context, state) {
                     if (state is PiholeConfigFailure) {
                       PiUtils.handleGeneralException(context, state.error);
                     }
                   },
                   builder: (context, state) {
-                    Widget widget = SizedBox();
                     if (state is PiholeConfigFailure) {
-                      widget = CustomErrorWidget(message: "Error loading data");
+                      return const CustomErrorWidget(
+                        message: "Error loading data",
+                      );
                     }
                     if (state is PiholeConfigLoading) {
-                      widget = Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     }
 
                     if (state is PiholeConfigSuccess) {
                       PiholeConfigModel piholeConfigModel =
                           state.piholeConfigModel;
-                      codeEditorController = CodeLineEditingController.fromText(
-                        const JsonEncoder.withIndent(
-                          '  ',
-                        ).convert(piholeConfigModel),
-                      );
-                      widget = Column(
+                      final jsonMap = piholeConfigModel.config.toJson();
+                      codeEditorController ??=
+                          CodeLineEditingController.fromText(
+                            const JsonEncoder.withIndent(
+                              '  ',
+                            ).convert(piholeConfigModel),
+                          );
+
+                      return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
@@ -119,69 +171,24 @@ class _PiholeConfigurationPageState extends State<PiholeConfigurationPage> {
                               ],
                             ],
                           ),
-                          SizedBox(height: 10),
-                          SizedBox(
-                            height: MediaQuery.sizeOf(context).height * 0.78,
+                          const SizedBox(height: 10),
+                          Expanded(
                             child: IndexedStack(
                               index: _selectedIndex,
                               children: [
-                                JsonWidget(
-                                  controller: controller,
-                                  json: piholeConfigModel.config.toJson(),
-                                  initialExpandDepth: 1,
-                                ),
-                                CodeEditor(
-                                  controller: codeEditorController,
-                                  readOnly: true,
-                                  indicatorBuilder:
-                                      (
-                                        context,
-                                        editingController,
-                                        chunkController,
-                                        notifier,
-                                      ) {
-                                        return Row(
-                                          children: [
-                                            DefaultCodeLineNumber(
-                                              controller: editingController,
-                                              notifier: notifier,
-                                            ),
-                                            DefaultCodeChunkIndicator(
-                                              width: 20,
-                                              controller: chunkController,
-                                              notifier: notifier,
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                  style: CodeEditorStyle(
-                                    codeTheme: CodeHighlightTheme(
-                                      languages: {
-                                        'json': CodeHighlightThemeMode(
-                                          mode: langJson,
-                                        ),
-                                      },
-                                      theme:
-                                          MediaQuery.of(
-                                                context,
-                                              ).platformBrightness ==
-                                              Brightness.dark
-                                          ? atomOneDarkTheme
-                                          : atomOneLightTheme,
-                                    ),
-                                  ),
-                                ),
+                                jsonViewWidget(jsonMap),
+                                codeEditorViewWidget(),
                               ],
                             ),
                           ),
                         ],
                       );
                     }
-                    return widget;
+                    return const SizedBox.shrink();
                   },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

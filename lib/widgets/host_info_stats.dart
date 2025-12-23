@@ -1,56 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pi_block/blocs/dashboard/dashboard_bloc.dart';
+import 'package:pi_block/blocs/dashboard/host_info_bloc.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/host_model.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 
-class HostInfoStats extends StatefulWidget {
+class HostInfoStats extends StatelessWidget {
   const HostInfoStats({super.key});
 
   @override
-  State<HostInfoStats> createState() => _HostInfoStatsState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          HostInfoBloc(context.read<PiholeRepository>())..add(LoadHostInfo()),
+      child: const HostInfoStatsView(),
+    );
+  }
 }
 
-class _HostInfoStatsState extends State<HostInfoStats> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<DashboardBloc>().add(LoadHostInfo());
-  }
+class HostInfoStatsView extends StatelessWidget {
+  const HostInfoStatsView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<DashboardBloc, DashboardState>(
-      buildWhen: (previous, current) {
-        if ((current is HostInfoInitial ||
-                current is HostInfoLoaded ||
-                current is HostInfoLoading ||
-                current is HostInfoError) &&
-            previous != current) {
-          return true;
-        }
-        return false;
-      },
+    return BlocConsumer<HostInfoBloc, HostInfoState>(
       listener: (context, state) {
-        if (state is HostInfoError) {
-          PiUtils.handleGeneralException(context, state.errorMessage);
+        if (state.status == HostStateStatus.failure) {
+          PiUtils.handleGeneralException(context, state.error);
         }
       },
       builder: (context, state) {
-        Widget widget = SizedBox();
-        if (state is HostInfoError) {
-          widget = ErrorCardWidget(
+        if (state.status == HostStateStatus.failure) {
+          return const ErrorCardWidget(
             header: "Host",
             message: "Error loading data",
           );
-        } else if (state is HostInfoLoading) {
-          widget = Center(child: CircularProgressIndicator());
-        } else if (state is HostInfoLoaded) {
+        } else if (state.status == HostStateStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state.status == HostStateStatus.success) {
           HostModel hostModel = state.hostModel;
 
-          widget = Card(
+          return Card(
             elevation: 4,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
@@ -60,44 +52,40 @@ class _HostInfoStatsState extends State<HostInfoStats> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const Text(
                     "Host",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      // color: Theme.of(context).colorScheme.primary,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Hostname"),
+                          const Text("Hostname"),
                           Text(
                             hostModel.host.uname.nodename,
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Product"),
+                          const Text("Product"),
                           Text(
                             hostModel.host.dmi.product.version,
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Board"),
+                          const Text("Board"),
                           Text(
                             '${hostModel.host.dmi.board.vendor}-${hostModel.host.dmi.board.name}',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -108,7 +96,7 @@ class _HostInfoStatsState extends State<HostInfoStats> {
             ),
           );
         }
-        return widget;
+        return const SizedBox.shrink();
       },
     );
   }

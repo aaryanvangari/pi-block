@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
@@ -14,6 +15,20 @@ import 'package:pi_block/widgets/empty_widget.dart';
 
 class NotificationsPage extends StatelessWidget {
   const NotificationsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          NotificationsBloc(context.read<PiholeRepository>())
+            ..add(NotificationsFetched()),
+      child: _NotificationsView(),
+    );
+  }
+}
+
+class _NotificationsView extends StatelessWidget {
+  const _NotificationsView();
 
   Widget _diagnosticsMessagesRow(DiagnosticMessageModel message) {
     return CustomExpansionTileWidget(
@@ -58,9 +73,9 @@ class NotificationsPage extends StatelessWidget {
         ),
       ],
       contentTitleItems: [
-        Text('Message ID: ', style: KTextStyle.listExpandedTitle),
-        Text('Time: ', style: KTextStyle.listExpandedTitle),
-        Text('Message: ', style: KTextStyle.listExpandedTitle),
+        const Text('Message ID: ', style: KTextStyle.listExpandedTitle),
+        const Text('Time: ', style: KTextStyle.listExpandedTitle),
+        const Text('Message: ', style: KTextStyle.listExpandedTitle),
       ],
       contentValueItems: [
         Text('${message.id}', style: KTextStyle.listExpandedValue),
@@ -114,7 +129,7 @@ class NotificationsPage extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Notifications"),
+          title: const Text("Notifications"),
           elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.arrow_back),
@@ -123,56 +138,53 @@ class NotificationsPage extends StatelessWidget {
             },
           ),
         ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Diagnostic Messages",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                  ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: const Text(
+                  "Diagnostic Messages",
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 ),
-                BlocConsumer<NotificationsBloc, NotificationsState>(
-                  listener: (context, state) {
-                    if (state is NotificationsFailure) {
-                      PiUtils.handleGeneralException(context, state.error);
-                    } else if (state is NotificationItemOperationSuccess) {
-                      GlobalSnackbar.info(context, state.message, "");
-                    } else if (state is NotificationItemOperationFailure) {
-                      GlobalSnackbar.error(context, state.errorMessage, "");
-                    }
-                  },
-                  builder: (context, state) {
-                    Widget widget = SizedBox();
-                    if (state is NotificationsFailure) {
-                      widget = CustomErrorWidget(message: "Error loading data");
-                    }
-                    if (state is NotificationsLoading) {
-                      widget = Center(child: CircularProgressIndicator());
-                    }
-                    if (state is NotificationsEmpty) {
-                      widget = EmptyWidget(message: "No Messages");
-                    }
-                    if (state is NotificationsSuccess) {
-                      List<DiagnosticMessageModel> diagnosticMessagesList =
-                          state.diagnosticMessagesList;
-                      widget = SizedBox(
-                        height: MediaQuery.sizeOf(context).height * 0.9,
-                        width: MediaQuery.sizeOf(context).width * 0.99,
-                        child: generateDiagnosticsMessages(
-                          diagnosticMessagesList,
-                        ),
-                      );
-                    }
-                    return widget;
-                  },
-                ),
-              ],
-            ),
+              ),
+              BlocConsumer<NotificationsBloc, NotificationsState>(
+                listener: (context, state) {
+                  if (state is NotificationsFailure) {
+                    PiUtils.handleGeneralException(context, state.error);
+                  } else if (state is NotificationItemOperationSuccess) {
+                    GlobalSnackbar.info(context, state.message, "");
+                  } else if (state is NotificationItemOperationFailure) {
+                    GlobalSnackbar.error(context, state.errorMessage, "");
+                  }
+                },
+                builder: (context, state) {
+                  if (state is NotificationsFailure) {
+                    return const CustomErrorWidget(
+                      message: "Error loading data",
+                    );
+                  }
+                  if (state is NotificationsLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state is NotificationsEmpty) {
+                    return const EmptyWidget(message: "No Messages");
+                  }
+                  if (state is NotificationsSuccess) {
+                    List<DiagnosticMessageModel> diagnosticMessagesList =
+                        state.diagnosticMessagesList;
+                    return Expanded(
+                      child: generateDiagnosticsMessages(
+                        diagnosticMessagesList,
+                      ),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
           ),
         ),
       ),

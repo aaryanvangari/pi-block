@@ -1,131 +1,128 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pi_block/blocs/dashboard/dashboard_bloc.dart';
+import 'package:pi_block/blocs/dashboard/version_info_bloc.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/version_model.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class VersionInfoStats extends StatefulWidget {
+class VersionInfoStats extends StatelessWidget {
   const VersionInfoStats({super.key});
 
   @override
-  State<VersionInfoStats> createState() => _VersionInfoStatsState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          VersionInfoBloc(context.read<PiholeRepository>())
+            ..add(LoadVersionInfo()),
+      child: const VersionInfoStatsView(),
+    );
+  }
 }
 
-class _VersionInfoStatsState extends State<VersionInfoStats> {
+class VersionInfoStatsView extends StatefulWidget {
+  const VersionInfoStatsView({super.key});
+
   @override
-  void initState() {
-    super.initState();
-    context.read<DashboardBloc>().add(LoadVersionInfo());
+  State<VersionInfoStatsView> createState() => _VersionInfoStatsViewState();
+}
+
+class _VersionInfoStatsViewState extends State<VersionInfoStatsView> {
+  VersionUpdateInfo getUpdateInfo(VersionModel model) {
+    final core =
+        model.version.core.local.version != model.version.core.remote.version;
+    final web =
+        model.version.web.local.version != model.version.web.remote.version;
+    final ftl =
+        model.version.ftl.local.version != model.version.ftl.remote.version;
+    final docker = model.version.docker.local != model.version.docker.remote;
+
+    return VersionUpdateInfo(
+      updateAvailable: core || web || ftl || docker,
+      core: core,
+      web: web,
+      ftl: ftl,
+      docker: docker,
+    );
   }
 
-  Map<String, dynamic> getIsUpdateAvailable(VersionModel versionModel) {
-    var coreLocal = versionModel.version.core.local.version;
-    var coreRemote = versionModel.version.core.remote.version;
-    var webLocal = versionModel.version.web.local.version;
-    var webRemote = versionModel.version.web.remote.version;
-    var ftlLocal = versionModel.version.ftl.local.version;
-    var ftlRemote = versionModel.version.ftl.remote.version;
-    var dockerLocal = versionModel.version.docker.local;
-    var dockerRemote = versionModel.version.docker.remote;
-
-    bool coreUpdate = false;
-    bool webUpdate = false;
-    bool ftlUpdate = false;
-    bool dockerUpdate = false;
-    bool updateAvailable = false;
-    if (coreLocal != coreRemote) coreUpdate = true;
-    if (webLocal != webRemote) webUpdate = true;
-    if (ftlLocal != ftlRemote) ftlUpdate = true;
-    if (dockerLocal != dockerRemote) dockerUpdate = true;
-
-    if (coreUpdate || webUpdate || ftlUpdate || dockerUpdate) {
-      updateAvailable = true;
+  Future<void> _launch(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
     }
-    return {
-      "update": updateAvailable,
-      "core": coreUpdate,
-      "web": webUpdate,
-      "ftl": ftlUpdate,
-      "docker": dockerUpdate,
-    };
   }
 
-  Widget _versionRow({
+  TableRow _versionTableRow({
     required String component,
     required String local,
     required String remote,
-    required bool header,
-    required bool newVersion,
-    required String url,
+    String? url,
+    bool isHeader = false,
+    bool showNewBadge = false,
   }) {
-    return Row(
+    final textStyle = TextStyle(
+      fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+    );
+
+    return TableRow(
       children: [
-        Expanded(
-          flex: 2,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                component,
-                style: TextStyle(
-                  fontWeight: header ? FontWeight.bold : FontWeight.normal,
-                  // color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ],
+        Padding(
+          padding: const EdgeInsets.only(
+            top: 4,
+            right: 2,
+            bottom: 4.0,
+            left: 4,
           ),
+          child: Text(component, style: textStyle),
         ),
-        Expanded(
-          flex: 2,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                local,
-                style: TextStyle(
-                  fontWeight: header ? FontWeight.bold : FontWeight.normal,
-                  // color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
-            ],
+        Padding(
+          padding: const EdgeInsets.only(
+            top: 4,
+            right: 2,
+            bottom: 4.0,
+            left: 4,
           ),
+          child: Text(local, style: textStyle, textAlign: TextAlign.center),
         ),
-        Expanded(
-          flex: 2,
+        Padding(
+          padding: const EdgeInsets.only(
+            top: 4,
+            right: 2,
+            bottom: 4.0,
+            left: 4,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               GestureDetector(
-                onTap: () async {
-                  if (await canLaunchUrl(Uri.parse(url))) {
-                    await launchUrl(Uri.parse(url));
-                  }
-                },
+                onTap: () => isHeader ? {} : _launch(url!),
                 child: Text(
                   remote,
                   style: TextStyle(
-                    color: header
+                    color: isHeader
                         ? Theme.of(context).colorScheme.onSurface
                         : Colors.blue,
-                    fontWeight: header ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
               ),
-              header
-                  ? SizedBox()
-                  : newVersion
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 4),
-                      child: Icon(
-                        Icons.new_releases,
-                        size: 15,
-                        color: Colors.green,
-                      ),
-                    )
-                  : SizedBox(),
+              if (!isHeader && showNewBadge)
+                const Padding(
+                  padding: EdgeInsets.only(
+                    top: 4,
+                    right: 2,
+                    bottom: 4.0,
+                    left: 4,
+                  ),
+                  child: Icon(
+                    Icons.new_releases,
+                    size: 15,
+                    color: KColors.newVersion,
+                  ),
+                ),
             ],
           ),
         ),
@@ -135,43 +132,31 @@ class _VersionInfoStatsState extends State<VersionInfoStats> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<DashboardBloc, DashboardState>(
-      buildWhen: (previous, current) {
-        if ((current is VersionInfoInitial ||
-                current is VersionInfoLoaded ||
-                current is VersionInfoLoading ||
-                current is VersionInfoError) &&
-            previous != current) {
-          return true;
-        }
-        return false;
-      },
+    return BlocConsumer<VersionInfoBloc, VersionInfoState>(
       listener: (context, state) {
-        if (state is VersionInfoError) {
-          PiUtils.handleGeneralException(context, state.errorMessage);
+        if (state.status == VersionStateStatus.failure) {
+          PiUtils.handleGeneralException(context, state.error);
         }
       },
       builder: (context, state) {
-        Widget widget = SizedBox();
-        if (state is VersionInfoError) {
-          widget = ErrorCardWidget(
+        if (state.status == VersionStateStatus.failure) {
+          return const ErrorCardWidget(
             header: "Versions",
             message: "Error loading data",
           );
-        } else if (state is VersionInfoLoading) {
-          widget = Center(child: CircularProgressIndicator());
-        } else if (state is VersionInfoLoaded) {
+        } else if (state.status == VersionStateStatus.loading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state.status == VersionStateStatus.success) {
           VersionModel versionModel = state.versionModel;
-          Map<String, dynamic> newReleasesInfo = getIsUpdateAvailable(
-            versionModel,
-          );
-          bool isUpdateAvailable = newReleasesInfo["update"];
-          bool isCoreUpdate = newReleasesInfo["core"];
-          bool isWebUpdate = newReleasesInfo["web"];
-          bool isFtlUpdate = newReleasesInfo["ftl"];
-          bool isDockerUpdate = newReleasesInfo["docker"];
+          final updateInfo = getUpdateInfo(versionModel);
 
-          widget = Card(
+          final isUpdateAvailable = updateInfo.updateAvailable;
+          final isCoreUpdate = updateInfo.core;
+          final isWebUpdate = updateInfo.web;
+          final isFtlUpdate = updateInfo.ftl;
+          final isDockerUpdate = updateInfo.docker;
+
+          return Card(
             elevation: 4,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
@@ -184,84 +169,107 @@ class _VersionInfoStatsState extends State<VersionInfoStats> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         "Versions",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          // color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                       isUpdateAvailable
                           ? FilledButton.tonalIcon(
-                              label: Text("New"),
-                              onPressed: () async {
-                                if (await canLaunchUrl(
-                                  Uri.parse(PiholeUrls.update),
-                                )) {
-                                  await launchUrl(Uri.parse(PiholeUrls.update));
-                                }
-                              },
-                              icon: Icon(
+                              label: const Text("New"),
+                              onPressed: () => _launch(PiholeUrls.update),
+                              icon: const Icon(
                                 Icons.new_releases,
-                                color: Colors.green,
+                                color: KColors.newVersion,
                               ),
                             )
-                          : SizedBox(),
+                          : const SizedBox(),
                     ],
                   ),
-                  SizedBox(height: 10),
-                  _versionRow(
-                    component: "Component",
-                    local: "Local",
-                    remote: "Remote",
-                    header: true,
-                    newVersion: false,
-                    url: "",
-                  ),
-                  SizedBox(height: 5),
-                  _versionRow(
-                    component: "Core",
-                    local: versionModel.version.core.local.version,
-                    remote: versionModel.version.core.remote.version,
-                    header: false,
-                    newVersion: isCoreUpdate,
-                    url:
-                        '${PiholeUrls.core}/${versionModel.version.core.remote.version}',
-                  ),
-                  _versionRow(
-                    component: "Web",
-                    local: versionModel.version.web.local.version,
-                    remote: versionModel.version.web.remote.version,
-                    header: false,
-                    newVersion: isWebUpdate,
-                    url:
-                        '${PiholeUrls.web}/${versionModel.version.web.remote.version}',
-                  ),
-                  _versionRow(
-                    component: "FTL",
-                    local: versionModel.version.ftl.local.version,
-                    remote: versionModel.version.ftl.remote.version,
-                    header: false,
-                    newVersion: isFtlUpdate,
-                    url:
-                        '${PiholeUrls.ftl}/${versionModel.version.ftl.remote.version}',
-                  ),
-                  _versionRow(
-                    component: "Docker",
-                    local: versionModel.version.docker.local,
-                    remote: versionModel.version.docker.remote,
-                    header: false,
-                    newVersion: isDockerUpdate,
-                    url: PiholeUrls.docker,
+                  const SizedBox(height: 10),
+                  Table(
+                    columnWidths: const {
+                      0: FlexColumnWidth(2), // Component name
+                      1: FlexColumnWidth(2), // Local version
+                      2: FlexColumnWidth(2), // Remote version
+                    },
+                    border: TableBorder.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withAlpha(25),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    children: [
+                      // Header row
+                      _versionTableRow(
+                        component: "Component",
+                        local: "Local",
+                        remote: "Remote",
+                        isHeader: true,
+                      ),
+                      // Core row
+                      _versionTableRow(
+                        component: "Core",
+                        local: versionModel.version.core.local.version,
+                        remote: versionModel.version.core.remote.version,
+                        showNewBadge: isCoreUpdate,
+                        url:
+                            '${PiholeUrls.core}/${versionModel.version.core.remote.version}',
+                      ),
+                      // Web row
+                      _versionTableRow(
+                        component: "Web",
+                        local: versionModel.version.web.local.version,
+                        remote: versionModel.version.web.remote.version,
+                        showNewBadge: isWebUpdate,
+                        url:
+                            '${PiholeUrls.web}/${versionModel.version.web.remote.version}',
+                      ),
+                      // FTL row
+                      _versionTableRow(
+                        component: "FTL",
+                        local: versionModel.version.ftl.local.version,
+                        remote: versionModel.version.ftl.remote.version,
+                        showNewBadge: isFtlUpdate,
+                        url:
+                            '${PiholeUrls.ftl}/${versionModel.version.ftl.remote.version}',
+                      ),
+                      // Docker row
+                      _versionTableRow(
+                        component: "Docker",
+                        local: versionModel.version.docker.local,
+                        remote: versionModel.version.docker.remote,
+                        showNewBadge: isDockerUpdate,
+                        url: PiholeUrls.docker,
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
           );
         }
-        return widget;
+        return const SizedBox.shrink();
       },
     );
   }
+}
+
+class VersionUpdateInfo {
+  final bool updateAvailable;
+  final bool core;
+  final bool web;
+  final bool ftl;
+  final bool docker;
+
+  const VersionUpdateInfo({
+    required this.updateAvailable,
+    required this.core,
+    required this.web,
+    required this.ftl,
+    required this.docker,
+  });
 }

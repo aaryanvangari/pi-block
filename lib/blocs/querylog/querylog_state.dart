@@ -12,6 +12,8 @@ class QuerylogState extends Equatable {
   final String message;
   final int recordsFiltered;
   final int page;
+  final int itemsPerPage;
+  final int pagesPerView;
   const QuerylogState({
     this.queries = const [],
     this.status = QuerylogStateStatus.initial,
@@ -20,6 +22,8 @@ class QuerylogState extends Equatable {
     this.message = "",
     this.recordsFiltered = 0,
     this.page = 1,
+    this.itemsPerPage = 0,
+    this.pagesPerView = 2,
   });
 
   QuerylogState copyWith({
@@ -30,6 +34,8 @@ class QuerylogState extends Equatable {
     String? message,
     int? recordsFiltered,
     int? page,
+    int? itemsPerPage,
+    int? pagesPerView,
   }) {
     return QuerylogState(
       queries: queries ?? this.queries,
@@ -39,6 +45,8 @@ class QuerylogState extends Equatable {
       message: message ?? this.message,
       recordsFiltered: recordsFiltered ?? this.recordsFiltered,
       page: page ?? this.page,
+      itemsPerPage: itemsPerPage ?? this.itemsPerPage,
+      pagesPerView: pagesPerView ?? this.pagesPerView,
     );
   }
 
@@ -51,5 +59,7 @@ class QuerylogState extends Equatable {
     message,
     recordsFiltered,
     page,
+    itemsPerPage,
+    pagesPerView,
   ];
 }

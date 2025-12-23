@@ -17,6 +17,8 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
   QuerylogBloc(this.piholeRepository) : super(QuerylogState()) {
     on<LoadQuerylog>(_loadQuerylog);
     on<AllowDenyQuerylogDomain>(_allowdenyQuerylogDomain);
+    on<UpdateItemsPerPage>(_updateItemsPerPage);
+    on<UpdatePagesPerView>(_updatePagesPerView);
     _querylogStreamController.add(const []);
   }
 
@@ -33,7 +35,7 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
     try {
       QueryListModel queryListModel = await piholeRepository.getQuerylogPage(
         event.start,
-        event.pageSize,
+        event.itemsPerPage,
       );
       final queries = queryListModel.queries;
       _querylogStreamController.add(queries);
@@ -54,6 +56,26 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
           error: e.toString(),
         ),
       );
+    }
+  }
+
+  void _updateItemsPerPage(
+    UpdateItemsPerPage event,
+    Emitter<QuerylogState> emit,
+  ) {
+    if (event.itemsPerPage != state.itemsPerPage) {
+      emit(state.copyWith(itemsPerPage: event.itemsPerPage));
+
+      add(LoadQuerylog(state.page, event.itemsPerPage));
+    }
+  }
+
+  void _updatePagesPerView(
+    UpdatePagesPerView event,
+    Emitter<QuerylogState> emit,
+  ) {
+    if (event.pagesPerView != state.pagesPerView) {
+      emit(state.copyWith(pagesPerView: event.pagesPerView));
     }
   }
 

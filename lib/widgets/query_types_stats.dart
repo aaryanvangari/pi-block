@@ -1,27 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/charts/query_types_piechart_bloc.dart';
+import 'package:pi_block/components/color_manager.dart';
 import 'package:pi_block/components/utils.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/summary_model.dart';
 import 'package:pi_block/widgets/custom_pie_chart.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/square_card_piechart_widget.dart';
 
-class QueryTypesStats extends StatefulWidget {
+class QueryTypesStats extends StatelessWidget {
   const QueryTypesStats({super.key});
 
   @override
-  State<QueryTypesStats> createState() => _QueryTypesStatsState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          QueryTypesPiechartBloc(context.read<PiholeRepository>())
+            ..add(LoadQueryTypesPiechart()),
+      child: const QueryTypesPiechartView(),
+    );
+  }
 }
 
-class _QueryTypesStatsState extends State<QueryTypesStats> {
+class QueryTypesPiechartView extends StatefulWidget {
+  const QueryTypesPiechartView({super.key});
+
   @override
-  void initState() {
-    super.initState();
-    context.read<QueryTypesPiechartBloc>().add(LoadQueryTypesPiechart());
-  }
+  State<QueryTypesPiechartView> createState() => _QueryTypesPiechartViewState();
+}
+
+class _QueryTypesPiechartViewState extends State<QueryTypesPiechartView> {
+  static const _title = "Query Types";
 
   List<PieData> generateTypesPieData(QueryTypes types) {
+    bool isDark = PiUtils.getDarkMode(context);
+    ColorManager colorManager = ColorManager(isDarkMode: isDark);
     List<PieData> pieDataList = [];
     double total = 0;
     types.toJson().forEach((key, value) {
@@ -36,7 +50,7 @@ class _QueryTypesStatsState extends State<QueryTypesStats> {
         PieData pieData = PieData(
           key,
           pieValue,
-          PiUtils.getRandomColor(context),
+          colorManager.getColorForEntity(key),
         );
         pieDataList.add(pieData);
       }
@@ -47,33 +61,26 @@ class _QueryTypesStatsState extends State<QueryTypesStats> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<QueryTypesPiechartBloc, QueryTypesPiechartState>(
-      buildWhen: (previous, current) {
-        return true;
-      },
       listener: (context, state) {
         if (state is QueryTypesPiechartError) {
           PiUtils.handleGeneralException(context, state.errorMessage);
         }
       },
       builder: (context, state) {
-        Widget widget = SizedBox();
         if (state is QueryTypesPiechartError) {
-          widget = ErrorCardWidget(
-            header: "Query Types",
+          return const ErrorCardWidget(
+            header: _title,
             message: "Error loading data",
           );
         } else if (state is QueryTypesPiechartLoading) {
-          widget = Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (state is QueryTypesPiechartLoaded) {
           StatsQueryTypes statsQueryTypes = state.statsQueryTypes;
           QueryTypes types = statsQueryTypes.types;
           var pieDataList = generateTypesPieData(types);
-          widget = SquareCardPiechartWidget(
-            title: "Query Types",
-            items: pieDataList,
-          );
+          return SquareCardPiechartWidget(title: _title, items: pieDataList);
         }
-        return widget;
+        return const SizedBox.shrink();
       },
     );
   }

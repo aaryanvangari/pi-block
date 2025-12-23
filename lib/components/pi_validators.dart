@@ -6,7 +6,7 @@ class PiValidators {
       return "API token is required";
     }
     if (!validators.isLength(value, 5)) {
-      return ("API token is short. Consider changing it.");
+      return ("API token can be minimum of 5 characters long.");
     }
     return null;
   }
@@ -40,7 +40,7 @@ class PiValidators {
       return "Domain is required";
     }
     if (!validators.isFQDN(value)) {
-      return "Invalid URL";
+      return "Invalid Domain";
     }
     return null;
   }

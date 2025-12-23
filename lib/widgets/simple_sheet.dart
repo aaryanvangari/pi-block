@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class SimpleBottomSheet extends StatelessWidget {
-  final BuildContext context;
   final String primaryTitle;
   final String confirmationText;
   final VoidCallback? primaryFunction;
@@ -11,7 +10,6 @@ class SimpleBottomSheet extends StatelessWidget {
   const SimpleBottomSheet({
     super.key,
     required this.primaryTitle,
-    required this.context,
     required this.confirmationText,
     required this.primaryFunction,
     required this.cancelFunction,
