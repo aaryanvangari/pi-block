@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/app_bloc_observer.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/blocs/blocking_bloc.dart';
+import 'package:pi_block/blocs/dashboard/summary_bloc.dart';
 import 'package:pi_block/blocs/stats/charts/client_history_barchart_bloc.dart';
 import 'package:pi_block/blocs/stats/charts/query_history_barchart_bloc.dart';
 import 'package:pi_block/blocs/stats/charts/query_types_piechart_bloc.dart';
@@ -187,6 +188,10 @@ class _MainAppState extends State<MainApp> {
       BlocProvider<AuthBloc>(
         create: (context) => AuthBloc(context.read<PiholeRepository>()),
         lazy: false,
+      ),
+      BlocProvider<SummaryBloc>(
+        create: (context) =>
+            SummaryBloc(context.read<PiholeRepository>()),
       ),
     ];
     return blocProviders;

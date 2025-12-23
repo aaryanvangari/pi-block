@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
-import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
-import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/pages/domains.dart';
 import 'package:pi_block/pages/lists.dart';
 import 'package:pi_block/widgets/drawer_widget.dart';
@@ -15,6 +13,7 @@ import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/pages/dashboard.dart';
 import 'package:pi_block/pages/querylog.dart';
 import 'package:pi_block/pages/stats.dart';
+import 'package:pi_block/widgets/notifications_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
@@ -34,12 +33,6 @@ class _HomePageState extends State<HomePage> {
     const ListsPage(),
   ];
   bool loading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<NotificationsBloc>().add(NotificationsFetched());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,32 +62,7 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: IconButton(
-                onPressed: () {
-                  context.go("/notifications");
-                },
-                icon: BlocBuilder<NotificationsBloc, NotificationsState>(
-                  builder: (context, state) {
-                    Widget widget = SizedBox();
-                    if (state is NotificationsLoading) {
-                      widget = Icon(Icons.notifications_paused);
-                    } else if (state is NotificationsEmpty) {
-                      widget = Icon(Icons.notifications_none);
-                    } else if (state is NotificationsSuccess) {
-                      List<DiagnosticMessageModel> diagnosticMessagesList =
-                          state.diagnosticMessagesList;
-                      widget = Badge.count(
-                        count: diagnosticMessagesList.length,
-                        child: Icon(Icons.notifications_on),
-                      );
-                    }
-                    return widget;
-                  },
-                ),
-              ),
-            ),
+            NotificationsWidget()
           ],
           title: Row(
             children: [

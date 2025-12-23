@@ -234,6 +234,13 @@ class KColors {
   ];
 }
 
+class KTimers {
+  static const snackbarError = 5;
+  static const snackbarInfo = 5;
+  static const summary = 15;
+  static const session = 1;
+}
+
 class PiholeUrls {
   static const update = 'https://discourse.pi-hole.net/c/announcements/5';
   static const core = 'https://github.com/pi-hole/pi-hole/releases';

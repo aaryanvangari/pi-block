@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:equatable/equatable.dart';
+import 'package:logging/logging.dart';
 
 /// Root response containing client statistics and historical data
 class ClientHistoryModel extends Equatable {
@@ -19,6 +22,11 @@ class ClientHistoryModel extends Equatable {
 
   /// Creates a [ClientHistoryModel] from JSON
   factory ClientHistoryModel.fromJson(Map<String, dynamic> json) {
+    log(
+      json.toString(),
+      level: Level.FINEST.value,
+      name: "ClientHistoryModel.fromJson",
+    );
     return ClientHistoryModel(
       clients: (json['clients'] as Map<String, dynamic>).map(
         (key, value) =>

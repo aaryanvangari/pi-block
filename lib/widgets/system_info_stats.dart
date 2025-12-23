@@ -17,22 +17,11 @@ class SystemInfoStats extends StatefulWidget {
 }
 
 class _SystemInfoStatsState extends State<SystemInfoStats> {
-  Timer? timer;
 
   @override
   void initState() {
     super.initState();
     context.read<DashboardBloc>().add(LoadSystemInfo());
-    timer = Timer.periodic(Duration(seconds: 15), (Timer t) {
-      // log('timer ${t.tick}');
-      context.read<DashboardBloc>().add(LoadSummaryInfo());
-    });
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
   }
 
   String getMemoryInfo(String type, SystemModel systemModel) {

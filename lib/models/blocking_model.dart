@@ -27,7 +27,6 @@ class BlockingModel extends Equatable {
       level: Level.FINEST.value,
       name: "BlockingModel.fromJson",
     );
-    log(json["timer"].runtimeType.toString());
     return BlockingModel(
       blocking: BlockingStatusExtension.fromJson(json['blocking']),
       // casting timer into int and double based on result otherwise dart throws error of wrong datatype

@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:equatable/equatable.dart';
+import 'package:logging/logging.dart';
 
 class SessionModel extends Equatable {
   final Session? session;
@@ -8,6 +11,11 @@ class SessionModel extends Equatable {
 
   // Factory constructor to create SessionModel from JSON
   factory SessionModel.fromJson(Map<String, dynamic> json) {
+    log(
+      json.toString(),
+      level: Level.FINEST.value,
+      name: "SessionModel.fromJson",
+    );
     return SessionModel(
       session: json['session'] != null
           ? Session.fromJson(json['session'])

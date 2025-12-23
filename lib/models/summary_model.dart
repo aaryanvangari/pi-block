@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:equatable/equatable.dart';
 import 'package:logging/logging.dart';
 
+/// ==================== SUMMARY ====================
 class SummaryModel extends Equatable {
   /// Query statistics
   final Queries queries;
@@ -25,7 +26,15 @@ class SummaryModel extends Equatable {
     required this.took,
   });
 
-  factory SummaryModel.fromJson(Map<String, dynamic> json) {
+  factory SummaryModel.empty() => SummaryModel(
+    queries: Queries.empty(),
+    clients: Clients.empty(),
+    gravity: Gravity.empty(),
+    took: 0,
+  );
+
+  factory SummaryModel.fromJson(Map<String, dynamic>? json) {
+    if (json == null || json.isEmpty) return SummaryModel.empty();
     log(
       json.toString(),
       level: Level.FINEST.value,
@@ -86,17 +95,33 @@ class Queries extends Equatable {
     required this.status,
   });
 
-  factory Queries.fromJson(Map<String, dynamic> json) => Queries(
-    total: json['total'] ?? 0,
-    blocked: json['blocked'] ?? 0,
-    percentBlocked: (json['percent_blocked'] as num?)?.toDouble() ?? 0,
-    uniqueDomains: json['unique_domains'] ?? 0,
-    forwarded: json['forwarded'] ?? 0,
-    cached: json['cached'] ?? 0,
-    frequency: (json['frequency'] as num?)?.toDouble() ?? 0,
-    types: QueryTypes.fromJson(json['types']),
-    status: QueryStatus.fromJson(json['status']),
+  factory Queries.empty() => Queries(
+    total: 0,
+    blocked: 0,
+    percentBlocked: 0,
+    uniqueDomains: 0,
+    forwarded: 0,
+    cached: 0,
+    frequency: 0,
+    types: QueryTypes.empty(),
+    status: QueryStatus.empty(),
   );
+
+  factory Queries.fromJson(Map<String, dynamic>? json) {
+    if (json == null || json.isEmpty) return Queries.empty();
+
+    return Queries(
+      total: json['total'] ?? 0,
+      blocked: json['blocked'] ?? 0,
+      percentBlocked: (json['percent_blocked'] as num?)?.toDouble() ?? 0,
+      uniqueDomains: json['unique_domains'] ?? 0,
+      forwarded: json['forwarded'] ?? 0,
+      cached: json['cached'] ?? 0,
+      frequency: (json['frequency'] as num?)?.toDouble() ?? 0,
+      types: QueryTypes.fromJson(json['types']),
+      status: QueryStatus.fromJson(json['status']),
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "total": total,
@@ -206,24 +231,47 @@ class QueryTypes extends Equatable {
     required this.OTHER,
   });
 
-  factory QueryTypes.fromJson(Map<String, dynamic> json) => QueryTypes(
-    A: json['A'] ?? 0,
-    AAAA: json['AAAA'] ?? 0,
-    ANY: json['ANY'] ?? 0,
-    SRV: json['SRV'] ?? 0,
-    SOA: json['SOA'] ?? 0,
-    PTR: json['PTR'] ?? 0,
-    TXT: json['TXT'] ?? 0,
-    NAPTR: json['NAPTR'] ?? 0,
-    MX: json['MX'] ?? 0,
-    DS: json['DS'] ?? 0,
-    RRSIG: json['RRSIG'] ?? 0,
-    DNSKEY: json['DNSKEY'] ?? 0,
-    NS: json['NS'] ?? 0,
-    SVCB: json['SVCB'] ?? 0,
-    HTTPS: json['HTTPS'] ?? 0,
-    OTHER: json['OTHER'] ?? 0,
+  factory QueryTypes.empty() => const QueryTypes(
+    A: 0,
+    AAAA: 0,
+    ANY: 0,
+    SRV: 0,
+    SOA: 0,
+    PTR: 0,
+    TXT: 0,
+    NAPTR: 0,
+    MX: 0,
+    DS: 0,
+    RRSIG: 0,
+    DNSKEY: 0,
+    NS: 0,
+    SVCB: 0,
+    HTTPS: 0,
+    OTHER: 0,
   );
+
+  factory QueryTypes.fromJson(Map<String, dynamic>? json) {
+    if (json == null || json.isEmpty) return QueryTypes.empty();
+
+    return QueryTypes(
+      A: json['A'] ?? 0,
+      AAAA: json['AAAA'] ?? 0,
+      ANY: json['ANY'] ?? 0,
+      SRV: json['SRV'] ?? 0,
+      SOA: json['SOA'] ?? 0,
+      PTR: json['PTR'] ?? 0,
+      TXT: json['TXT'] ?? 0,
+      NAPTR: json['NAPTR'] ?? 0,
+      MX: json['MX'] ?? 0,
+      DS: json['DS'] ?? 0,
+      RRSIG: json['RRSIG'] ?? 0,
+      DNSKEY: json['DNSKEY'] ?? 0,
+      NS: json['NS'] ?? 0,
+      SVCB: json['SVCB'] ?? 0,
+      HTTPS: json['HTTPS'] ?? 0,
+      OTHER: json['OTHER'] ?? 0,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "A": A,
@@ -345,27 +393,53 @@ class QueryStatus extends Equatable {
     required this.EXTERNAL_BLOCKED_EDE15,
   });
 
-  factory QueryStatus.fromJson(Map<String, dynamic> json) => QueryStatus(
-    UNKNOWN: json['UNKNOWN'] ?? 0,
-    GRAVITY: json['GRAVITY'] ?? 0,
-    FORWARDED: json['FORWARDED'] ?? 0,
-    CACHE: json['CACHE'] ?? 0,
-    REGEX: json['REGEX'] ?? 0,
-    DENYLIST: json['DENYLIST'] ?? 0,
-    EXTERNAL_BLOCKED_IP: json['EXTERNAL_BLOCKED_IP'] ?? 0,
-    EXTERNAL_BLOCKED_NULL: json['EXTERNAL_BLOCKED_NULL'] ?? 0,
-    EXTERNAL_BLOCKED_NXRA: json['EXTERNAL_BLOCKED_NXRA'] ?? 0,
-    GRAVITY_CNAME: json['GRAVITY_CNAME'] ?? 0,
-    REGEX_CNAME: json['REGEX_CNAME'] ?? 0,
-    DENYLIST_CNAME: json['DENYLIST_CNAME'] ?? 0,
-    RETRIED: json['RETRIED'] ?? 0,
-    RETRIED_DNSSEC: json['RETRIED_DNSSEC'] ?? 0,
-    IN_PROGRESS: json['IN_PROGRESS'] ?? 0,
-    DBBUSY: json['DBBUSY'] ?? 0,
-    SPECIAL_DOMAIN: json['SPECIAL_DOMAIN'] ?? 0,
-    CACHE_STALE: json['CACHE_STALE'] ?? 0,
-    EXTERNAL_BLOCKED_EDE15: json['EXTERNAL_BLOCKED_EDE15'] ?? 0,
+  factory QueryStatus.empty() => const QueryStatus(
+    UNKNOWN: 0,
+    GRAVITY: 0,
+    FORWARDED: 0,
+    CACHE: 0,
+    REGEX: 0,
+    DENYLIST: 0,
+    EXTERNAL_BLOCKED_IP: 0,
+    EXTERNAL_BLOCKED_NULL: 0,
+    EXTERNAL_BLOCKED_NXRA: 0,
+    GRAVITY_CNAME: 0,
+    REGEX_CNAME: 0,
+    DENYLIST_CNAME: 0,
+    RETRIED: 0,
+    RETRIED_DNSSEC: 0,
+    IN_PROGRESS: 0,
+    DBBUSY: 0,
+    SPECIAL_DOMAIN: 0,
+    CACHE_STALE: 0,
+    EXTERNAL_BLOCKED_EDE15: 0,
   );
+
+  factory QueryStatus.fromJson(Map<String, dynamic>? json) {
+    if (json == null || json.isEmpty) return QueryStatus.empty();
+
+    return QueryStatus(
+      UNKNOWN: json['UNKNOWN'] ?? 0,
+      GRAVITY: json['GRAVITY'] ?? 0,
+      FORWARDED: json['FORWARDED'] ?? 0,
+      CACHE: json['CACHE'] ?? 0,
+      REGEX: json['REGEX'] ?? 0,
+      DENYLIST: json['DENYLIST'] ?? 0,
+      EXTERNAL_BLOCKED_IP: json['EXTERNAL_BLOCKED_IP'] ?? 0,
+      EXTERNAL_BLOCKED_NULL: json['EXTERNAL_BLOCKED_NULL'] ?? 0,
+      EXTERNAL_BLOCKED_NXRA: json['EXTERNAL_BLOCKED_NXRA'] ?? 0,
+      GRAVITY_CNAME: json['GRAVITY_CNAME'] ?? 0,
+      REGEX_CNAME: json['REGEX_CNAME'] ?? 0,
+      DENYLIST_CNAME: json['DENYLIST_CNAME'] ?? 0,
+      RETRIED: json['RETRIED'] ?? 0,
+      RETRIED_DNSSEC: json['RETRIED_DNSSEC'] ?? 0,
+      IN_PROGRESS: json['IN_PROGRESS'] ?? 0,
+      DBBUSY: json['DBBUSY'] ?? 0,
+      SPECIAL_DOMAIN: json['SPECIAL_DOMAIN'] ?? 0,
+      CACHE_STALE: json['CACHE_STALE'] ?? 0,
+      EXTERNAL_BLOCKED_EDE15: json['EXTERNAL_BLOCKED_EDE15'] ?? 0,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "UNKNOWN": UNKNOWN,
@@ -463,8 +537,12 @@ class Clients extends Equatable {
 
   const Clients({required this.active, required this.total});
 
-  factory Clients.fromJson(Map<String, dynamic> json) =>
-      Clients(active: json['active'] ?? 0, total: json['total'] ?? 0);
+  factory Clients.empty() => const Clients(active: 0, total: 0);
+
+  factory Clients.fromJson(Map<String, dynamic>? json) {
+    if (json == null || json.isEmpty) return Clients.empty();
+    return Clients(active: json['active'] ?? 0, total: json['total'] ?? 0);
+  }
 
   Map<String, dynamic> toJson() => {"active": active, "total": total};
 
@@ -482,10 +560,16 @@ class Gravity extends Equatable {
 
   const Gravity({required this.domainsBeingBlocked, required this.lastUpdate});
 
-  factory Gravity.fromJson(Map<String, dynamic> json) => Gravity(
-    domainsBeingBlocked: json['domains_being_blocked'] ?? 0,
-    lastUpdate: json['last_update'] ?? 0,
-  );
+  factory Gravity.empty() =>
+      const Gravity(domainsBeingBlocked: 0, lastUpdate: 0);
+
+  factory Gravity.fromJson(Map<String, dynamic>? json) {
+    if (json == null || json.isEmpty) return Gravity.empty();
+    return Gravity(
+      domainsBeingBlocked: json['domains_being_blocked'] ?? 0,
+      lastUpdate: json['last_update'] ?? 0,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
     "domains_being_blocked": domainsBeingBlocked,
