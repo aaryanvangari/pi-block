@@ -72,7 +72,7 @@ class GlobalSnackbar {
               ),
               // Adding a vertical line between the product name and the undo button
               Container(
-                color: Colors.grey,
+                color: KColors.snackbarDivider,
                 height: 25,
                 width: 1,
                 margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -169,7 +169,7 @@ class GlobalSnackbar {
               ),
               // Adding a vertical line between the product name and the undo button
               Container(
-                color: Colors.grey,
+                color: KColors.snackbarDivider,
                 height: 25,
                 width: 1,
                 margin: const EdgeInsets.symmetric(horizontal: 5),

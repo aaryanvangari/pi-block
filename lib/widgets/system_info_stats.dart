@@ -51,11 +51,11 @@ class SystemInfoStatsView extends StatelessWidget {
       final Color color;
 
       if (load < 1) {
-        color = Colors.green;
+        color = KColors.systemLoadLow;
       } else if (load < 2) {
-        color = Colors.orange;
+        color = KColors.systemLoadMedium;
       } else {
-        color = Colors.red;
+        color = KColors.systemLoadHigh;
       }
 
       return LoadTextWidget(title: load, color: color);

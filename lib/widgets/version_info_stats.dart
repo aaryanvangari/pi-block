@@ -104,7 +104,7 @@ class _VersionInfoStatsViewState extends State<VersionInfoStatsView> {
                   style: TextStyle(
                     color: isHeader
                         ? Theme.of(context).colorScheme.onSurface
-                        : Colors.blue,
+                        : KColors.links,
                     fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),

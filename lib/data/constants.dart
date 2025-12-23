@@ -202,37 +202,6 @@ class KListStyle {
     indent: 10,
     endIndent: 10,
   );
-  static const Map<String, Color> listHeaderBackgroundColors = {
-    "red": Color(0xFFFF0000),
-    "green": Color(0xFF008000),
-    "orange": Color(0xFFffa500),
-  };
-}
-
-class KColors {
-  static const List<String> colorSwatches = [
-    "#fecd10",
-    "#4c8fb9",
-    "#968a05",
-    "#f79188",
-    "#f1057e",
-    "#89147c",
-    "#f144f0",
-    "#bb41b5",
-    "#7e4c80",
-    "#e6100b",
-    "#41cde1",
-    "#b3e5b8",
-    "#3bc6a6",
-    "#9fd85f",
-    "#9951ac",
-    "#1aa6d6",
-    "#d802ac",
-    "#3aa2d3",
-    "#ab6dac",
-    "#b6e312",
-  ];
-  static const newVersion = Colors.green;
 }
 
 class KTimers {
@@ -241,6 +210,35 @@ class KTimers {
   static const summary = 15;
   static const system = 15;
   static const session = 1;
+}
+
+class KColors {
+  static const newVersion = Colors.green;
+  static const snackbarDivider = Colors.grey;
+  static const transparent = Colors.transparent;
+  static const flutterSwitch = Colors.green;
+  static const deny = Colors.red;
+  static const block = Colors.red;
+  static const allow = Colors.green;
+  static const download = Colors.green;
+  static const switchOn = Colors.green;
+  static const switchOff = Colors.grey;
+  static const blockingTimesTitles = Colors.white;
+  static const systemLoadLow = Colors.green;
+  static const systemLoadMedium = Colors.orange;
+  static const systemLoadHigh = Colors.red;
+  static const links = Colors.blue;
+
+  /// Dynamic colors
+  static Color welcomeCircle1 = Colors.white.withAlpha(10);
+  static Color welcomeCircle2 = Colors.white.withAlpha(15);
+  static Color welcomeCircle3 = Colors.white.withAlpha(20);
+  static Color welcomeCircle4 = Colors.white.withAlpha(30);
+  static Color linearProgressbarBackground = Colors.grey.withAlpha(40);
+  static Color listHeaderTitleAllowDark = Colors.green.withAlpha(200);
+  static Color listHeaderTitleAllowLight = Colors.green.withAlpha(220);
+  static Color listHeaderTitleBlockDark = Colors.red.withAlpha(170);
+  static Color listHeaderTitleBlockLight = Colors.red.withAlpha(220);
 }
 
 class KProgressBarColors {
@@ -260,6 +258,7 @@ class KSummaryStatsColors {
   static const Color queriesBlocked = Color(0xFFdd4b39);
   static const Color percentBlocked = Color(0xFFf39c12);
   static const Color domainsOnList = Color(0xFF00a65a);
+  static const summaryStatIcons = Colors.white;
 }
 
 class KBarChartColors {

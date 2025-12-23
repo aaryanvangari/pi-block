@@ -101,7 +101,7 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
           BarChartRodStackItem(
             start.toDouble(),
             (start + count).toDouble(),
-            clientColors[key] ?? Colors.grey,
+            clientColors[key]!,
           ),
         );
         start = start + count;
@@ -152,10 +152,10 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
         if (count > 0) {
           tooltipStackItems.add(
             _tooltipLine(
-              clientNames[key] ?? "",
+              clientNames[key]!,
               count,
               total,
-              clientColors[key] ?? Colors.grey,
+              clientColors[key]!,
               tooltipTextColor,
             ),
           );

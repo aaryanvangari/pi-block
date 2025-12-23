@@ -72,45 +72,27 @@ class _MainAppState extends State<MainApp> {
         ? TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Colors.green.withAlpha(200),
+            color: KColors.listHeaderTitleAllowDark,
           )
         : TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Colors.green.withAlpha(220),
+            color: KColors.listHeaderTitleAllowLight,
           );
     listHeaderTitleBlock.value = isDark
         ? TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Colors.red.withAlpha(170),
+            color: KColors.listHeaderTitleBlockDark,
           )
         : TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: Colors.red.withAlpha(220),
+            color: KColors.listHeaderTitleBlockLight,
           );
     tagBackground.value = isDark
         ? colorScheme.onInverseSurface.withAlpha(KListStyle.darkAlphaIntensity)
         : colorScheme.onSurface.withAlpha(KListStyle.lightAlphaIntensity);
-    listHeaderBackground.value = isDark
-        ? colorScheme.onInverseSurface.withAlpha(KListStyle.lightAlphaIntensity)
-        : colorScheme.onSurface.withAlpha(KListStyle.lightAlphaIntensity);
-
-    listHeaderRedBackground.value = (isDark
-        ? KListStyle.listHeaderBackgroundColors["red"]?.withAlpha(
-            KListStyle.darkAlphaIntensity,
-          )
-        : KListStyle.listHeaderBackgroundColors["red"]?.withAlpha(
-            KListStyle.lightAlphaIntensity,
-          ))!;
-    listHeaderGreenBackground.value = (isDark
-        ? KListStyle.listHeaderBackgroundColors["green"]?.withAlpha(
-            KListStyle.darkAlphaIntensity,
-          )
-        : KListStyle.listHeaderBackgroundColors["green"]?.withAlpha(
-            KListStyle.lightAlphaIntensity,
-          ))!;
   }
 
   List<BlocProvider> getBlocProviders() {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/widgets/gradient_background.dart';
 import 'package:pi_block/widgets/logo.dart';
 
@@ -36,10 +37,10 @@ class _WelcomePageState extends State<WelcomePage> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  _buildCirle(size.width * 1.2, Colors.white.withAlpha(10), 0),
-                  _buildCirle(size.width * 0.9, Colors.white.withAlpha(15), 0),
-                  _buildCirle(size.width * 0.6, Colors.white.withAlpha(20), 0),
-                  _buildCirle(size.width * 0.3, Colors.white.withAlpha(30), 0),
+                  _buildCirle(size.width * 1.2, KColors.welcomeCircle1, 0),
+                  _buildCirle(size.width * 0.9, KColors.welcomeCircle2, 0),
+                  _buildCirle(size.width * 0.6, KColors.welcomeCircle3, 0),
+                  _buildCirle(size.width * 0.3, KColors.welcomeCircle4, 0),
                 ],
               ),
             ),

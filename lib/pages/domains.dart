@@ -420,7 +420,7 @@ class DomainsView extends StatelessWidget {
                       padding: 4.0,
                       toggleSize: 15.0,
                       borderRadius: 20.0,
-                      activeColor: Colors.green,
+                      activeColor: KColors.flutterSwitch,
                       value: item.enabled,
                       onToggle: (value) {
                         context.read<DomainsBloc>().add(
@@ -445,8 +445,8 @@ class DomainsView extends StatelessWidget {
                               ? Icons.block
                               : FontAwesomeIcons.check,
                           color: item.type == "deny"
-                              ? Colors.red
-                              : Colors.green,
+                              ? KColors.deny
+                              : KColors.allow,
                           title: item.type == "deny" ? "Deny" : "Allow",
                         ),
                         CustomTagWidget(
@@ -454,8 +454,8 @@ class DomainsView extends StatelessWidget {
                               ? Symbols.regular_expression
                               : Symbols.match_word,
                           color: item.type == "deny"
-                              ? Colors.red
-                              : Colors.green,
+                              ? KColors.deny
+                              : KColors.allow,
                           title: item.kind == "regex" ? "Regex" : "Exact",
                         ),
                       ],

@@ -74,7 +74,7 @@ class ListsView extends StatelessWidget {
                       padding: 4.0,
                       toggleSize: 15.0,
                       borderRadius: 20.0,
-                      activeColor: Colors.green,
+                      activeColor: KColors.flutterSwitch,
                       value: item.enabled,
                       onToggle: (value) {
                         context.read<ListsBloc>().add(
@@ -99,7 +99,7 @@ class ListsView extends StatelessWidget {
                           iconData: (item.status == 1)
                               ? FontAwesomeIcons.download
                               : FontAwesomeIcons.clockRotateLeft,
-                          color: Colors.green,
+                          color: KColors.download,
                           title: (item.status == 1) ? "Downloaded" : "Upstream",
                         ),
                         CustomTagWidget(
@@ -107,8 +107,8 @@ class ListsView extends StatelessWidget {
                               ? Icons.block
                               : FontAwesomeIcons.check,
                           color: (item.type == "block")
-                              ? Colors.red
-                              : Colors.green,
+                              ? KColors.block
+                              : KColors.allow,
                           title: (item.type == "block")
                               ? "Blocklist"
                               : "Allowlist",
