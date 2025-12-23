@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/custom_pie_chart.dart';
 
 class SquareCardPiechartWidget extends StatelessWidget {

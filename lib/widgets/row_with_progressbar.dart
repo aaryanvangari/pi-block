@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/theme/app_colors.dart';
 
 class RowWithProgressbar extends StatelessWidget {
   final String title;

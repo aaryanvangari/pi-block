@@ -4,9 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/charts/client_history_barchart_bloc.dart';
 import 'package:pi_block/components/color_manager.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/clients_history_model.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/legend_widget.dart';
 

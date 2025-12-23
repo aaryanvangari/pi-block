@@ -23,6 +23,8 @@ import 'package:pi_block/pages/settings.dart';
 import 'package:pi_block/pages/stats.dart';
 import 'package:pi_block/pages/welcome.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
+import 'package:pi_block/theme/app_colors.dart';
+import 'package:pi_block/theme/app_styles.dart';
 // import 'package:pi_block/theme/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

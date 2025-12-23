@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pi_block/blocs/dashboard/summary_bloc.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/summary_model.dart';
+import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 
 class SummaryInfoStats extends StatelessWidget {

@@ -7,10 +7,10 @@ import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 
 class NotificationsPage extends StatelessWidget {
@@ -118,7 +118,7 @@ class _NotificationsView extends StatelessWidget {
         );
       },
       separatorBuilder: (context, index) {
-        return KListStyle.listDivider;
+        return KDivider.listDivider;
       },
     );
     return listView;

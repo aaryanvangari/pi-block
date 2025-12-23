@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/logo.dart';
 
 class DrawerWidget extends StatelessWidget {

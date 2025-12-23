@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:pi_block/blocs/blocking_bloc.dart';
-import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
+import 'package:pi_block/theme/app_colors.dart';
 
 class BlockingInfoStats extends StatelessWidget {
   const BlockingInfoStats({super.key});

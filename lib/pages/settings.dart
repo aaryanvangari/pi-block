@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -128,7 +129,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ],
                   ),
                 ),
-                KConstants.sectionDivider,
+                KDivider.sectionDivider,
               ],
             ),
             FutureBuilder(

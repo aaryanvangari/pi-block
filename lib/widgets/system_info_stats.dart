@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/dashboard/system_info_bloc.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/system_model.dart';
+import 'package:pi_block/theme/app_colors.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/load_text.dart';
 

@@ -1,6 +1,6 @@
 import 'dart:math' show Random;
 import 'package:flutter/material.dart';
-import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/theme/app_colors.dart';
 
 class ColorManager {
   final Map<String, Color> _assignedColors = {};

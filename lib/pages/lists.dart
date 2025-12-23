@@ -9,12 +9,13 @@ import 'package:pi_block/components/pi_validators.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/lists_model.dart';
+import 'package:pi_block/theme/app_colors.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/widgets/custom_toggle_switch.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
@@ -555,7 +556,7 @@ class ListsView extends StatelessWidget {
         );
       },
       separatorBuilder: (context, index) {
-        return KListStyle.listDivider;
+        return KDivider.listDivider;
       },
     );
     return listView;

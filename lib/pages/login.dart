@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
-import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
 
 class LoginPage extends StatefulWidget {

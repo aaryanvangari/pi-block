@@ -4,11 +4,13 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pager/pager.dart';
 import 'package:pi_block/blocs/querylog/querylog_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
+import 'package:pi_block/constants/features/querylog.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/query_model.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/theme/app_colors.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/custom_tag.dart';
@@ -83,7 +85,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
 
   String getDomainName(query) {
     String domainName = "";
-    var queryStatusConstant = KConstants.queryStatus[query.status];
+    var queryStatusConstant = QuerylogConstants.queryStatus[query.status];
     if (queryStatusConstant?.containsKey("isCNAME")) {
       var isCNAME = queryStatusConstant["isCNAME"];
       domainName = isCNAME
@@ -100,7 +102,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
     Color queryStatusColorWithAlpha,
   ) {
     String status = "";
-    var queryStatusConstant = KConstants.queryStatus[query.status];
+    var queryStatusConstant = QuerylogConstants.queryStatus[query.status];
     var isCNAME =
         (queryStatusConstant?.containsKey("isCNAME") &&
         queryStatusConstant["isCNAME"]);
@@ -121,7 +123,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
           status = query.status;
       }
     } else {
-      status = KConstants.queryStatus[query.status]["fieldtext"];
+      status = QuerylogConstants.queryStatus[query.status]["fieldtext"];
       status = isCNAME
           ? '$status Query was blocked during CNAME inspection of ${query.cname}'
           : status;
@@ -138,7 +140,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
   }
 
   Widget buildStatusCell(String status) {
-    var queryStatusConstant = KConstants.queryStatus[status];
+    var queryStatusConstant = QuerylogConstants.queryStatus[status];
     return Icon(
       queryStatusConstant["icon"],
       size: 12,
@@ -147,12 +149,12 @@ class _QueryLogViewState extends State<_QueryLogView> {
   }
 
   Widget _queryLogRow(QueryModel item) {
-    var queryStatusConstant = KConstants.queryStatus[item.status];
+    var queryStatusConstant = QuerylogConstants.queryStatus[item.status];
     bool isDarkMode = PiUtils.getDarkMode(context);
     String queryStatusColor = queryStatusConstant["colorName"];
     Color queryStatusColorWithAlpha = isDarkMode
-        ? KConstants.queryLogColors[queryStatusColor]["dark"]
-        : KConstants.queryLogColors[queryStatusColor]["light"];
+        ? KQueryLogColors.queryLogColors[queryStatusColor]["dark"]
+        : KQueryLogColors.queryLogColors[queryStatusColor]["light"];
     return CustomExpansionTileWidget(
       isHeaderARow: true,
       headerItems: [
@@ -353,10 +355,10 @@ class _QueryLogViewState extends State<_QueryLogView> {
         var selectedPageItem = queryModels[index];
         bool isBlocked = false;
         isBlocked =
-            KConstants.queryStatus[selectedPageItem.status].containsKey(
+            QuerylogConstants.queryStatus[selectedPageItem.status].containsKey(
               "blocked",
             ) &&
-            KConstants.queryStatus[selectedPageItem.status]["blocked"];
+            QuerylogConstants.queryStatus[selectedPageItem.status]["blocked"];
         return Slidable(
           key: Key(selectedPageItem.id.toString()),
           endActionPane: isBlocked
@@ -366,7 +368,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
         );
       },
       separatorBuilder: (context, index) {
-        return KListStyle.listDivider;
+        return KDivider.listDivider;
       },
     );
     return listView;
