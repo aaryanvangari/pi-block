@@ -12,13 +12,12 @@ class NotificationsWidget extends StatefulWidget {
 }
 
 class _NotificationsWidgetState extends State<NotificationsWidget> {
-
   @override
   void initState() {
     super.initState();
     context.read<NotificationsBloc>().add(NotificationsFetched());
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/dashboard/dashboard_bloc.dart';
@@ -17,7 +15,6 @@ class SystemInfoStats extends StatefulWidget {
 }
 
 class _SystemInfoStatsState extends State<SystemInfoStats> {
-
   @override
   void initState() {
     super.initState();

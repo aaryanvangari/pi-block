@@ -21,7 +21,7 @@ class PiholeConfigModel extends Equatable {
       config: Config.fromJson(json['config']),
       took: (json['took'] as num).toDouble(),
     );
-  }   
+  }
 
   Map<String, dynamic> toJson() => {'config': config.toJson(), 'took': took};
 
