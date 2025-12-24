@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
 class WaitingCardWidget extends StatelessWidget {
-  const WaitingCardWidget({
-    super.key,
-    required this.header,
-  });
+  const WaitingCardWidget({super.key, required this.header});
   final String header;
 
   @override
@@ -19,13 +16,10 @@ class WaitingCardWidget extends StatelessWidget {
           children: [
             Text(
               header,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 10, width: MediaQuery.sizeOf(context).width),
-            const Center(child: CircularProgressIndicator())
+            const Center(child: CircularProgressIndicator()),
           ],
         ),
       ),

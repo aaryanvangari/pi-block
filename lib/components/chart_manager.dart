@@ -4,7 +4,6 @@ import 'package:pi_block/models/clients_history_model.dart';
 import 'package:pi_block/models/history_model.dart';
 
 class ChartManager {
-
   /// We get 145 items of data and we are not interested in all of them
   /// as it does not fit into mobile screen.
   /// So we limit it to maybe 20-25 (barItemsNeeded) depending on screen width.
@@ -31,7 +30,7 @@ class ChartManager {
     );
     return history.sublist(start);
   }
-  
+
   Widget bottomTitles(double value, TitleMeta meta) {
     const style = TextStyle(fontSize: 8);
     DateTime xDateTime = DateTime.fromMillisecondsSinceEpoch(

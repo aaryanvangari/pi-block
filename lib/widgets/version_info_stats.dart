@@ -33,7 +33,6 @@ class VersionInfoStatsView extends StatefulWidget {
 }
 
 class _VersionInfoStatsViewState extends State<VersionInfoStatsView> {
-
   static const _title = "Versions";
 
   VersionUpdateInfo getUpdateInfo(VersionModel model) {

@@ -70,7 +70,10 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
     int barItemsNeeded,
   ) {
     List<BarChartGroupData> barGroups = [];
-    final visibleHistory = chartManager.visibleClientHistory(history, barItemsNeeded);
+    final visibleHistory = chartManager.visibleClientHistory(
+      history,
+      barItemsNeeded,
+    );
 
     for (var i = 0; i < visibleHistory.length; i++) {
       ClientHistoryEntry clientHistoryEntry = visibleHistory[i];
@@ -123,7 +126,10 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
     Color tooltipTextColor,
   ) {
     List<List<TextSpan>> tooltips = [];
-    final visibleHistory = chartManager.visibleClientHistory(history, barItemsNeeded);
+    final visibleHistory = chartManager.visibleClientHistory(
+      history,
+      barItemsNeeded,
+    );
 
     for (var i = 0; i < visibleHistory.length; i++) {
       ClientHistoryEntry clientHistoryEntry = visibleHistory[i];
