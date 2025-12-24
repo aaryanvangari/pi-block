@@ -135,13 +135,12 @@ class _SettingsPageState extends State<SettingsPage> {
             FutureBuilder(
               future: PackageInfo.fromPlatform().then((info) => info),
               builder: (context, AsyncSnapshot snapshot) {
-                Widget widget;
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  widget = Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasData) {
                   var packageInfo = snapshot.data;
-                  widget = Padding(
+                  return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -151,12 +150,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       ],
                     ),
                   );
-                } else if (snapshot.hasError) {
-                  widget = SizedBox();
-                } else {
-                  widget = SizedBox();
                 }
-                return widget;
+                return const SizedBox.shrink();
               },
             ),
           ],
