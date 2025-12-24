@@ -4,14 +4,9 @@ import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/widgets/gradient_background.dart';
 import 'package:pi_block/widgets/logo.dart';
 
-class WelcomePage extends StatefulWidget {
+class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
-  @override
-  State<WelcomePage> createState() => _WelcomePageState();
-}
-
-class _WelcomePageState extends State<WelcomePage> {
   Widget _buildCirle(double diameter, Color color, int index) {
     return Container(
       width: diameter,

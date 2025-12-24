@@ -16,14 +16,9 @@ import 'package:pi_block/pages/stats.dart';
 import 'package:pi_block/widgets/notifications_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class HomePage extends StatelessWidget {
+  HomePage({super.key});
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
   bool hasNotifications = false;
   final List<Widget> _pages = [
     const DashboardPage(),

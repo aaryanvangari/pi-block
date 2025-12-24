@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class LocalDnsPage extends StatefulWidget {
+class LocalDnsPage extends StatelessWidget {
   const LocalDnsPage({super.key});
 
-  @override
-  State<LocalDnsPage> createState() => _LocalDnsPageState();
-}
-
-class _LocalDnsPageState extends State<LocalDnsPage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(

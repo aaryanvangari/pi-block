@@ -7,14 +7,9 @@ import 'package:pi_block/widgets/summary_info_stats.dart';
 import 'package:pi_block/widgets/system_info_stats.dart';
 import 'package:pi_block/widgets/version_info_stats.dart';
 
-class DashboardPage extends StatefulWidget {
+class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
 
-  @override
-  State<DashboardPage> createState() => _DashboardPageState();
-}
-
-class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
