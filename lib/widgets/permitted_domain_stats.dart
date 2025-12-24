@@ -9,6 +9,7 @@ import 'package:pi_block/widgets/empty_card_widget.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/row_with_progressbar.dart';
 import 'package:pi_block/widgets/square_card_list_widget.dart';
+import 'package:pi_block/widgets/waiting_card_widget.dart';
 
 class PermittedDomainStats extends StatelessWidget {
   const PermittedDomainStats({super.key});
@@ -68,7 +69,7 @@ class PermittedDomainsListView extends StatelessWidget {
         } else if (state is DomainsPermittedEmpty) {
           return const EmptyCardWidget(header: _title, message: "No data");
         } else if (state is DomainsPermittedLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WaitingCardWidget(header: _title);
         } else if (state is DomainsPermittedLoaded) {
           DomainsModel domainsModel = state.domains;
           List<StatDomainModel> domains = domainsModel.domains;

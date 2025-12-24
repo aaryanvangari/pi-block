@@ -8,6 +8,7 @@ import 'package:pi_block/models/upstreams_model.dart';
 import 'package:pi_block/widgets/custom_pie_chart.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/square_card_piechart_widget.dart';
+import 'package:pi_block/widgets/waiting_card_widget.dart';
 
 class UpstreamsStats extends StatelessWidget {
   const UpstreamsStats({super.key});
@@ -74,7 +75,7 @@ class _UpstreamsPiechartViewState extends State<UpstreamsPiechartView> {
             message: "Error loading data",
           );
         } else if (state is UpstreamsPiechartLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WaitingCardWidget(header: _title);
         } else if (state is UpstreamsPiechartLoaded) {
           UpstreamsModel upstreamsModel = state.upstreamsModel;
           List<Upstream> types = upstreamsModel.upstreams;

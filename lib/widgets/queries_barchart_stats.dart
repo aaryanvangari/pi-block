@@ -9,6 +9,7 @@ import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/legend_widget.dart';
+import 'package:pi_block/widgets/waiting_card_widget.dart';
 
 class QueriesBarchartStats extends StatelessWidget {
   const QueriesBarchartStats({super.key});
@@ -247,7 +248,7 @@ class QueriesBarchartView extends StatelessWidget {
             message: "Error loading data",
           );
         } else if (state is QueryHistoryBarchartLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WaitingCardWidget(header: "Total Queries");
         } else if (state is QueryHistoryBarchartLoaded) {
           HistoryModel historyModel = state.historyModel;
           List<HistoryEntry> history = historyModel.history;

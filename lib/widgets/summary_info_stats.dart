@@ -7,6 +7,7 @@ import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/summary_model.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
+import 'package:pi_block/widgets/waiting_card_widget.dart';
 
 class SummaryInfoStats extends StatelessWidget {
   const SummaryInfoStats({super.key});
@@ -23,6 +24,8 @@ class SummaryInfoStats extends StatelessWidget {
 
 class SummaryInfoStatsView extends StatelessWidget {
   const SummaryInfoStatsView({super.key});
+
+  static const _title = "Summary";
 
   Widget _buildStatCard(
     BuildContext context, {
@@ -105,11 +108,11 @@ class SummaryInfoStatsView extends StatelessWidget {
       builder: (context, state) {
         if (state.status == SummaryStateStatus.failure) {
           return const ErrorCardWidget(
-            header: "Summary",
+            header: _title,
             message: "Error loading data",
           );
         } else if (state.status == SummaryStateStatus.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WaitingCardWidget(header: _title);
         } else if (state.status == SummaryStateStatus.success) {
           SummaryModel summaryModel = state.summaryModel;
 

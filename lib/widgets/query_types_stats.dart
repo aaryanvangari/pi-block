@@ -8,6 +8,7 @@ import 'package:pi_block/models/summary_model.dart';
 import 'package:pi_block/widgets/custom_pie_chart.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/square_card_piechart_widget.dart';
+import 'package:pi_block/widgets/waiting_card_widget.dart';
 
 class QueryTypesStats extends StatelessWidget {
   const QueryTypesStats({super.key});
@@ -73,7 +74,7 @@ class _QueryTypesPiechartViewState extends State<QueryTypesPiechartView> {
             message: "Error loading data",
           );
         } else if (state is QueryTypesPiechartLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WaitingCardWidget(header: _title);
         } else if (state is QueryTypesPiechartLoaded) {
           StatsQueryTypes statsQueryTypes = state.statsQueryTypes;
           QueryTypes types = statsQueryTypes.types;

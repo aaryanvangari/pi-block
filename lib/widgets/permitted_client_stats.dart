@@ -9,6 +9,7 @@ import 'package:pi_block/widgets/empty_card_widget.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/row_with_progressbar.dart';
 import 'package:pi_block/widgets/square_card_list_widget.dart';
+import 'package:pi_block/widgets/waiting_card_widget.dart';
 
 class PermittedClientStats extends StatelessWidget {
   const PermittedClientStats({super.key});
@@ -68,7 +69,7 @@ class PermittedClientsListView extends StatelessWidget {
         } else if (state is ClientsPermittedEmpty) {
           return const EmptyCardWidget(header: _title, message: "No data");
         } else if (state is ClientsPermittedLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WaitingCardWidget(header: _title);
         } else if (state is ClientsPermittedLoaded) {
           ClientsModel clientsModel = state.clients;
           List<ClientModel> clients = clientsModel.clients;

@@ -9,6 +9,7 @@ import 'package:pi_block/models/clients_history_model.dart';
 import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/legend_widget.dart';
+import 'package:pi_block/widgets/waiting_card_widget.dart';
 
 class ClientsBarchartStats extends StatelessWidget {
   const ClientsBarchartStats({super.key});
@@ -242,7 +243,7 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
             message: "Error loading data",
           );
         } else if (state is ClientHistoryBarchartLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WaitingCardWidget(header: "Client Activity");
         } else if (state is ClientHistoryBarchartLoaded) {
           ClientHistoryModel clientHistoryModel = state.clientHistoryModel;
           List<ClientHistoryEntry> history = clientHistoryModel.history;
