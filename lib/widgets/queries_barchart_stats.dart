@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/charts/query_history_barchart_bloc.dart';
+import 'package:pi_block/components/chart_manager.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/history_model.dart';
@@ -26,23 +27,11 @@ class QueriesBarchartStats extends StatelessWidget {
 }
 
 class QueriesBarchartView extends StatelessWidget {
-  const QueriesBarchartView({super.key});
+  QueriesBarchartView({super.key});
 
-  /// We get 145 items of data and we are not interested in all of them
-  /// as it does not fit into mobile screen.
-  /// So we limit it to maybe 20-25 (barItemsNeeded) depending on screen width.
-  /// Sorting by timestamp.millisecondsSinceEpoch didnt work so
-  /// Iterating from 145-125 and decreasing one at a time
-  List<HistoryEntry> _visibleHistory(
-    List<HistoryEntry> history,
-    int barItemsNeeded,
-  ) {
-    final start = (history.length - 1 - barItemsNeeded).clamp(
-      0,
-      history.length,
-    );
-    return history.sublist(start);
-  }
+  ChartManager chartManager = ChartManager();
+
+  static const _title = "Total Queries";
 
   List<BarChartGroupData> generateBarChartGroupData(
     List<HistoryEntry> history,
@@ -51,7 +40,7 @@ class QueriesBarchartView extends StatelessWidget {
     int barItemsNeeded,
   ) {
     List<BarChartGroupData> barGroups = [];
-    final visibleHistory = _visibleHistory(history, barItemsNeeded);
+    final visibleHistory = chartManager.visibleHistory(history, barItemsNeeded);
 
     for (var i = 0; i < visibleHistory.length; i++) {
       HistoryEntry historyItem = visibleHistory[i];
@@ -119,7 +108,7 @@ class QueriesBarchartView extends StatelessWidget {
     Color tooltipTextColor,
   ) {
     List<List<TextSpan>> tooltips = [];
-    final visibleHistory = _visibleHistory(history, barItemsNeeded);
+    final visibleHistory = chartManager.visibleHistory(history, barItemsNeeded);
 
     for (var i = 0; i < visibleHistory.length; i++) {
       HistoryEntry historyItem = visibleHistory[i];
@@ -132,7 +121,7 @@ class QueriesBarchartView extends StatelessWidget {
       double others = total - (blocked + cached + forwarded);
 
       tooltipStackItems.add(
-        _tooltipLine(
+        chartManager.tooltipLine(
           'Others',
           others.toInt(),
           total.toInt(),
@@ -141,7 +130,7 @@ class QueriesBarchartView extends StatelessWidget {
         ),
       );
       tooltipStackItems.add(
-        _tooltipLine(
+        chartManager.tooltipLine(
           'Blocked',
           blocked.toInt(),
           total.toInt(),
@@ -150,7 +139,7 @@ class QueriesBarchartView extends StatelessWidget {
         ),
       );
       tooltipStackItems.add(
-        _tooltipLine(
+        chartManager.tooltipLine(
           'Cached',
           cached.toInt(),
           total.toInt(),
@@ -159,7 +148,7 @@ class QueriesBarchartView extends StatelessWidget {
         ),
       );
       tooltipStackItems.add(
-        _tooltipLine(
+        chartManager.tooltipLine(
           'Forwarded',
           forwarded.toInt(),
           total.toInt(),
@@ -173,66 +162,6 @@ class QueriesBarchartView extends StatelessWidget {
     return tooltips;
   }
 
-  Widget bottomTitles(double value, TitleMeta meta) {
-    const style = TextStyle(fontSize: 8);
-    DateTime xDateTime = DateTime.fromMillisecondsSinceEpoch(
-      (value as num).toInt(),
-    );
-    String xHourMinText = '${xDateTime.hour}:${xDateTime.minute}';
-    return SideTitleWidget(
-      meta: meta,
-      angle: -90 * 3.14 / 180,
-      fitInside: SideTitleFitInsideData(
-        enabled: true,
-        axisPosition: 0,
-        parentAxisSize: 0,
-        distanceFromEdge: -15,
-      ),
-      child: Text(xHourMinText, style: style),
-    );
-  }
-
-  Widget leftTitles(double value, TitleMeta meta) {
-    if (value == meta.max) {
-      return Container();
-    }
-    const style = TextStyle(fontSize: 12);
-    return SideTitleWidget(
-      meta: meta,
-      child: Text(meta.formattedValue, style: style),
-    );
-  }
-
-  String _percent(int value, int total) {
-    if (total == 0) return '0%';
-    return '${((value / total) * 100).toStringAsFixed(1)}%';
-  }
-
-  TextSpan _tooltipLine(
-    String label,
-    int value,
-    int total,
-    Color color,
-    Color textColor,
-  ) {
-    return TextSpan(
-      children: [
-        TextSpan(
-          text: '$label: ',
-          style: TextStyle(
-            color: color,
-            fontWeight: FontWeight.w600,
-            fontSize: 12,
-          ),
-        ),
-        TextSpan(
-          text: '$value (${_percent(value, total)})\n',
-          style: TextStyle(color: textColor, fontSize: 12),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<QueryHistoryBarchartBloc, QueryHistoryBarchartState>(
@@ -244,11 +173,11 @@ class QueriesBarchartView extends StatelessWidget {
       builder: (context, state) {
         if (state is QueryHistoryBarchartError) {
           return const ErrorCardWidget(
-            header: "Total Queries",
+            header: _title,
             message: "Error loading data",
           );
         } else if (state is QueryHistoryBarchartLoading) {
-          return const WaitingCardWidget(header: "Total Queries");
+          return const WaitingCardWidget(header: _title);
         } else if (state is QueryHistoryBarchartLoaded) {
           HistoryModel historyModel = state.historyModel;
           List<HistoryEntry> history = historyModel.history;
@@ -268,7 +197,7 @@ class QueriesBarchartView extends StatelessWidget {
                       vertical: 2,
                     ),
                     child: const Text(
-                      "Total Queries",
+                      _title,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -353,14 +282,14 @@ class QueriesBarchartView extends StatelessWidget {
                                 sideTitles: SideTitles(
                                   showTitles: true,
                                   reservedSize: 40,
-                                  getTitlesWidget: bottomTitles,
+                                  getTitlesWidget: chartManager.bottomTitles,
                                 ),
                               ),
                               leftTitles: AxisTitles(
                                 sideTitles: SideTitles(
                                   showTitles: true,
                                   reservedSize: 30,
-                                  getTitlesWidget: leftTitles,
+                                  getTitlesWidget: chartManager.leftTitles,
                                 ),
                               ),
                               topTitles: const AxisTitles(
