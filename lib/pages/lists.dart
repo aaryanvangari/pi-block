@@ -513,9 +513,7 @@ class ListsView extends StatelessWidget {
                   );
                 },
                 autoClose: true,
-                backgroundColor: Theme.of(
-                  context,
-                ).colorScheme.error.withAlpha(200),
+                backgroundColor: slideError.value,
                 icon: Icons.delete,
               ),
             ],
