@@ -227,14 +227,8 @@ class ListsView extends StatelessWidget {
                             decoration: InputDecoration(
                               labelText: "Comment",
                               border: KInputStyle.inputBorder,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
+                              focusedBorder: KInputStyle.focusedBorder,
+                              enabledBorder: KInputStyle.enabledBorder,
                               suffixIcon: IconButton(
                                 onPressed: () => commentController.clear(),
                                 icon: Icon(Icons.clear),
@@ -372,14 +366,8 @@ class ListsView extends StatelessWidget {
                             decoration: InputDecoration(
                               labelText: "Address",
                               border: KInputStyle.inputBorder,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
+                              focusedBorder: KInputStyle.focusedBorder,
+                              enabledBorder: KInputStyle.enabledBorder,
                               suffixIcon: IconButton(
                                 onPressed: () => addressController.clear(),
                                 icon: Icon(Icons.clear),
@@ -397,14 +385,8 @@ class ListsView extends StatelessWidget {
                             decoration: InputDecoration(
                               labelText: "Comment",
                               border: KInputStyle.inputBorder,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
+                              focusedBorder: KInputStyle.focusedBorder,
+                              enabledBorder: KInputStyle.enabledBorder,
                               suffixIcon: IconButton(
                                 onPressed: () => commentController.clear(),
                                 icon: Icon(Icons.clear),

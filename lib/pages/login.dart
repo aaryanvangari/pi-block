@@ -81,14 +81,8 @@ class _LoginPageState extends State<LoginPage> {
                               decoration: InputDecoration(
                                 labelText: "Pi-Hole Server Url",
                                 border: KInputStyle.inputBorder,
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.grey),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.grey),
-                                ),
+                                focusedBorder: KInputStyle.focusedBorder,
+                                enabledBorder: KInputStyle.enabledBorder,
                                 suffixIcon: IconButton(
                                   onPressed: _serverUrlController.clear,
                                   icon: Icon(Icons.clear),
@@ -116,14 +110,8 @@ class _LoginPageState extends State<LoginPage> {
                               decoration: InputDecoration(
                                 labelText: "API Token",
                                 border: KInputStyle.inputBorder,
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.grey),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(color: Colors.grey),
-                                ),
+                                focusedBorder: KInputStyle.focusedBorder,
+                                enabledBorder: KInputStyle.enabledBorder,
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     passwordVisible

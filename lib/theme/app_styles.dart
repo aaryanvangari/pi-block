@@ -21,6 +21,15 @@ class KTextStyle {
 class KInputStyle {
   static final InputBorder inputBorder = OutlineInputBorder(
     borderRadius: BorderRadius.circular(10),
+    borderSide: BorderSide(color: Colors.grey),
+  );
+  static final InputBorder focusedBorder = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(10),
+    borderSide: BorderSide(color: Colors.grey),
+  );
+  static final InputBorder enabledBorder = OutlineInputBorder(
+    borderRadius: BorderRadius.circular(10),
+    borderSide: BorderSide(color: Colors.grey),
   );
 }
 
@@ -56,3 +65,14 @@ class KDivider {
     endIndent: 10,
   );
 }
+
+// class KTextField {
+//   static OutlineInputBorder focusedBorder = OutlineInputBorder(
+//     borderRadius: BorderRadius.circular(10),
+//     borderSide: BorderSide(color: Colors.grey),
+//   );
+//   enabledBorder: OutlineInputBorder(
+//     borderRadius: BorderRadius.circular(10),
+//     borderSide: BorderSide(color: Colors.grey),
+//   ),
+// }

@@ -84,14 +84,8 @@ class DomainsView extends StatelessWidget {
                             decoration: InputDecoration(
                               labelText: "Domain",
                               border: KInputStyle.inputBorder,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
+                              focusedBorder: KInputStyle.focusedBorder,
+                              enabledBorder: KInputStyle.enabledBorder,
                               suffixIcon: IconButton(
                                 onPressed: () => domainController.clear(),
                                 icon: Icon(Icons.clear),
@@ -109,14 +103,8 @@ class DomainsView extends StatelessWidget {
                             decoration: InputDecoration(
                               labelText: "Comment",
                               border: KInputStyle.inputBorder,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
+                              focusedBorder: KInputStyle.focusedBorder,
+                              enabledBorder: KInputStyle.enabledBorder,
                               suffixIcon: IconButton(
                                 onPressed: () => commentController.clear(),
                                 icon: Icon(Icons.clear),
@@ -268,14 +256,8 @@ class DomainsView extends StatelessWidget {
                             decoration: InputDecoration(
                               labelText: "Comment",
                               border: KInputStyle.inputBorder,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
+                              focusedBorder: KInputStyle.focusedBorder,
+                              enabledBorder: KInputStyle.enabledBorder,
                               suffixIcon: IconButton(
                                 onPressed: () => commentController.clear(),
                                 icon: const Icon(Icons.clear),
