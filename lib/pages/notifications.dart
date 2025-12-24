@@ -165,14 +165,11 @@ class _NotificationsView extends StatelessWidget {
                     return const CustomErrorWidget(
                       message: "Error loading data",
                     );
-                  }
-                  if (state is NotificationsLoading) {
+                  } else if (state is NotificationsLoading) {
                     return const Center(child: CircularProgressIndicator());
-                  }
-                  if (state is NotificationsEmpty) {
+                  } else if (state is NotificationsEmpty) {
                     return const EmptyWidget(message: "No Messages");
-                  }
-                  if (state is NotificationsSuccess) {
+                  } else if (state is NotificationsSuccess) {
                     List<DiagnosticMessageModel> diagnosticMessagesList =
                         state.diagnosticMessagesList;
                     return Expanded(
