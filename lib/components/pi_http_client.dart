@@ -3,7 +3,8 @@ import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'package:logging/logging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pi_block/services/user_session_service.dart';
+import 'package:pi_block/models/user_session_model.dart';
 
 class PiHttpClient {
   final http.Client _httpClient;
@@ -14,11 +15,11 @@ class PiHttpClient {
   dynamic get(String urlEndpoint, {dynamic queryParams}) async {
     dynamic result;
     try {
-      final prefs = await SharedPreferences.getInstance();
-      String scheme = prefs.getString("scheme")!;
-      String server = prefs.getString("server")!;
-      int port = prefs.getInt("port")!;
-      String sid = prefs.getString("sid")!;
+      UserSessionModel? userSessionModel = UserSessionService().getSession();
+      String scheme = userSessionModel!.serverUri.scheme;
+      String server = userSessionModel.serverUri.host;
+      int port = userSessionModel.serverUri.port;
+      String sid = userSessionModel.session.sid;
       Uri url;
       if ((queryParams != null) && (queryParams.keys.length > 0)) {
         url = Uri(
@@ -79,11 +80,11 @@ class PiHttpClient {
     Map<String, String> headers = {};
     try {
       if (server == null) {
-        final prefs = await SharedPreferences.getInstance();
-        scheme = prefs.getString("scheme")!;
-        server = prefs.getString("server")!;
-        port = prefs.getInt("port")!;
-        sid = prefs.getString("sid")!;
+        UserSessionModel? userSessionModel = UserSessionService().getSession();
+        scheme = userSessionModel!.serverUri.scheme;
+        server = userSessionModel.serverUri.host;
+        port = userSessionModel.serverUri.port;
+        sid = userSessionModel.session.sid;
         headers = <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           "sid": sid.toString(),
@@ -142,17 +143,13 @@ class PiHttpClient {
     }
   }
 
-  dynamic delete(
-    String urlEndpoint,
-    bool rawResponse, {
-    dynamic queryParams,
-  }) async {
+  dynamic delete(String urlEndpoint, {dynamic queryParams}) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      String scheme = prefs.getString("scheme")!;
-      String server = prefs.getString("server")!;
-      int port = prefs.getInt("port")!;
-      String sid = prefs.getString("sid")!;
+      UserSessionModel? userSessionModel = UserSessionService().getSession();
+      String scheme = userSessionModel!.serverUri.scheme;
+      String server = userSessionModel.serverUri.host;
+      int port = userSessionModel.serverUri.port;
+      String sid = userSessionModel.session.sid;
       Uri url;
       if ((queryParams != null) && (queryParams.keys.length > 0)) {
         url = Uri(
@@ -186,11 +183,11 @@ class PiHttpClient {
         time: DateTime.now(),
       );
 
-      /// #TODO Refactor
       if (response.statusCode == 204) {
-        return rawResponse ? response : {"deleted": true};
+        return {"deleted": true};
+      } else {
+        return {"deleted": false};
       }
-      return response;
     } catch (e) {
       log(
         e.toString(),
@@ -216,11 +213,11 @@ class PiHttpClient {
     Map<String, String> headers = {};
     try {
       if (server == null) {
-        final prefs = await SharedPreferences.getInstance();
-        scheme = prefs.getString("scheme")!;
-        server = prefs.getString("server")!;
-        port = prefs.getInt("port")!;
-        sid = prefs.getString("sid")!;
+        UserSessionModel? userSessionModel = UserSessionService().getSession();
+        scheme = userSessionModel!.serverUri.scheme;
+        server = userSessionModel.serverUri.host;
+        port = userSessionModel.serverUri.port;
+        sid = userSessionModel.session.sid;
         headers = <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           "sid": sid.toString(),

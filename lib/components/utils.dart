@@ -6,10 +6,11 @@ import 'package:flutter_randomcolor/flutter_randomcolor.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:logging/logging.dart';
-import 'package:pi_block/components/api_exception.dart';
+import 'package:pi_block/error/exceptions/api_exception.dart';
 import 'package:pi_block/components/global_snackbar.dart';
-import 'package:pi_block/components/session_exception.dart';
+import 'package:pi_block/error/exceptions/session_exception.dart';
 import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/models/app_settings_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class PiUtils {
@@ -153,22 +154,21 @@ class PiUtils {
   }
 
   static bool getDarkMode(BuildContext context) {
-    String themeMode = isDarkModeNotifier.value;
+    ThemeModeOption themeMode = themeModeOptionNotifier.value;
     bool isDarkMode = false;
     switch (themeMode) {
-      case "System":
+      case ThemeModeOption.system:
         isDarkMode =
             (MediaQuery.of(context).platformBrightness == Brightness.dark)
             ? true
             : false;
         break;
-      case "Light":
+      case ThemeModeOption.light:
         isDarkMode = false;
         break;
-      case "Dark":
+      case ThemeModeOption.dark:
         isDarkMode = true;
         break;
-      default:
     }
     return isDarkMode;
   }

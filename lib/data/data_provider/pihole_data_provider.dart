@@ -40,7 +40,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> logout() async {
     try {
-      var result = await piHttpClient.delete(ApiUrls.auth, false);
+      var result = await piHttpClient.delete(ApiUrls.auth);
 
       PiUtils.handleAPIException(result, true);
 
@@ -74,7 +74,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> deleteDiagnosticMessages(int id) async {
     try {
-      var result = await piHttpClient.delete('${ApiUrls.messages}/$id', false);
+      var result = await piHttpClient.delete('${ApiUrls.messages}/$id');
       PiUtils.handleAPIException(result, false);
 
       log(

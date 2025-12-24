@@ -3,18 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
+import 'package:pi_block/components/global_snackbar.dart';
+import 'package:pi_block/services/settings_service.dart';
+import 'package:pi_block/models/app_settings_model.dart';
 import 'package:pi_block/pages/domains.dart';
 import 'package:pi_block/pages/lists.dart';
 import 'package:pi_block/widgets/drawer_widget.dart';
 import 'package:pi_block/widgets/navbar_widget.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/pages/dashboard.dart';
 import 'package:pi_block/pages/querylog.dart';
 import 'package:pi_block/pages/stats.dart';
 import 'package:pi_block/widgets/notifications_widget.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -38,22 +39,26 @@ class HomePage extends StatelessWidget {
           actions: [
             IconButton(
               onPressed: () async {
-                isDarkModeNotifier.value = PiUtils.getDarkMode(context)
-                    ? "Light"
-                    : "Dark";
-                final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
-                await prefs.setString(
-                  KConstants.themeModeKey,
-                  isDarkModeNotifier.value,
+                final newMode =
+                    themeModeOptionNotifier.value == ThemeModeOption.dark
+                    ? ThemeModeOption.light
+                    : ThemeModeOption.dark;
+
+                await SettingsService().updateSettings(
+                  (settings) => settings.copyWith(themeModeOption: newMode),
                 );
+                themeModeOptionNotifier.value = newMode;
+                themeModeNotifier.value =
+                    themeModeOptionNotifier.value == ThemeModeOption.dark
+                    ? ThemeMode.dark
+                    : ThemeMode.light;
               },
               icon: ValueListenableBuilder(
-                valueListenable: isDarkModeNotifier,
-                builder: (context, darkMode, child) {
+                valueListenable: themeModeOptionNotifier,
+                builder: (context, themeModeOption, child) {
                   return PiUtils.getDarkMode(context)
-                      ? Icon(Icons.light_mode)
-                      : Icon(Icons.dark_mode);
+                      ? const Icon(Icons.light_mode)
+                      : const Icon(Icons.dark_mode);
                 },
               ),
             ),
@@ -89,8 +94,19 @@ class HomePage extends StatelessWidget {
             }
           },
           builder: (context, state) {
-            return DrawerWidget(
-              onLogout: () => context.read<AuthBloc>().add(Logout()),
+            return BlocListener<AuthBloc, AuthState>(
+              listener: (context, state) {
+                if (state.status == AuthStateStatus.failure) {
+                  GlobalSnackbar.error(
+                    context,
+                    state.error,
+                    state.errorDescription,
+                  );
+                }
+              },
+              child: DrawerWidget(
+                onLogout: () => context.read<AuthBloc>().add(Logout()),
+              ),
             );
           },
         ),

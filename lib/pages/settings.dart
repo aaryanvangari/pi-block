@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/services/settings_service.dart';
 import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/models/app_settings_model.dart';
 import 'package:pi_block/theme/app_styles.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -14,31 +14,30 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  void onDarkModeChanged(String value, String isDarkMode) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    if (value == "Dark") {
-      isDarkMode = "Dark";
-    } else if (value == "Light") {
-      isDarkMode = "Light";
-    } else if (value == "System") {
-      isDarkMode = "System";
-    }
-    setState(() {
-      darkMode = value;
-      isDarkModeNotifier.value = isDarkMode;
-    });
-    prefs.setString(KConstants.themeModeKey, isDarkMode);
-  }
-
-  String? darkMode;
+  late ThemeModeOption _currentMode;
+  late AppSettingsModel appSettingsModel;
 
   void loadSettings() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    var themeMode = prefs.getString(KConstants.themeModeKey);
+    _currentMode = SettingsService().getSettings().themeModeOption;
+  }
 
+  void _onThemeModeChanged(ThemeModeOption? value) async {
+    if (value == null) return;
+    await SettingsService().updateSettings(
+      (appSettingsModel) => appSettingsModel.copyWith(themeModeOption: value),
+    );
+    // Notifying app about theme change through notifiers
+    ThemeMode themeMode = SettingsService().getThemeMode(value);
+
+    // app theme notifier
+    themeModeNotifier.value = themeMode;
+
+    // theme option notifier so be in sync with dark/light icon in home page
+    themeModeOptionNotifier.value = value;
+
+    // setting state of app so that dropdown change is reflected
     setState(() {
-      darkMode = (themeMode == null) ? "System" : themeMode;
+      _currentMode = value;
     });
   }
 
@@ -95,36 +94,28 @@ class _SettingsPageState extends State<SettingsPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text("Theme", style: TextStyle(fontSize: 16)),
-                      ValueListenableBuilder(
-                        valueListenable: isDarkModeNotifier,
-                        builder: (context, isDarkMode, child) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12.0,
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton(
-                                value: darkMode,
-                                items: [
-                                  DropdownMenuItem(
-                                    value: "System",
-                                    child: Text("System"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "Light",
-                                    child: Text("Light"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "Dark",
-                                    child: Text("Dark"),
-                                  ),
-                                ],
-                                onChanged: (value) =>
-                                    onDarkModeChanged(value!, isDarkMode),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<ThemeModeOption>(
+                            value: _currentMode,
+                            items: [
+                              DropdownMenuItem(
+                                value: ThemeModeOption.system,
+                                child: Text("System"),
                               ),
-                            ),
-                          );
-                        },
+                              DropdownMenuItem(
+                                value: ThemeModeOption.light,
+                                child: Text("Light"),
+                              ),
+                              DropdownMenuItem(
+                                value: ThemeModeOption.dark,
+                                child: Text("Dark"),
+                              ),
+                            ],
+                            onChanged: _onThemeModeChanged,
+                          ),
+                        ),
                       ),
                     ],
                   ),

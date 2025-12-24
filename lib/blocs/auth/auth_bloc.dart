@@ -1,9 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pi_block/components/api_exception.dart';
+import 'package:pi_block/error/exceptions/api_exception.dart';
+import 'package:pi_block/services/user_session_service.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/session_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pi_block/models/user_session_model.dart';
 
 part 'auth_event.dart';
 part 'auth_state.dart';
@@ -37,15 +38,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       int sessionValidUntil =
           time.millisecondsSinceEpoch + (sessionModel.session!.validity * 1000);
 
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString("sid", sessionModel.session!.sid);
-      prefs.setString("csrf", sessionModel.session!.csrf);
-      prefs.setString("message", sessionModel.session!.message);
-      prefs.setInt("validity", sessionModel.session!.validity);
-      prefs.setString("scheme", serverUrl.scheme);
-      prefs.setString("server", serverUrl.host);
-      prefs.setInt("port", serverUrl.port);
-      prefs.setInt("sessionValidUntil", sessionValidUntil);
+      UserSessionModel userSessionModel = UserSessionModel(
+        session: sessionModel.session ?? Session.empty(),
+        serverUrl: serverUrl.toString(),
+        sessionValidUntil: sessionValidUntil,
+      );
+
+      UserSessionService userSessionService = UserSessionService();
+      userSessionService.saveSession(userSessionModel);
 
       emit(
         state.copyWith(
@@ -56,9 +56,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           scheme: serverUrl.scheme,
           server: serverUrl.host,
           port: serverUrl.port,
-          sessionValidUntil:
-              time.millisecondsSinceEpoch +
-              (sessionModel.session!.validity * 1000),
+          sessionValidUntil: sessionValidUntil,
           status: AuthStateStatus.loggedIn,
           error: "",
         ),
@@ -85,33 +83,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _logout(Logout event, Emitter<AuthState> emit) async {
     emit(state.copyWith(status: AuthStateStatus.loading));
     try {
-      await piholeRepository.logout();
-      final prefs = await SharedPreferences.getInstance();
+      bool isLoggedOut = await piholeRepository.logout();
+      if (isLoggedOut) {
+        UserSessionService userSessionService = UserSessionService();
+        await userSessionService.clearSession();
 
-      prefs.setString("sid", "");
-      prefs.setString("csrf", "");
-      prefs.setString("message", "");
-      prefs.setInt("validity", 0);
-      prefs.setString("scheme", "");
-      prefs.setString("server", "");
-      prefs.setInt("port", 0);
-      prefs.setInt("sessionValidUntil", 0);
-
-      emit(
-        state.copyWith(
-          sid: "",
-          csrf: "",
-          message: "",
-          validity: 0,
-          scheme: "",
-          server: "",
-          port: 0,
-          sessionValidUntil: 0,
-          status: AuthStateStatus.loggedOut,
-          error: "",
-          errorDescription: "",
-        ),
-      );
+        emit(
+          state.copyWith(
+            sid: "",
+            csrf: "",
+            message: "",
+            validity: 0,
+            scheme: "",
+            server: "",
+            port: 0,
+            sessionValidUntil: 0,
+            status: AuthStateStatus.loggedOut,
+            error: "",
+            errorDescription: "",
+          ),
+        );
+      }
     } catch (e) {
       emit(
         state.copyWith(status: AuthStateStatus.failure, error: e.toString()),
