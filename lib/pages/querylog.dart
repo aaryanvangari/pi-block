@@ -10,7 +10,7 @@ import 'package:pi_block/models/query_model.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
-import 'package:pi_block/theme/app_ui_tokens.dart';
+import 'package:pi_block/theme/app_ui_context.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/custom_tag.dart';
@@ -304,8 +304,8 @@ class _QueryLogViewState extends State<_QueryLogView> {
           },
           autoClose: true,
           backgroundColor: isBlocked
-              ? Theme.of(context).extension<AppUiTokens>()!.slidePrimary
-              : Theme.of(context).extension<AppUiTokens>()!.slideError,
+              ? context.ui.slidePrimary
+              : context.ui.slideError,
           icon: isBlocked ? Icons.check : Icons.block,
         ),
       ],
@@ -344,8 +344,8 @@ class _QueryLogViewState extends State<_QueryLogView> {
           },
           autoClose: true,
           backgroundColor: isBlocked
-              ? Theme.of(context).extension<AppUiTokens>()!.slidePrimary
-              : Theme.of(context).extension<AppUiTokens>()!.slideError,
+              ? context.ui.slidePrimary
+              : context.ui.slideError,
           icon: isBlocked ? Icons.check : Icons.block,
         ),
       ],
@@ -380,6 +380,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
 
   @override
   Widget build(BuildContext context) {
+    context.ui; // updates AppUiTokens when theme changes
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(10),

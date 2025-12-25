@@ -7,7 +7,7 @@ import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/theme/app_styles.dart';
-import 'package:pi_block/theme/app_ui_tokens.dart';
+import 'package:pi_block/theme/app_ui_context.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/components/utils.dart';
@@ -109,9 +109,7 @@ class _NotificationsView extends StatelessWidget {
                   );
                 },
                 autoClose: true,
-                backgroundColor: Theme.of(
-                  context,
-                ).extension<AppUiTokens>()!.slideError,
+                backgroundColor: context.ui.slideError,
                 icon: Icons.delete,
               ),
             ],
@@ -128,6 +126,7 @@ class _NotificationsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.ui; // updates AppUiTokens when theme changes
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(

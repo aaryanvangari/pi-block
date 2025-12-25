@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pi_block/theme/app_ui_tokens.dart';
+import 'package:pi_block/theme/app_ui_context.dart';
 
 class CustomTagWidget extends StatelessWidget {
   const CustomTagWidget({
@@ -16,10 +16,11 @@ class CustomTagWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.ui; // updates AppUiTokens when theme changes
     return Container(
       padding: EdgeInsets.symmetric(vertical: 3, horizontal: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).extension<AppUiTokens>()!.tagBackground,
+        color: context.ui.tagBackground,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Row(

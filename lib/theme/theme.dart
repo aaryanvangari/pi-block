@@ -381,7 +381,9 @@ class MaterialTheme {
 
     /// load extensions based on current color scheme
     /// This changes our custom colors on the fly and can be used as below
-    /// Theme.of(context).extension<AppUiTokens>()!.slidePrimary
+    /// Deprecated: Theme.of(context).extension<AppUiTokens>()!.slidePrimary
+    /// Update: use `context.ui.slidePrimary` as we have `ui` extension method on
+    /// buildcontext which gets updated when theme changes and thereby our AppUiTokens
     extensions: [
       (colorScheme.brightness == Brightness.dark)
           ? darkUiTokens(colorScheme)

@@ -10,7 +10,7 @@ import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
-import 'package:pi_block/theme/app_ui_tokens.dart';
+import 'package:pi_block/theme/app_ui_context.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
@@ -55,12 +55,8 @@ class ListsView extends StatelessWidget {
                           Text(
                             item.comment,
                             style: (item.type == "block")
-                                ? Theme.of(context)
-                                      .extension<AppUiTokens>()!
-                                      .listHeaderTitleBlock
-                                : Theme.of(context)
-                                      .extension<AppUiTokens>()!
-                                      .listHeaderTitleAllow,
+                                ? context.ui.listHeaderTitleBlock
+                                : context.ui.listHeaderTitleAllow,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -508,9 +504,7 @@ class ListsView extends StatelessWidget {
                   );
                 },
                 autoClose: true,
-                backgroundColor: Theme.of(
-                  context,
-                ).extension<AppUiTokens>()!.slideError,
+                backgroundColor: context.ui.slideError,
                 icon: Icons.delete,
               ),
             ],
@@ -524,9 +518,7 @@ class ListsView extends StatelessWidget {
                   _editListSheet(context, selectedPageItem);
                 },
                 autoClose: true,
-                backgroundColor: Theme.of(
-                  context,
-                ).extension<AppUiTokens>()!.slidePrimary,
+                backgroundColor: context.ui.slidePrimary,
                 icon: Icons.edit,
               ),
             ],
@@ -543,6 +535,7 @@ class ListsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.ui; // updates AppUiTokens when theme changes
     return SafeArea(
       child: Scaffold(
         body: Padding(
