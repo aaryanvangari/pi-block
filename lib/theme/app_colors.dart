@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class KColors {
+  static const welcomeScreenBackground = Color(0xFF8198d3);
   static const newVersion = Colors.green;
   static const snackbarDivider = Colors.grey;
   static const transparent = Colors.transparent;
