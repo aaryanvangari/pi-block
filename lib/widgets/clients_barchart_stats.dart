@@ -240,6 +240,7 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
                               enabled: true,
                               touchTooltipData: BarTouchTooltipData(
                                 maxContentWidth: chartTooltipWidth,
+                                fitInsideHorizontally: true,
                                 getTooltipColor: (group) =>
                                     Theme.of(context).colorScheme.onSurface,
                                 tooltipBorderRadius: BorderRadius.circular(8),

@@ -246,6 +246,8 @@ class QueriesBarchartView extends StatelessWidget {
                               enabled: true,
                               touchTooltipData: BarTouchTooltipData(
                                 maxContentWidth: chartTooltipWidth,
+                                fitInsideHorizontally: true,
+                                fitInsideVertically: true,
                                 getTooltipColor: (group) =>
                                     Theme.of(context).colorScheme.onSurface,
                                 tooltipBorderRadius: BorderRadius.circular(8),
