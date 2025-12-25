@@ -43,3 +43,14 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Ignore all .env files
+.env
+
+# Ignore environment-specific .env files (useful for dev, staging, production)
+.env.development
+.env.staging
+.env.production
+
+# If you have any environment config directories
+config/

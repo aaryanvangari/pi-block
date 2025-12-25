@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pi_block/blocs/app_bloc_observer.dart';
@@ -44,6 +45,9 @@ void main() async {
   // Open boxes
   await Hive.openBox<UserSessionModel>(HiveBoxes.userSessions);
   await Hive.openBox<AppSettingsModel>(HiveBoxes.settings);
+
+  // Load environment files for preloaded credentials
+  await dotenv.load(fileName: ".env");
 
   runApp(Directionality(textDirection: TextDirection.ltr, child: MainApp()));
   // runApp(const MainApp());

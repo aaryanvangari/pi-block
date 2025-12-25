@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
@@ -14,8 +15,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _passwordController = TextEditingController();
-  final _serverUrlController = TextEditingController();
+  final _passwordController = TextEditingController(
+    text: dotenv.env['API_TOKEN'] ?? '',
+  );
+  final _serverUrlController = TextEditingController(
+    text: dotenv.env['SERVER_URL'] ?? '',
+  );
   bool loading = false;
   bool passwordVisible = true;
   PiValidators piValidators = PiValidators();
