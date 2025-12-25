@@ -5,12 +5,12 @@ import 'package:pager/pager.dart';
 import 'package:pi_block/blocs/querylog/querylog_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/constants/features/querylog.dart';
-import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/query_model.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
+import 'package:pi_block/theme/app_ui_tokens.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/custom_tag.dart';
@@ -303,7 +303,9 @@ class _QueryLogViewState extends State<_QueryLogView> {
             );
           },
           autoClose: true,
-          backgroundColor: isBlocked ? slidePrimary.value : slideError.value,
+          backgroundColor: isBlocked
+              ? Theme.of(context).extension<AppUiTokens>()!.slidePrimary
+              : Theme.of(context).extension<AppUiTokens>()!.slideError,
           icon: isBlocked ? Icons.check : Icons.block,
         ),
       ],
@@ -341,7 +343,9 @@ class _QueryLogViewState extends State<_QueryLogView> {
             );
           },
           autoClose: true,
-          backgroundColor: isBlocked ? slidePrimary.value : slideError.value,
+          backgroundColor: isBlocked
+              ? Theme.of(context).extension<AppUiTokens>()!.slidePrimary
+              : Theme.of(context).extension<AppUiTokens>()!.slideError,
           icon: isBlocked ? Icons.check : Icons.block,
         ),
       ],

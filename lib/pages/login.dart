@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
-import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
 
 class LoginPage extends StatefulWidget {
@@ -80,9 +79,6 @@ class _LoginPageState extends State<LoginPage> {
                                   piValidators.serverUrlValidator(value),
                               decoration: InputDecoration(
                                 labelText: "Pi-Hole Server Url",
-                                border: KInputStyle.inputBorder,
-                                focusedBorder: KInputStyle.focusedBorder,
-                                enabledBorder: KInputStyle.enabledBorder,
                                 suffixIcon: IconButton(
                                   onPressed: _serverUrlController.clear,
                                   icon: Icon(Icons.clear),
@@ -109,9 +105,6 @@ class _LoginPageState extends State<LoginPage> {
                                   piValidators.apiTokenValidator(value),
                               decoration: InputDecoration(
                                 labelText: "API Token",
-                                border: KInputStyle.inputBorder,
-                                focusedBorder: KInputStyle.focusedBorder,
-                                enabledBorder: KInputStyle.enabledBorder,
                                 suffixIcon: IconButton(
                                   icon: Icon(
                                     passwordVisible

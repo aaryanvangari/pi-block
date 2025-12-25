@@ -6,11 +6,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pi_block/blocs/lists/lists_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
-import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
+import 'package:pi_block/theme/app_ui_tokens.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
@@ -55,8 +55,12 @@ class ListsView extends StatelessWidget {
                           Text(
                             item.comment,
                             style: (item.type == "block")
-                                ? listHeaderTitleBlock.value
-                                : listHeaderTitleAllow.value,
+                                ? Theme.of(context)
+                                      .extension<AppUiTokens>()!
+                                      .listHeaderTitleBlock
+                                : Theme.of(context)
+                                      .extension<AppUiTokens>()!
+                                      .listHeaderTitleAllow,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -226,9 +230,6 @@ class ListsView extends StatelessWidget {
                                 piValidators.listsCommentValidator(value),
                             decoration: InputDecoration(
                               labelText: "Comment",
-                              border: KInputStyle.inputBorder,
-                              focusedBorder: KInputStyle.focusedBorder,
-                              enabledBorder: KInputStyle.enabledBorder,
                               suffixIcon: IconButton(
                                 onPressed: () => commentController.clear(),
                                 icon: Icon(Icons.clear),
@@ -365,9 +366,6 @@ class ListsView extends StatelessWidget {
                                 piValidators.listsAddressValidator(value),
                             decoration: InputDecoration(
                               labelText: "Address",
-                              border: KInputStyle.inputBorder,
-                              focusedBorder: KInputStyle.focusedBorder,
-                              enabledBorder: KInputStyle.enabledBorder,
                               suffixIcon: IconButton(
                                 onPressed: () => addressController.clear(),
                                 icon: Icon(Icons.clear),
@@ -384,9 +382,6 @@ class ListsView extends StatelessWidget {
                                 piValidators.listsCommentValidator(value),
                             decoration: InputDecoration(
                               labelText: "Comment",
-                              border: KInputStyle.inputBorder,
-                              focusedBorder: KInputStyle.focusedBorder,
-                              enabledBorder: KInputStyle.enabledBorder,
                               suffixIcon: IconButton(
                                 onPressed: () => commentController.clear(),
                                 icon: Icon(Icons.clear),
@@ -513,7 +508,9 @@ class ListsView extends StatelessWidget {
                   );
                 },
                 autoClose: true,
-                backgroundColor: slideError.value,
+                backgroundColor: Theme.of(
+                  context,
+                ).extension<AppUiTokens>()!.slideError,
                 icon: Icons.delete,
               ),
             ],
@@ -527,7 +524,9 @@ class ListsView extends StatelessWidget {
                   _editListSheet(context, selectedPageItem);
                 },
                 autoClose: true,
-                backgroundColor: slidePrimary.value,
+                backgroundColor: Theme.of(
+                  context,
+                ).extension<AppUiTokens>()!.slidePrimary,
                 icon: Icons.edit,
               ),
             ],

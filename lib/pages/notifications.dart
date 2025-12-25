@@ -4,10 +4,10 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
-import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/theme/app_styles.dart';
+import 'package:pi_block/theme/app_ui_tokens.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/components/utils.dart';
@@ -109,7 +109,9 @@ class _NotificationsView extends StatelessWidget {
                   );
                 },
                 autoClose: true,
-                backgroundColor: slideError.value,
+                backgroundColor: Theme.of(
+                  context,
+                ).extension<AppUiTokens>()!.slideError,
                 icon: Icons.delete,
               ),
             ],

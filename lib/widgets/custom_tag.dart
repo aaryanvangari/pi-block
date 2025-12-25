@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/theme/app_ui_tokens.dart';
 
 class CustomTagWidget extends StatelessWidget {
   const CustomTagWidget({
@@ -19,7 +19,7 @@ class CustomTagWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 3, horizontal: 4),
       decoration: BoxDecoration(
-        color: tagBackground.value,
+        color: Theme.of(context).extension<AppUiTokens>()!.tagBackground,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Row(

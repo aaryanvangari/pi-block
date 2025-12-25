@@ -84,7 +84,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16.0,
@@ -98,6 +98,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 12.0),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<ThemeModeOption>(
+                            borderRadius: BorderRadius.circular(10),
+                            style: Theme.of(context).textTheme.bodyMedium,
                             value: _currentMode,
                             items: [
                               DropdownMenuItem(
