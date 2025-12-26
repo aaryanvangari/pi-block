@@ -11,6 +11,7 @@ import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/theme/app_ui_context.dart';
+import 'package:pi_block/widgets/cancel_button.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
@@ -19,6 +20,7 @@ import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/widgets/custom_toggle_switch.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
+import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 class ListsPage extends StatelessWidget {
   const ListsPage({super.key});
@@ -177,7 +179,8 @@ class ListsView extends StatelessWidget {
     );
   }
 
-  void _editListSheet(BuildContext ctx, ListsModel listsModel) {
+  void editListFormModal(BuildContext ctx, ListsModel listsModel) {
+    final pageIndexNotifier = ValueNotifier<int>(0);
     String type = listsModel.type;
     bool enabled = listsModel.enabled;
     List<int> groups = listsModel.groups;
@@ -189,135 +192,148 @@ class ListsView extends StatelessWidget {
     );
     final listsBloc = ctx.read<ListsBloc>();
     final formKey = GlobalKey<FormState>();
-    showModalBottomSheet(
-      isScrollControlled: true,
-      elevation: 5,
+
+    WoltModalSheet.show(
       context: ctx,
-      isDismissible: true,
-      showDragHandle: true,
-      useSafeArea: true,
-      shape: KBottomSheetStyle.shape,
-      builder: (ctx) => BlocProvider.value(
-        value: listsBloc,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(
-              top: 15,
-              left: 15,
-              right: 15,
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
+      pageIndexNotifier: pageIndexNotifier,
+      pageListBuilder: (context) {
+        return [
+          WoltModalSheetPage(
+            navBarHeight: 40,
+            pageTitle: Text(
+              "Edit List",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Form(
-                  key: formKey,
-                  child: Builder(
-                    builder: (ctx) {
-                      return Column(
-                        children: [
-                          TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            controller: commentController,
-                            maxLines: 3,
-                            validator: (value) =>
-                                piValidators.listsCommentValidator(value),
-                            decoration: InputDecoration(
-                              labelText: "Comment",
-                              suffixIcon: IconButton(
-                                onPressed: () => commentController.clear(),
-                                icon: Icon(Icons.clear),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 16,
-                            runSpacing: 10,
-                            children: [
-                              CustomToggleSwitch(
-                                initialLabelIndex: enabled ? 0 : 1,
-                                labels: ['Enabled', 'Disabled'],
-                                onToggle: (index) => enabled = index == 0,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 15),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              BlocConsumer<ListsBloc, ListsState>(
-                                listener: (context, state) {
-                                  if (state.itemStatus ==
-                                      ListsItemStateStatus.success) {
-                                    if (Navigator.canPop(ctx)) {
-                                      Navigator.pop(ctx);
-                                    }
-                                  } else if (state.itemStatus ==
-                                      ListsItemStateStatus.failure) {
-                                    if (Navigator.canPop(ctx)) {
-                                      Navigator.pop(ctx);
-                                    }
-                                  }
-                                },
-                                builder: (context, state) {
-                                  final isLoading =
-                                      state.itemStatus ==
-                                      ListsItemStateStatus.loading;
-                                  return FilledButton(
-                                    onPressed: () {
-                                      if (formKey.currentState!.validate()) {
-                                        listsBloc.add(
-                                          UpdateListsItem(
-                                            listsModel: listsModel,
-                                            type: type,
-                                            comment: commentController.text,
-                                            enabled: enabled,
-                                            groups: groups,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
+            child: BlocProvider.value(
+              value: listsBloc,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: 15,
+                    left: 15,
+                    right: 15,
+                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Form(
+                        key: formKey,
+                        child: Builder(
+                          builder: (ctx) {
+                            return Column(
+                              children: [
+                                TextFormField(
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  controller: commentController,
+                                  maxLines: 3,
+                                  validator: (value) =>
+                                      piValidators.commentValidator(value),
+                                  decoration: InputDecoration(
+                                    labelText: "Comment",
+                                    suffixIcon: IconButton(
+                                      onPressed: () =>
+                                          commentController.clear(),
+                                      icon: Icon(Icons.clear),
                                     ),
-                                    child: isLoading
-                                        ? CircularLoaderInButton()
-                                        : Text("Save"),
-                                  );
-                                },
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(ctx);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                 ),
-                                child: Text("Cancel"),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
+                                const SizedBox(height: 10),
+                                Wrap(
+                                  spacing: 16,
+                                  runSpacing: 10,
+                                  children: [
+                                    CustomToggleSwitch(
+                                      initialLabelIndex: enabled ? 0 : 1,
+                                      labels: ['Enabled', 'Disabled'],
+                                      onToggle: (index) => enabled = index == 0,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 15),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    BlocConsumer<ListsBloc, ListsState>(
+                                      listener: (context, state) {
+                                        if (state.itemStatus ==
+                                            ListsItemStateStatus.success) {
+                                          if (Navigator.canPop(ctx)) {
+                                            Navigator.pop(ctx);
+                                          }
+                                        } else if (state.itemStatus ==
+                                            ListsItemStateStatus.failure) {
+                                          PiUtils.handleGeneralException(
+                                            context,
+                                            state.error,
+                                          );
+                                        }
+                                      },
+                                      builder: (context, state) {
+                                        final isLoading =
+                                            state.itemStatus ==
+                                            ListsItemStateStatus.loading;
+                                        return FilledButton(
+                                          onPressed: () {
+                                            if (formKey.currentState!
+                                                .validate()) {
+                                              listsBloc.add(
+                                                UpdateListsItem(
+                                                  listsModel: listsModel,
+                                                  type: type,
+                                                  comment:
+                                                      commentController.text,
+                                                  enabled: enabled,
+                                                  groups: groups,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                          ),
+                                          child: isLoading
+                                              ? CircularLoaderInButton()
+                                              : Text("Save"),
+                                        );
+                                      },
+                                    ),
+                                    CancelButton(
+                                      onPressed: () {
+                                        Navigator.pop(ctx);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ];
+      },
+      modalTypeBuilder: (ctx) => WoltModalType.bottomSheet(), // adapt type
+    ).whenComplete(() {
+      commentController.dispose();
+      pageIndexNotifier.dispose();
+    });
   }
 
-  void _addListSheet(BuildContext ctx) {
+  void addListFormModal(BuildContext ctx) {
+    final pageIndexNotifier = ValueNotifier<int>(0);
     String type = "allow";
     PiValidators piValidators = PiValidators();
 
@@ -325,148 +341,212 @@ class ListsView extends StatelessWidget {
     TextEditingController addressController = TextEditingController();
     final listsBloc = ctx.read<ListsBloc>();
     final formKey = GlobalKey<FormState>();
-    showModalBottomSheet(
-      isScrollControlled: true,
-      elevation: 5,
+
+    WoltModalSheet.show(
       context: ctx,
-      isDismissible: true,
-      showDragHandle: true,
-      useSafeArea: true,
-      shape: KBottomSheetStyle.shape,
-      builder: (ctx) => BlocProvider.value(
-        value: listsBloc,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(
-              top: 15,
-              left: 15,
-              right: 15,
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
+      pageIndexNotifier: pageIndexNotifier,
+      pageListBuilder: (context) {
+        return [
+          WoltModalSheetPage(
+            navBarHeight: 40,
+            pageTitle: Text(
+              "Add List",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Form(
-                  key: formKey,
-                  child: Builder(
-                    builder: (ctx) {
-                      return Column(
-                        children: [
-                          TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            controller: addressController,
-                            maxLines: 1,
-                            validator: (value) =>
-                                piValidators.listsAddressValidator(value),
-                            decoration: InputDecoration(
-                              labelText: "Address",
-                              suffixIcon: IconButton(
-                                onPressed: () => addressController.clear(),
-                                icon: Icon(Icons.clear),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            controller: commentController,
-                            maxLines: 2,
-                            validator: (value) =>
-                                piValidators.listsCommentValidator(value),
-                            decoration: InputDecoration(
-                              labelText: "Comment",
-                              suffixIcon: IconButton(
-                                onPressed: () => commentController.clear(),
-                                icon: Icon(Icons.clear),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 16,
-                            runSpacing: 10,
-                            children: [
-                              CustomToggleSwitch(
-                                initialLabelIndex: type == "allow" ? 0 : 1,
-                                labels: ['Allow', 'BLock'],
-                                onToggle: (index) =>
-                                    type = index == 0 ? "allow" : "block",
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              BlocConsumer<ListsBloc, ListsState>(
-                                listener: (context, state) {
-                                  if (state.itemStatus ==
-                                      ListsItemStateStatus.success) {
-                                    if (Navigator.canPop(ctx)) {
-                                      Navigator.pop(ctx);
-                                    }
-                                  } else if (state.itemStatus ==
-                                      ListsItemStateStatus.failure) {
-                                    if (Navigator.canPop(ctx)) {
-                                      Navigator.pop(ctx);
-                                    }
-                                  }
-                                },
-                                builder: (context, state) {
-                                  final isLoading =
-                                      state.itemStatus ==
-                                      ListsItemStateStatus.loading;
-                                  return FilledButton(
-                                    onPressed: () {
-                                      if (formKey.currentState!.validate()) {
-                                        ListsModel listsModel = ListsModel(
-                                          type: type,
-                                          comment: commentController.text,
-                                          address: addressController.text,
-                                        );
-                                        context.read<ListsBloc>().add(
-                                          AddListsItem(listsModel: listsModel),
-                                        );
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
+            child: BlocProvider.value(
+              value: listsBloc,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: 15,
+                    left: 15,
+                    right: 15,
+                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Form(
+                        key: formKey,
+                        child: Builder(
+                          builder: (ctx) {
+                            return Column(
+                              children: [
+                                TextFormField(
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  controller: addressController,
+                                  maxLines: 1,
+                                  validator: (value) =>
+                                      piValidators.addressValidator(value),
+                                  decoration: InputDecoration(
+                                    labelText: "Address",
+                                    suffixIcon: IconButton(
+                                      onPressed: () =>
+                                          addressController.clear(),
+                                      icon: Icon(Icons.clear),
                                     ),
-                                    child: isLoading
-                                        ? CircularLoaderInButton()
-                                        : const Text("Save"),
-                                  );
-                                },
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(ctx);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                 ),
-                                child: const Text("Cancel"),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
+                                const SizedBox(height: 10),
+                                TextFormField(
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  controller: commentController,
+                                  maxLines: 2,
+                                  validator: (value) =>
+                                      piValidators.commentValidator(value),
+                                  decoration: InputDecoration(
+                                    labelText: "Comment",
+                                    suffixIcon: IconButton(
+                                      onPressed: () =>
+                                          commentController.clear(),
+                                      icon: Icon(Icons.clear),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Wrap(
+                                  spacing: 16,
+                                  runSpacing: 10,
+                                  children: [
+                                    CustomToggleSwitch(
+                                      initialLabelIndex: type == "allow"
+                                          ? 0
+                                          : 1,
+                                      labels: ['Allow', 'BLock'],
+                                      onToggle: (index) =>
+                                          type = index == 0 ? "allow" : "block",
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    BlocConsumer<ListsBloc, ListsState>(
+                                      listener: (context, state) {
+                                        if (state.itemStatus ==
+                                            ListsItemStateStatus.success) {
+                                          if (Navigator.canPop(ctx)) {
+                                            Navigator.pop(ctx);
+                                          }
+                                        } else if (state.itemStatus ==
+                                            ListsItemStateStatus.failure) {
+                                          PiUtils.handleGeneralException(
+                                            context,
+                                            state.error,
+                                          );
+                                        }
+                                      },
+                                      builder: (context, state) {
+                                        final isLoading =
+                                            state.itemStatus ==
+                                            ListsItemStateStatus.loading;
+                                        return FilledButton(
+                                          onPressed: () {
+                                            if (formKey.currentState!
+                                                .validate()) {
+                                              ListsModel
+                                              listsModel = ListsModel(
+                                                type: type,
+                                                comment: commentController.text,
+                                                address: addressController.text,
+                                              );
+                                              context.read<ListsBloc>().add(
+                                                AddListsItem(
+                                                  listsModel: listsModel,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                          ),
+                                          child: isLoading
+                                              ? CircularLoaderInButton()
+                                              : const Text("Save"),
+                                        );
+                                      },
+                                    ),
+                                    CancelButton(
+                                      onPressed: () {
+                                        Navigator.pop(ctx);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ];
+      },
+      modalTypeBuilder: (ctx) => WoltModalType.bottomSheet(), // adapt type
+    ).whenComplete(() {
+      commentController.dispose();
+      addressController.dispose();
+      pageIndexNotifier.dispose();
+    });
+  }
+
+  void deleteListModal(BuildContext context, ListsModel listsModel) {
+    final listsBloc = context.read<ListsBloc>();
+    final pageIndexNotifier = ValueNotifier<int>(0);
+    WoltModalSheet.show(
+      context: context,
+      pageIndexNotifier: pageIndexNotifier,
+      pageListBuilder: (context) {
+        return [
+          WoltModalSheetPage(
+            navBarHeight: 40,
+            pageTitle: Text(
+              "Delete List",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            child: BlocProvider.value(
+              value: listsBloc,
+              child: BlocListener<ListsBloc, ListsState>(
+                listener: (context, state) {
+                  if (state.itemStatus == ListsItemStateStatus.success) {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  } else if (state.itemStatus == ListsItemStateStatus.failure) {
+                    PiUtils.handleGeneralException(context, state.error);
+                  }
+                },
+                child: SimpleBottomSheet(
+                  primaryTitle: "Delete",
+                  cancelFunction: () => Navigator.pop(context),
+                  primaryFunction: () => {
+                    listsBloc.add(DeleteListsItem(listsModel: listsModel)),
+                  },
+                  confirmationText: "Do you want to delete list?",
+                ),
+              ),
+            ),
+          ),
+        ];
+      },
+      modalTypeBuilder: (context) => WoltModalType.bottomSheet(), // adapt type
+    ).whenComplete(() {
+      pageIndexNotifier.dispose();
+    });
   }
 
   Widget getLists(List<ListsModel> listsModels) {
@@ -482,26 +562,7 @@ class ListsView extends StatelessWidget {
             children: [
               SlidableAction(
                 onPressed: (context) {
-                  final listsBloc = context.read<ListsBloc>();
-                  showModalBottomSheet(
-                    isScrollControlled: true,
-                    elevation: 5,
-                    context: context,
-                    isDismissible: true,
-                    showDragHandle: true,
-                    shape: KBottomSheetStyle.shape,
-                    builder: (ctx) => SimpleBottomSheet(
-                      primaryTitle: "Delete",
-                      cancelFunction: () => Navigator.pop(ctx),
-                      primaryFunction: () => {
-                        listsBloc.add(
-                          DeleteListsItem(listsModel: selectedPageItem),
-                        ),
-                        Navigator.pop(ctx),
-                      },
-                      confirmationText: "Do you want to delete list?",
-                    ),
-                  );
+                  deleteListModal(context, selectedPageItem);
                 },
                 autoClose: true,
                 backgroundColor: context.ui.slideError,
@@ -515,7 +576,7 @@ class ListsView extends StatelessWidget {
             children: [
               SlidableAction(
                 onPressed: (context) {
-                  _editListSheet(context, selectedPageItem);
+                  editListFormModal(context, selectedPageItem);
                 },
                 autoClose: true,
                 backgroundColor: context.ui.slidePrimary,
@@ -552,8 +613,9 @@ class ListsView extends StatelessWidget {
                             context,
                             "An Error Occured",
                           );
-                        } else if (state.itemStatus ==
-                            ListsItemStateStatus.failure) {
+                        } else if (state.itemToggleStatus ==
+                            ListsItemToggleStateStatus.failure) {
+                          context.read<ListsBloc>().add(ResetItemToggleError());
                           PiUtils.handleGeneralException(
                             context,
                             "An Error Occured",
@@ -598,7 +660,7 @@ class ListsView extends StatelessWidget {
                                     ),
                                     IconButton.filled(
                                       onPressed: () {
-                                        _addListSheet(context);
+                                        addListFormModal(context);
                                       },
                                       icon: Icon(Icons.add, size: 15),
                                       visualDensity: VisualDensity.compact,

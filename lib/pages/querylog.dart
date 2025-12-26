@@ -16,6 +16,7 @@ import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
+import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 class QueryLogPage extends StatelessWidget {
   const QueryLogPage({super.key});
@@ -273,83 +274,64 @@ class _QueryLogViewState extends State<_QueryLogView> {
     );
   }
 
-  ActionPane allowActionPane(item, isBlocked) {
-    return ActionPane(
-      motion: const BehindMotion(),
-      extentRatio: 0.2,
-      children: [
-        SlidableAction(
-          onPressed: (context) {
-            final querylogBloc = BlocProvider.of<QuerylogBloc>(context);
-            showModalBottomSheet(
-              isScrollControlled: true,
-              elevation: 5,
-              context: context,
-              isDismissible: true,
-              showDragHandle: true,
-              shape: KBottomSheetStyle.shape,
-              builder: (ctx) => SimpleBottomSheet(
-                primaryTitle: "Allow",
-                backgroundColor: Theme.of(ctx).colorScheme.primary,
-                cancelFunction: () => Navigator.pop(ctx),
-                primaryFunction: () {
-                  querylogBloc.add(
-                    AllowDenyQuerylogDomain(queryModel: item, type: "allow"),
-                  );
-                  Navigator.pop(ctx);
+  void allowDenyQuerylogModal(
+    BuildContext context,
+    QueryModel item,
+    bool isBlocked,
+  ) {
+    final querylogBloc = context.read<QuerylogBloc>();
+    final pageIndexNotifier = ValueNotifier<int>(0);
+    WoltModalSheet.show(
+      context: context,
+      pageIndexNotifier: pageIndexNotifier,
+      pageListBuilder: (context) {
+        return [
+          WoltModalSheetPage(
+            navBarHeight: 40,
+            pageTitle: Text(
+              '${isBlocked ? 'Allow' : 'Deny'} Domain',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            child: BlocProvider.value(
+              value: querylogBloc,
+              child: BlocListener<QuerylogBloc, QuerylogState>(
+                listener: (context, state) {
+                  if (state.itemStatus == QuerylogItemStateStatus.success) {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  } else if (state.itemStatus ==
+                      QuerylogItemStateStatus.failure) {
+                    PiUtils.handleGeneralException(context, state.error);
+                  }
                 },
-                confirmationText: "Do you want to allow domain?",
-              ),
-            );
-          },
-          autoClose: true,
-          backgroundColor: isBlocked
-              ? context.ui.slidePrimary
-              : context.ui.slideError,
-          icon: isBlocked ? Icons.check : Icons.block,
-        ),
-      ],
-    );
-  }
-
-  ActionPane denyActionPane(item, isBlocked) {
-    return ActionPane(
-      motion: const BehindMotion(),
-      extentRatio: 0.2,
-      children: [
-        SlidableAction(
-          onPressed: (context) {
-            final querylogBloc = BlocProvider.of<QuerylogBloc>(context);
-            showModalBottomSheet(
-              isScrollControlled: true,
-              elevation: 5,
-              context: context,
-              isDismissible: true,
-              showDragHandle: true,
-              shape: KBottomSheetStyle.shape,
-              builder: (ctx) {
-                return SimpleBottomSheet(
-                  primaryTitle: "Deny",
-                  cancelFunction: () => Navigator.pop(ctx),
-                  primaryFunction: () {
+                child: SimpleBottomSheet(
+                  primaryTitle: isBlocked ? "Allow" : "Deny",
+                  backgroundColor: isBlocked
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                  cancelFunction: () => Navigator.pop(context),
+                  primaryFunction: () => {
                     querylogBloc.add(
-                      AllowDenyQuerylogDomain(queryModel: item, type: "deny"),
-                    );
-                    Navigator.pop(ctx);
+                      AllowDenyQuerylogDomain(
+                        queryModel: item,
+                        type: isBlocked ? "allow" : "deny",
+                      ),
+                    ),
                   },
-                  confirmationText: "Do you want to deny domain?",
-                );
-              },
-            );
-          },
-          autoClose: true,
-          backgroundColor: isBlocked
-              ? context.ui.slidePrimary
-              : context.ui.slideError,
-          icon: isBlocked ? Icons.check : Icons.block,
-        ),
-      ],
-    );
+                  confirmationText:
+                      'Do you want to ${isBlocked ? 'allow' : 'deny'} domain?',
+                ),
+              ),
+            ),
+          ),
+        ];
+      },
+      modalTypeBuilder: (context) => WoltModalType.bottomSheet(), // adapt type
+    ).whenComplete(() {
+      pageIndexNotifier.dispose();
+    });
   }
 
   Widget generateQueryLogData(List<QueryModel> queryModels) {
@@ -365,9 +347,22 @@ class _QueryLogViewState extends State<_QueryLogView> {
             QuerylogConstants.queryStatus[selectedPageItem.status]["blocked"];
         return Slidable(
           key: Key(selectedPageItem.id.toString()),
-          endActionPane: isBlocked
-              ? allowActionPane(selectedPageItem, isBlocked)
-              : denyActionPane(selectedPageItem, isBlocked),
+          endActionPane: ActionPane(
+            motion: const BehindMotion(),
+            extentRatio: 0.2,
+            children: [
+              SlidableAction(
+                onPressed: (context) {
+                  allowDenyQuerylogModal(context, selectedPageItem, isBlocked);
+                },
+                autoClose: true,
+                backgroundColor: isBlocked
+                    ? context.ui.slidePrimary
+                    : context.ui.slideError,
+                icon: isBlocked ? Icons.check : Icons.block,
+              ),
+            ],
+          ),
           child: _queryLogRow(selectedPageItem),
         );
       },
@@ -421,12 +416,6 @@ class _QueryLogViewState extends State<_QueryLogView> {
                   return BlocConsumer<QuerylogBloc, QuerylogState>(
                     listener: (context, state) {
                       if (state.status == QuerylogStateStatus.failure) {
-                        PiUtils.handleGeneralException(
-                          context,
-                          "An Error Occured",
-                        );
-                      } else if (state.itemStatus ==
-                          QuerylogItemStateStatus.failure) {
                         PiUtils.handleGeneralException(
                           context,
                           "An Error Occured",

@@ -21,21 +21,21 @@ class PiValidators {
     return null;
   }
 
-  listsCommentValidator(String? value) {
+  commentValidator(String? value) {
     if (!validators.isLength(value ?? "", 0, 100)) {
       return ("Comment can be max 100 characters long.");
     }
     return null;
   }
 
-  listsAddressValidator(String? value) {
+  addressValidator(String? value) {
     if (!validators.isURL(value)) {
       return "Invalid URL";
     }
     return null;
   }
 
-  domainsDomainValidator(String? value) {
+  domainValidator(String? value) {
     if (value == null || value.isEmpty) {
       return "Domain is required";
     }

@@ -57,3 +57,5 @@ final class DeleteListsItem extends ListsEvent {
   @override
   List<Object> get props => [listsModel];
 }
+
+final class ResetItemToggleError extends ListsEvent {}

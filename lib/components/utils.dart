@@ -69,8 +69,10 @@ class PiUtils {
       error: e,
     );
     String errorClass = e.runtimeType.toString();
-    String errorTitle = e.toString().substring(0, 15);
-    String errorDescription = e.toString();
+    String errorTitle = e.toString().length > 15
+        ? e.toString().substring(0, 15)
+        : e.toString();
+    String errorDescription = e.toString().length > 15 ? e.toString() : "";
     if (errorClass == "APIException") {
       APIException apiException = e as APIException;
       errorTitle = apiException.message;
@@ -83,6 +85,7 @@ class PiUtils {
 
     if (e.toString() == "Session Error: Session Expired") {
       // await Future.delayed(Duration(seconds: 0));
+      // #TODO test this functionality
       context.go("/");
     }
     GlobalSnackbar.error(context, errorTitle, errorDescription);

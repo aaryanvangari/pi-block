@@ -22,6 +22,7 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
     on<UpdateDomainsItem>(_updateDomainsItem);
     on<AddDomainsItem>(_addDomainsItem);
     on<DeleteDomainsItem>(_deleteDomainsItem);
+    on<ResetItemToggleError>(_resetToggleError);
     _domainstreamController.add(const []);
   }
 
@@ -53,11 +54,25 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
     }
   }
 
+  void _resetToggleError(
+    ResetItemToggleError event,
+    Emitter<DomainsState> emit,
+  ) {
+    emit(
+      state.copyWith(
+        itemToggleStatus: DomainsItemToggleStateStatus.initial,
+        toggleError: "",
+      ),
+    );
+  }
+
   Future<void> _onDomainToggled(
     DomainItemToggled event,
     Emitter<DomainsState> emit,
   ) async {
-    emit(state.copyWith(itemStatus: DomainsItemStateStatus.loading));
+    emit(
+      state.copyWith(itemToggleStatus: DomainsItemToggleStateStatus.loading),
+    );
     try {
       final newDomain = event.domainModel.copyWith(enabled: event.isEnabled);
       DomainUpdateModel domainUpdateModel = await piholeRepository
@@ -77,8 +92,8 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
     } catch (e) {
       emit(
         state.copyWith(
-          itemStatus: DomainsItemStateStatus.failure,
-          error: e.toString(),
+          itemToggleStatus: DomainsItemToggleStateStatus.failure,
+          toggleError: e.toString(),
         ),
       );
     }
