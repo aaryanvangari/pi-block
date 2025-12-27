@@ -7,7 +7,12 @@
         {
             "name": "pi_block",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "--dart-define=ENV=dev",
+                "--dart-define=SERVER_URL=${env:PIHOLE_SERVER_URL}",
+                "--dart-define=API_TOKEN=${env:PIHOLE_API_TOKEN}"
+            ]
         },
         {
             "name": "pi_block (profile mode)",
