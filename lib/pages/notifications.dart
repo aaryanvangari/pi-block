@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
@@ -132,12 +131,7 @@ class _NotificationsView extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Notifications"),
           elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              context.go("/home");
-            },
-          ),
+          leading: BackButton(),
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),

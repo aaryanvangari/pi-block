@@ -3,7 +3,6 @@ import 'dart:math' hide log;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_randomcolor/flutter_randomcolor.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:logging/logging.dart';
 import 'package:pi_block/error/exceptions/api_exception.dart';
@@ -83,11 +82,6 @@ class PiUtils {
       errorDescription = sessionException.description;
     }
 
-    if (e.toString() == "Session Error: Session Expired") {
-      // await Future.delayed(Duration(seconds: 0));
-      // #TODO test this functionality
-      context.go("/");
-    }
     GlobalSnackbar.error(context, errorTitle, errorDescription);
   }
 

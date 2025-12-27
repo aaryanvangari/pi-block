@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pi_block/services/settings_service.dart';
 import 'package:pi_block/data/notifiers.dart';
@@ -53,12 +52,7 @@ class _SettingsPageState extends State<SettingsPage> {
       appBar: AppBar(
         title: Text("Settings"),
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            context.go("/home");
-          },
-        ),
+        leading: BackButton(),
       ),
       body: SingleChildScrollView(
         child: Column(

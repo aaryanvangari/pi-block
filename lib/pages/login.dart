@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
@@ -36,16 +35,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Login"),
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            context.go("/");
-          },
-        ),
-      ),
+      appBar: AppBar(title: Text("Login"), elevation: 0, leading: BackButton()),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -129,11 +119,9 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 20),
                           BlocConsumer<AuthBloc, AuthState>(
+                            /// success case will be handled by AppRouter
                             listener: (context, state) {
-                              if (state.status == AuthStateStatus.loggedIn) {
-                                context.go("/home");
-                              } else if (state.status ==
-                                  AuthStateStatus.failure) {
+                              if (state.status == AuthStateStatus.failure) {
                                 GlobalSnackbar.error(
                                   context,
                                   state.error,

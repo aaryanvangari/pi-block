@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pi_block/router/app_routes.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/widgets/logo.dart';
 
@@ -31,7 +32,7 @@ class WelcomePage extends StatelessWidget {
                 SizedBox(height: 30),
                 FilledButton(
                   onPressed: () {
-                    context.go("/login");
+                    context.pushNamed(AppRoutes.login);
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(size.width * 0.7, 50),

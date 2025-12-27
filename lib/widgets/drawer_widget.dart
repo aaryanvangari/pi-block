@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pi_block/router/app_routes.dart';
 import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/logo.dart';
 
@@ -50,14 +51,16 @@ class DrawerWidget extends StatelessWidget {
                 ),
                 leading: Icon(Icons.code),
                 onTap: () {
-                  context.go("/piholeConfiguration");
+                  Navigator.of(context).pop(); // closes drawer
+                  context.pushNamed(AppRoutes.piholeConfiguration);
                 },
               ),
               ListTile(
                 title: Text("Settings", style: KTextStyle.drawerEntryItemTitle),
                 leading: Icon(Icons.settings),
                 onTap: () {
-                  context.go("/settings");
+                  Navigator.of(context).pop(); // closes drawer
+                  context.pushNamed(AppRoutes.settings);
                 },
               ),
             ],
