@@ -18,9 +18,7 @@ class WelcomePage extends StatelessWidget {
             return SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight
-                ),
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
                 child: FractionallySizedBox(
                   widthFactor: isWide ? 0.35 : 1,
                   child: Column(

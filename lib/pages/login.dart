@@ -43,11 +43,9 @@ class _LoginPageState extends State<LoginPage> {
               final isWide = constraints.maxWidth > 900;
               return SingleChildScrollView(
                 child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: constraints.maxHeight
-                  ),
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
                   child: FractionallySizedBox(
-                    widthFactor: isWide ? 0.35: 1,
+                    widthFactor: isWide ? 0.35 : 1,
                     alignment: Alignment.center,
                     child: Padding(
                       padding: const EdgeInsets.all(20.0),
@@ -82,12 +80,13 @@ class _LoginPageState extends State<LoginPage> {
                                         autovalidateMode:
                                             AutovalidateMode.onUserInteraction,
                                         controller: _serverUrlController,
-                                        validator: (value) =>
-                                            piValidators.serverUrlValidator(value),
+                                        validator: (value) => piValidators
+                                            .serverUrlValidator(value),
                                         decoration: InputDecoration(
                                           labelText: "Pi-Hole Server Url",
                                           suffixIcon: IconButton(
-                                            onPressed: _serverUrlController.clear,
+                                            onPressed:
+                                                _serverUrlController.clear,
                                             icon: Icon(Icons.clear),
                                           ),
                                         ),
@@ -108,8 +107,8 @@ class _LoginPageState extends State<LoginPage> {
                                         obscureText: passwordVisible,
                                         enableSuggestions: false,
                                         autocorrect: false,
-                                        validator: (value) =>
-                                            piValidators.apiTokenValidator(value),
+                                        validator: (value) => piValidators
+                                            .apiTokenValidator(value),
                                         decoration: InputDecoration(
                                           labelText: "API Token",
                                           suffixIcon: IconButton(
@@ -120,12 +119,14 @@ class _LoginPageState extends State<LoginPage> {
                                             ),
                                             onPressed: () {
                                               setState(() {
-                                                passwordVisible = !passwordVisible;
+                                                passwordVisible =
+                                                    !passwordVisible;
                                               });
                                             },
                                           ),
                                         ),
-                                        keyboardType: TextInputType.visiblePassword,
+                                        keyboardType:
+                                            TextInputType.visiblePassword,
                                         textInputAction: TextInputAction.done,
                                       ),
                                     ),
@@ -133,7 +134,8 @@ class _LoginPageState extends State<LoginPage> {
                                     BlocConsumer<AuthBloc, AuthState>(
                                       /// success case will be handled by AppRouter
                                       listener: (context, state) {
-                                        if (state.status == AuthStateStatus.failure) {
+                                        if (state.status ==
+                                            AuthStateStatus.failure) {
                                           GlobalSnackbar.error(
                                             context,
                                             state.error,
@@ -142,7 +144,8 @@ class _LoginPageState extends State<LoginPage> {
                                         }
                                       },
                                       builder: (context, state) {
-                                        if (state.status == AuthStateStatus.loading) {
+                                        if (state.status ==
+                                            AuthStateStatus.loading) {
                                           loading = true;
                                         } else if (state.status ==
                                             AuthStateStatus.failure) {
@@ -150,20 +153,26 @@ class _LoginPageState extends State<LoginPage> {
                                         }
                                         return FilledButton(
                                           onPressed: () {
-                                            if (formKey.currentState!.validate()) {
+                                            if (formKey.currentState!
+                                                .validate()) {
                                               context.read<AuthBloc>().add(
                                                 Login(
                                                   serverUrl:
                                                       _serverUrlController.text,
-                                                  apiToken: _passwordController.text,
+                                                  apiToken:
+                                                      _passwordController.text,
                                                 ),
                                               );
                                             }
                                           },
                                           style: ElevatedButton.styleFrom(
-                                            minimumSize: Size(double.infinity, 50),
+                                            minimumSize: Size(
+                                              double.infinity,
+                                              50,
+                                            ),
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
                                             ),
                                           ),
                                           child: loading
