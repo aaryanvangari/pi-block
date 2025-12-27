@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logging/logging.dart';
 import 'package:pi_block/error/exceptions/api_exception.dart';
 import 'package:pi_block/services/user_session_service.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
@@ -83,31 +86,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _logout(Logout event, Emitter<AuthState> emit) async {
     emit(state.copyWith(status: AuthStateStatus.loading));
     try {
-      bool isLoggedOut = await piholeRepository.logout();
-      if (isLoggedOut) {
-        UserSessionService userSessionService = UserSessionService();
-        await userSessionService.clearSession();
-
-        emit(
-          state.copyWith(
-            sid: "",
-            csrf: "",
-            message: "",
-            validity: 0,
-            scheme: "",
-            server: "",
-            port: 0,
-            sessionValidUntil: 0,
-            status: AuthStateStatus.loggedOut,
-            error: "",
-            errorDescription: "",
-          ),
-        );
-      }
+      await piholeRepository.logout();
     } catch (e) {
-      emit(
-        state.copyWith(status: AuthStateStatus.failure, error: e.toString()),
-      );
+      log(e.toString(), level: Level.FINE.value, name: "AuthBloc._logout");
     }
+
+    UserSessionService userSessionService = UserSessionService();
+    await userSessionService.clearSession();
+
+    emit(
+      state.copyWith(
+        sid: "",
+        csrf: "",
+        message: "",
+        validity: 0,
+        scheme: "",
+        server: "",
+        port: 0,
+        sessionValidUntil: 0,
+        status: AuthStateStatus.loggedOut,
+        error: "",
+        errorDescription: "",
+      ),
+    );
   }
 }
