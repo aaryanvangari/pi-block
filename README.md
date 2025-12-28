@@ -18,4 +18,3 @@ Application to manage Pi-Hole instance.
 ## Limitations
 
 * For now works on instances with default group
-* Maybe some layout issues

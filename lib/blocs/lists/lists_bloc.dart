@@ -23,6 +23,7 @@ class ListsBloc extends Bloc<ListsEvent, ListsState> {
     on<UpdateListsItem>(_updateListsItem);
     on<AddListsItem>(_addListsItem);
     on<DeleteListsItem>(_deleteListsItem);
+    on<ResetItemToggleError>(_resetToggleError);
     _listStreamController.add(const []);
   }
 
@@ -52,11 +53,20 @@ class ListsBloc extends Bloc<ListsEvent, ListsState> {
     }
   }
 
+  void _resetToggleError(ResetItemToggleError event, Emitter<ListsState> emit) {
+    emit(
+      state.copyWith(
+        itemToggleStatus: ListsItemToggleStateStatus.initial,
+        toggleError: "",
+      ),
+    );
+  }
+
   Future<void> _onListToggled(
     ListItemToggled event,
     Emitter<ListsState> emit,
   ) async {
-    emit(state.copyWith(itemStatus: ListsItemStateStatus.loading));
+    emit(state.copyWith(itemToggleStatus: ListsItemToggleStateStatus.loading));
     try {
       final newList = event.listsModel.copyWith(enabled: event.isEnabled);
       ListUpdateModel listUpdateModel = await piholeRepository.updateListsItem(
@@ -71,8 +81,8 @@ class ListsBloc extends Bloc<ListsEvent, ListsState> {
     } catch (e) {
       emit(
         state.copyWith(
-          itemStatus: ListsItemStateStatus.failure,
-          error: e.toString(),
+          itemToggleStatus: ListsItemToggleStateStatus.failure,
+          toggleError: e.toString(),
         ),
       );
     }

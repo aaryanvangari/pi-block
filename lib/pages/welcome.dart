@@ -1,76 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pi_block/widgets/gradient_background.dart';
+import 'package:pi_block/router/app_routes.dart';
+import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/widgets/logo.dart';
 
-class WelcomePage extends StatefulWidget {
+class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key});
 
   @override
-  State<WelcomePage> createState() => _WelcomePageState();
-}
-
-class _WelcomePageState extends State<WelcomePage> {
-  Widget _buildCirle(double diameter, Color color, int index) {
-    return Container(
-      width: diameter,
-      height: diameter,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: index < 2 ? color : Colors.transparent,
-        border: index >= 2 ? Border.all(color: color, width: 1) : null,
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
-      body: GradientBackground(
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            Positioned(
-              top: size.height * 0.15,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  _buildCirle(size.width * 1.2, Colors.white.withAlpha(10), 0),
-                  _buildCirle(size.width * 0.9, Colors.white.withAlpha(15), 0),
-                  _buildCirle(size.width * 0.6, Colors.white.withAlpha(20), 0),
-                  _buildCirle(size.width * 0.3, Colors.white.withAlpha(30), 0),
-                ],
-              ),
-            ),
-            Positioned(
-              top: size.height * 0.3,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  LogoWidget(type: "welcome"),
-                  SizedBox(height: 20),
-                  Text(
-                    "Manage your Pi-Hole server",
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(height: 30),
-                  FilledButton(
-                    onPressed: () {
-                      context.go("/login");
-                    },
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: Size(size.width * 0.7, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+      backgroundColor: KColors.welcomeScreenBackground,
+      body: Center(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth > 900;
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: FractionallySizedBox(
+                  widthFactor: isWide ? 0.35 : 1,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      LogoWidget(type: "welcome"),
+                      const SizedBox(height: 20),
+                      Text(
+                        "Manage your Pi-Hole server",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.surface,
+                        ),
                       ),
-                    ),
-                    child: Text("Get Started"),
+                      SizedBox(height: 30),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 40,
+                        child: FilledButton(
+                          onPressed: () {
+                            context.pushNamed(AppRoutes.login);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.primaryContainer,
+                            foregroundColor: Theme.of(
+                              context,
+                            ).colorScheme.onPrimaryContainer,
+                          ),
+                          child: Text("Get Started"),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

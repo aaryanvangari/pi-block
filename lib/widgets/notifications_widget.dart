@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
+import 'package:pi_block/router/app_routes.dart';
 
 class NotificationsWidget extends StatelessWidget {
   const NotificationsWidget({super.key});
@@ -28,7 +29,7 @@ class NotificationsListView extends StatelessWidget {
       padding: const EdgeInsets.only(right: 10.0),
       child: IconButton(
         onPressed: () {
-          context.go("/notifications");
+          context.pushNamed(AppRoutes.notifications);
         },
         icon: BlocBuilder<NotificationsBloc, NotificationsState>(
           builder: (context, state) {

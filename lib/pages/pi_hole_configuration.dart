@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_json/flutter_json.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/pihole_config/pihole_config_bloc.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/pihole_config_model.dart';
@@ -93,12 +92,7 @@ class _PiholeConfigurationViewState extends State<_PiholeConfigurationView> {
         appBar: AppBar(
           title: Text("Pi-Hole Configuration"),
           elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              context.go("/home");
-            },
-          ),
+          leading: BackButton(),
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),

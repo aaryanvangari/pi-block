@@ -9,7 +9,10 @@ import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/domain_model.dart';
-import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/theme/app_colors.dart';
+import 'package:pi_block/theme/app_styles.dart';
+import 'package:pi_block/theme/app_ui_context.dart';
+import 'package:pi_block/widgets/cancel_button.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
@@ -18,7 +21,7 @@ import 'package:pi_block/widgets/custom_toggle_switch.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
+import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 class DomainsPage extends StatelessWidget {
   const DomainsPage({super.key});
@@ -36,7 +39,8 @@ class DomainsPage extends StatelessWidget {
 class DomainsView extends StatelessWidget {
   const DomainsView({super.key});
 
-  void _addDomainSheet(BuildContext ctx) {
+  void addDomainFormModal(BuildContext ctx) {
+    final pageIndexNotifier = ValueNotifier<int>(0);
     String type = "allow";
     String kind = "exact";
     PiValidators piValidators = PiValidators();
@@ -45,178 +49,180 @@ class DomainsView extends StatelessWidget {
     TextEditingController domainController = TextEditingController();
     final domainsBloc = ctx.read<DomainsBloc>();
     final formKey = GlobalKey<FormState>();
-    showModalBottomSheet(
-      isScrollControlled: true,
-      elevation: 5,
+
+    WoltModalSheet.show(
       context: ctx,
-      isDismissible: true,
-      showDragHandle: true,
-      useSafeArea: true,
-      shape: KBottomSheetStyle.shape,
-      builder: (ctx) => BlocProvider.value(
-        value: domainsBloc,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(
-              top: 15,
-              left: 15,
-              right: 15,
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
+      pageIndexNotifier: pageIndexNotifier,
+      pageListBuilder: (context) {
+        return [
+          WoltModalSheetPage(
+            navBarHeight: 40,
+            pageTitle: Text(
+              "Add Domain",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Form(
-                  key: formKey,
-                  child: Builder(
-                    builder: (ctx) {
-                      return Column(
-                        children: [
-                          TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            controller: domainController,
-                            maxLines: 1,
-                            validator: (value) =>
-                                piValidators.domainsDomainValidator(value),
-                            decoration: InputDecoration(
-                              labelText: "Domain",
-                              border: KInputStyle.inputBorder,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              suffixIcon: IconButton(
-                                onPressed: () => domainController.clear(),
-                                icon: Icon(Icons.clear),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            controller: commentController,
-                            maxLines: 2,
-                            validator: (value) =>
-                                piValidators.listsCommentValidator(value),
-                            decoration: InputDecoration(
-                              labelText: "Comment",
-                              border: KInputStyle.inputBorder,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              suffixIcon: IconButton(
-                                onPressed: () => commentController.clear(),
-                                icon: Icon(Icons.clear),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 16,
-                            runSpacing: 10,
-                            children: [
-                              CustomToggleSwitch(
-                                initialLabelIndex: kind == "regex" ? 0 : 1,
-                                labels: ['Regex', 'Exact'],
-                                onToggle: (index) =>
-                                    kind = (index == 0) ? "regex" : "exact",
-                              ),
-                              CustomToggleSwitch(
-                                initialLabelIndex: type == "allow" ? 0 : 1,
-                                labels: ['Allow', 'Deny'],
-                                onToggle: (index) =>
-                                    type = (index == 0) ? "allow" : "deny",
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              BlocConsumer<DomainsBloc, DomainsState>(
-                                listener: (context, state) {
-                                  if (state.itemStatus ==
-                                      DomainsItemStateStatus.success) {
-                                    if (Navigator.canPop(ctx)) {
-                                      Navigator.pop(ctx);
-                                    }
-                                  } else if (state.itemStatus ==
-                                      DomainsItemStateStatus.failure) {
-                                    if (Navigator.canPop(ctx)) {
-                                      Navigator.pop(ctx);
-                                    }
-                                  }
-                                },
-                                builder: (context, state) {
-                                  final isLoading =
-                                      state.itemStatus ==
-                                      DomainsItemStateStatus.loading;
-                                  return FilledButton(
-                                    onPressed: () {
-                                      if (formKey.currentState!.validate()) {
-                                        DomainModel domainModel = DomainModel(
-                                          domain: domainController.text,
-                                          comment: commentController.text,
-                                          type: type,
-                                          kind: kind,
-                                        );
-                                        context.read<DomainsBloc>().add(
-                                          AddDomainsItem(
-                                            domainModel: domainModel,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
+            child: BlocProvider.value(
+              value: domainsBloc,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: 15,
+                    left: 15,
+                    right: 15,
+                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Form(
+                        key: formKey,
+                        child: Builder(
+                          builder: (ctx) {
+                            return Column(
+                              children: [
+                                TextFormField(
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  controller: domainController,
+                                  maxLines: 1,
+                                  validator: (value) =>
+                                      piValidators.domainValidator(value),
+                                  decoration: InputDecoration(
+                                    labelText: "Domain",
+                                    suffixIcon: IconButton(
+                                      onPressed: () => domainController.clear(),
+                                      icon: Icon(Icons.clear),
                                     ),
-                                    child: isLoading
-                                        ? CircularLoaderInButton()
-                                        : const Text("Save"),
-                                  );
-                                },
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(ctx);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                 ),
-                                child: const Text("Cancel"),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
+                                const SizedBox(height: 10),
+                                TextFormField(
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  controller: commentController,
+                                  maxLines: 2,
+                                  validator: (value) =>
+                                      piValidators.commentValidator(value),
+                                  decoration: InputDecoration(
+                                    labelText: "Comment",
+                                    suffixIcon: IconButton(
+                                      onPressed: () =>
+                                          commentController.clear(),
+                                      icon: Icon(Icons.clear),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Wrap(
+                                  spacing: 16,
+                                  runSpacing: 10,
+                                  children: [
+                                    CustomToggleSwitch(
+                                      initialLabelIndex: kind == "regex"
+                                          ? 0
+                                          : 1,
+                                      labels: ['Regex', 'Exact'],
+                                      onToggle: (index) => kind = (index == 0)
+                                          ? "regex"
+                                          : "exact",
+                                    ),
+                                    CustomToggleSwitch(
+                                      initialLabelIndex: type == "allow"
+                                          ? 0
+                                          : 1,
+                                      labels: ['Allow', 'Deny'],
+                                      onToggle: (index) => type = (index == 0)
+                                          ? "allow"
+                                          : "deny",
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    BlocConsumer<DomainsBloc, DomainsState>(
+                                      listener: (context, state) {
+                                        if (state.itemStatus ==
+                                            DomainsItemStateStatus.success) {
+                                          if (Navigator.canPop(ctx)) {
+                                            Navigator.pop(ctx);
+                                          }
+                                        } else if (state.itemStatus ==
+                                            DomainsItemStateStatus.failure) {
+                                          PiUtils.handleGeneralException(
+                                            context,
+                                            state.error,
+                                          );
+                                        }
+                                      },
+                                      builder: (context, state) {
+                                        final isLoading =
+                                            state.itemStatus ==
+                                            DomainsItemStateStatus.loading;
+                                        return FilledButton(
+                                          onPressed: () {
+                                            if (formKey.currentState!
+                                                .validate()) {
+                                              DomainModel
+                                              domainModel = DomainModel(
+                                                domain: domainController.text,
+                                                comment: commentController.text,
+                                                type: type,
+                                                kind: kind,
+                                              );
+                                              context.read<DomainsBloc>().add(
+                                                AddDomainsItem(
+                                                  domainModel: domainModel,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                          ),
+                                          child: isLoading
+                                              ? CircularLoaderInButton()
+                                              : const Text("Save"),
+                                        );
+                                      },
+                                    ),
+                                    CancelButton(
+                                      onPressed: () {
+                                        Navigator.pop(ctx);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ];
+      },
+      modalTypeBuilder: (ctx) => WoltModalType.bottomSheet(), // adapt type
+    ).whenComplete(() {
+      commentController.dispose();
+      domainController.dispose();
+      pageIndexNotifier.dispose();
+    });
   }
 
-  void _editDomainSheet(BuildContext ctx, DomainModel domainModel) {
+  void editDomainFormModal(BuildContext ctx, DomainModel domainModel) {
+    final pageIndexNotifier = ValueNotifier<int>(0);
     String type = domainModel.type;
     bool enabled = domainModel.enabled;
     List<int> groups = domainModel.groups;
@@ -229,155 +235,213 @@ class DomainsView extends StatelessWidget {
     );
     final domainsBloc = ctx.read<DomainsBloc>();
     final formKey = GlobalKey<FormState>();
-    showModalBottomSheet(
-      isScrollControlled: true,
-      elevation: 5,
+
+    WoltModalSheet.show(
       context: ctx,
-      isDismissible: true,
-      showDragHandle: true,
-      useSafeArea: true,
-      shape: KBottomSheetStyle.shape,
-      builder: (ctx) => BlocProvider.value(
-        value: domainsBloc,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(
-              top: 15,
-              left: 15,
-              right: 15,
-              bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
+      pageIndexNotifier: pageIndexNotifier,
+      pageListBuilder: (context) {
+        return [
+          WoltModalSheetPage(
+            navBarHeight: 40,
+            pageTitle: Text(
+              "Edit Domain",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Form(
-                  key: formKey,
-                  child: Builder(
-                    builder: (ctx) {
-                      return Column(
-                        children: [
-                          TextFormField(
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            controller: commentController,
-                            maxLines: 3,
-                            validator: (value) =>
-                                piValidators.listsCommentValidator(value),
-                            decoration: InputDecoration(
-                              labelText: "Comment",
-                              border: KInputStyle.inputBorder,
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide: BorderSide(color: Colors.grey),
-                              ),
-                              suffixIcon: IconButton(
-                                onPressed: () => commentController.clear(),
-                                icon: const Icon(Icons.clear),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 16,
-                            runSpacing: 10,
-                            children: [
-                              CustomToggleSwitch(
-                                initialLabelIndex: enabled ? 0 : 1,
-                                labels: ['Enabled', 'Disabled'],
-                                onToggle: (index) =>
-                                    enabled = (index == 0) ? true : false,
-                              ),
-                              CustomToggleSwitch(
-                                initialLabelIndex: kind == "regex" ? 0 : 1,
-                                labels: ['Regex', 'Exact'],
-                                onToggle: (index) =>
-                                    kind = (index == 0) ? "regex" : "exact",
-                              ),
-                              CustomToggleSwitch(
-                                initialLabelIndex: type == "allow" ? 0 : 1,
-                                labels: ['Allow', 'Deny'],
-                                onToggle: (index) =>
-                                    type = (index == 0) ? "allow" : "deny",
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              BlocConsumer<DomainsBloc, DomainsState>(
-                                listener: (context, state) {
-                                  if (state.itemStatus ==
-                                      DomainsItemStateStatus.success) {
-                                    if (Navigator.canPop(ctx)) {
-                                      Navigator.pop(ctx);
-                                    }
-                                  } else if (state.itemStatus ==
-                                      DomainsItemStateStatus.failure) {
-                                    if (Navigator.canPop(ctx)) {
-                                      Navigator.pop(ctx);
-                                    }
-                                  }
-                                },
-                                builder: (context, state) {
-                                  final isLoading =
-                                      state.itemStatus ==
-                                      DomainsItemStateStatus.loading;
-                                  return FilledButton(
-                                    onPressed: () {
-                                      if (formKey.currentState!.validate()) {
-                                        context.read<DomainsBloc>().add(
-                                          UpdateDomainsItem(
-                                            domainModel: domainModel,
-                                            type: type,
-                                            kind: kind,
-                                            comment: commentController.text,
-                                            enabled: enabled,
-                                            groups: groups,
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
+            child: BlocProvider.value(
+              value: domainsBloc,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: 15,
+                    left: 15,
+                    right: 15,
+                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Form(
+                        key: formKey,
+                        child: Builder(
+                          builder: (ctx) {
+                            return Column(
+                              children: [
+                                TextFormField(
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
+                                  controller: commentController,
+                                  maxLines: 3,
+                                  validator: (value) =>
+                                      piValidators.commentValidator(value),
+                                  decoration: InputDecoration(
+                                    labelText: "Comment",
+                                    suffixIcon: IconButton(
+                                      onPressed: () =>
+                                          commentController.clear(),
+                                      icon: const Icon(Icons.clear),
                                     ),
-                                    child: isLoading
-                                        ? CircularLoaderInButton()
-                                        : const Text("Save"),
-                                  );
-                                },
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pop(ctx);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                 ),
-                                child: const Text("Cancel"),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
+                                const SizedBox(height: 10),
+                                Wrap(
+                                  spacing: 16,
+                                  runSpacing: 10,
+                                  children: [
+                                    CustomToggleSwitch(
+                                      initialLabelIndex: enabled ? 0 : 1,
+                                      labels: ['Enabled', 'Disabled'],
+                                      onToggle: (index) =>
+                                          enabled = (index == 0) ? true : false,
+                                    ),
+                                    CustomToggleSwitch(
+                                      initialLabelIndex: kind == "regex"
+                                          ? 0
+                                          : 1,
+                                      labels: ['Regex', 'Exact'],
+                                      onToggle: (index) => kind = (index == 0)
+                                          ? "regex"
+                                          : "exact",
+                                    ),
+                                    CustomToggleSwitch(
+                                      initialLabelIndex: type == "allow"
+                                          ? 0
+                                          : 1,
+                                      labels: ['Allow', 'Deny'],
+                                      onToggle: (index) => type = (index == 0)
+                                          ? "allow"
+                                          : "deny",
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    BlocConsumer<DomainsBloc, DomainsState>(
+                                      listener: (context, state) {
+                                        if (state.itemStatus ==
+                                            DomainsItemStateStatus.success) {
+                                          if (Navigator.canPop(ctx)) {
+                                            Navigator.pop(ctx);
+                                          }
+                                        } else if (state.itemStatus ==
+                                            DomainsItemStateStatus.failure) {
+                                          PiUtils.handleGeneralException(
+                                            context,
+                                            state.error,
+                                          );
+                                        }
+                                      },
+                                      builder: (context, state) {
+                                        final isLoading =
+                                            state.itemStatus ==
+                                            DomainsItemStateStatus.loading;
+                                        return FilledButton(
+                                          onPressed: () {
+                                            if (formKey.currentState!
+                                                .validate()) {
+                                              context.read<DomainsBloc>().add(
+                                                UpdateDomainsItem(
+                                                  domainModel: domainModel,
+                                                  type: type,
+                                                  kind: kind,
+                                                  comment:
+                                                      commentController.text,
+                                                  enabled: enabled,
+                                                  groups: groups,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                          ),
+                                          child: isLoading
+                                              ? CircularLoaderInButton()
+                                              : const Text("Save"),
+                                        );
+                                      },
+                                    ),
+                                    CancelButton(
+                                      onPressed: () {
+                                        Navigator.pop(ctx);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ];
+      },
+      modalTypeBuilder: (ctx) => WoltModalType.bottomSheet(), // adapt type
+    ).whenComplete(() {
+      commentController.dispose();
+      pageIndexNotifier.dispose();
+    });
+  }
+
+  void deleteDomainModal(BuildContext context, DomainModel domainModel) {
+    final domainsBloc = context.read<DomainsBloc>();
+    final pageIndexNotifier = ValueNotifier<int>(0);
+    WoltModalSheet.show(
+      context: context,
+      pageIndexNotifier: pageIndexNotifier,
+      pageListBuilder: (context) {
+        return [
+          WoltModalSheetPage(
+            navBarHeight: 40,
+            pageTitle: Text(
+              "Delete Domain",
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            child: BlocProvider.value(
+              value: domainsBloc,
+              child: BlocListener<DomainsBloc, DomainsState>(
+                listener: (context, state) {
+                  if (state.itemStatus == DomainsItemStateStatus.success) {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  } else if (state.itemStatus ==
+                      DomainsItemStateStatus.failure) {
+                    PiUtils.handleGeneralException(context, state.error);
+                  }
+                },
+                child: SimpleBottomSheet(
+                  primaryTitle: "Delete",
+                  cancelFunction: () => Navigator.pop(context),
+                  primaryFunction: () => {
+                    domainsBloc.add(
+                      DeleteDomainsItem(domainModel: domainModel),
+                    ),
+                  },
+                  confirmationText: "Do you want to delete domain?",
+                ),
+              ),
+            ),
+          ),
+        ];
+      },
+      modalTypeBuilder: (context) => WoltModalType.bottomSheet(), // adapt type
+    ).whenComplete(() {
+      pageIndexNotifier.dispose();
+    });
   }
 
   Widget _domainRow(DomainModel item, BuildContext context) {
@@ -399,8 +463,8 @@ class DomainsView extends StatelessWidget {
                           Text(
                             item.domain,
                             style: (item.type == "deny")
-                                ? listHeaderTitleBlock.value
-                                : listHeaderTitleAllow.value,
+                                ? context.ui.listHeaderTitleBlock
+                                : context.ui.listHeaderTitleAllow,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -420,7 +484,7 @@ class DomainsView extends StatelessWidget {
                       padding: 4.0,
                       toggleSize: 15.0,
                       borderRadius: 20.0,
-                      activeColor: Colors.green,
+                      activeColor: KColors.flutterSwitch,
                       value: item.enabled,
                       onToggle: (value) {
                         context.read<DomainsBloc>().add(
@@ -445,8 +509,8 @@ class DomainsView extends StatelessWidget {
                               ? Icons.block
                               : FontAwesomeIcons.check,
                           color: item.type == "deny"
-                              ? Colors.red
-                              : Colors.green,
+                              ? KColors.deny
+                              : KColors.allow,
                           title: item.type == "deny" ? "Deny" : "Allow",
                         ),
                         CustomTagWidget(
@@ -454,8 +518,8 @@ class DomainsView extends StatelessWidget {
                               ? Symbols.regular_expression
                               : Symbols.match_word,
                           color: item.type == "deny"
-                              ? Colors.red
-                              : Colors.green,
+                              ? KColors.deny
+                              : KColors.allow,
                           title: item.kind == "regex" ? "Regex" : "Exact",
                         ),
                       ],
@@ -521,29 +585,10 @@ class DomainsView extends StatelessWidget {
             children: [
               SlidableAction(
                 onPressed: (context) {
-                  final domainsBloc = context.read<DomainsBloc>();
-                  showModalBottomSheet(
-                    isScrollControlled: true,
-                    elevation: 5,
-                    context: context,
-                    isDismissible: true,
-                    showDragHandle: true,
-                    shape: KBottomSheetStyle.shape,
-                    builder: (ctx) => SimpleBottomSheet(
-                      primaryTitle: "Delete",
-                      cancelFunction: () => Navigator.pop(ctx),
-                      primaryFunction: () => {
-                        domainsBloc.add(
-                          DeleteDomainsItem(domainModel: selectedPageItem),
-                        ),
-                        Navigator.pop(ctx),
-                      },
-                      confirmationText: "Do you want to delete domain?",
-                    ),
-                  );
+                  deleteDomainModal(context, selectedPageItem);
                 },
                 autoClose: true,
-                backgroundColor: slideError.value,
+                backgroundColor: context.ui.slideError,
                 icon: Icons.delete,
               ),
             ],
@@ -554,10 +599,10 @@ class DomainsView extends StatelessWidget {
             children: [
               SlidableAction(
                 onPressed: (context) {
-                  _editDomainSheet(context, selectedPageItem);
+                  editDomainFormModal(context, selectedPageItem);
                 },
                 autoClose: true,
-                backgroundColor: slidePrimary.value,
+                backgroundColor: context.ui.slidePrimary,
                 icon: Icons.edit,
               ),
             ],
@@ -566,7 +611,7 @@ class DomainsView extends StatelessWidget {
         );
       },
       separatorBuilder: (context, index) {
-        return KListStyle.listDivider;
+        return KDivider.listDivider;
       },
     );
     return listView;
@@ -574,6 +619,7 @@ class DomainsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.ui; // updates AppUiTokens when theme changes
     return SafeArea(
       child: Scaffold(
         body: Padding(
@@ -588,8 +634,9 @@ class DomainsView extends StatelessWidget {
                         context,
                         "An Error Occured",
                       );
-                    } else if (state.itemStatus ==
-                        DomainsItemStateStatus.failure) {
+                    } else if (state.itemToggleStatus ==
+                        DomainsItemToggleStateStatus.failure) {
+                      context.read<DomainsBloc>().add(ResetItemToggleError());
                       PiUtils.handleGeneralException(
                         context,
                         "An Error Occured",
@@ -631,7 +678,7 @@ class DomainsView extends StatelessWidget {
                                 ),
                                 IconButton.filled(
                                   onPressed: () {
-                                    _addDomainSheet(context);
+                                    addDomainFormModal(context);
                                   },
                                   icon: Icon(Icons.add, size: 15),
                                   visualDensity: VisualDensity.compact,

@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
-import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/models/blocking_model.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';

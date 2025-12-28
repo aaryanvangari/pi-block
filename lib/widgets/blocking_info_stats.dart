@@ -4,6 +4,7 @@ import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:pi_block/blocs/blocking_bloc.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
+import 'package:pi_block/theme/app_colors.dart';
 
 class BlockingInfoStats extends StatelessWidget {
   const BlockingInfoStats({super.key});
@@ -148,8 +149,8 @@ class _BlockingInfoViewState extends State<BlockingInfoView> {
                         onChanged: (value) => context.read<BlockingBloc>().add(
                           OnBlockingChanged(value, null),
                         ),
-                        activeThumbColor: Colors.green,
-                        inactiveThumbColor: Colors.grey,
+                        activeThumbColor: KColors.switchOn,
+                        inactiveThumbColor: KColors.switchOff,
                       );
                     },
                   ),
@@ -195,7 +196,7 @@ class _BlockingInfoViewState extends State<BlockingInfoView> {
                           blockingTimes[index][0],
                           style: TextStyle(
                             fontSize: 18,
-                            color: Colors.white,
+                            color: KColors.blockingTimesTitles,
                             fontWeight: FontWeight.w500,
                           ),
                           textAlign: TextAlign.center,

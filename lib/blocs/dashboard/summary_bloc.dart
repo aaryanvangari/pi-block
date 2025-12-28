@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/summary_model.dart';
 

@@ -59,3 +59,5 @@ final class DeleteDomainsItem extends DomainsEvent {
   @override
   List<Object> get props => [domainModel];
 }
+
+final class ResetItemToggleError extends DomainsEvent {}

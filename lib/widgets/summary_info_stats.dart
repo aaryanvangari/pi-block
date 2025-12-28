@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pi_block/blocs/dashboard/summary_bloc.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/summary_model.dart';
+import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
+import 'package:pi_block/widgets/waiting_card_widget.dart';
 
 class SummaryInfoStats extends StatelessWidget {
   const SummaryInfoStats({super.key});
@@ -23,6 +24,8 @@ class SummaryInfoStats extends StatelessWidget {
 
 class SummaryInfoStatsView extends StatelessWidget {
   const SummaryInfoStatsView({super.key});
+
+  static const _title = "Summary";
 
   Widget _buildStatCard(
     BuildContext context, {
@@ -50,7 +53,11 @@ class SummaryInfoStatsView extends StatelessWidget {
               top: -20,
               child: Opacity(
                 opacity: 0.3,
-                child: Icon(icon, size: 80, color: Colors.white),
+                child: Icon(
+                  icon,
+                  size: 80,
+                  color: KSummaryStatsColors.summaryStatIcons,
+                ),
               ),
             ),
             Padding(
@@ -59,13 +66,17 @@ class SummaryInfoStatsView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icon, size: 30, color: Colors.white),
+                  Icon(
+                    icon,
+                    size: 30,
+                    color: KSummaryStatsColors.summaryStatIcons,
+                  ),
                   const SizedBox(height: 10),
                   Text(
                     title,
                     style: const TextStyle(
                       fontSize: 14,
-                      color: Colors.white,
+                      color: KSummaryStatsColors.summaryStatIcons,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -73,7 +84,7 @@ class SummaryInfoStatsView extends StatelessWidget {
                     value,
                     style: const TextStyle(
                       fontSize: 22,
-                      color: Colors.white,
+                      color: KSummaryStatsColors.summaryStatIcons,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -97,11 +108,11 @@ class SummaryInfoStatsView extends StatelessWidget {
       builder: (context, state) {
         if (state.status == SummaryStateStatus.failure) {
           return const ErrorCardWidget(
-            header: "Summary",
+            header: _title,
             message: "Error loading data",
           );
         } else if (state.status == SummaryStateStatus.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WaitingCardWidget(header: _title);
         } else if (state.status == SummaryStateStatus.success) {
           SummaryModel summaryModel = state.summaryModel;
 

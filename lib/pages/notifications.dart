@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
-import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
+import 'package:pi_block/theme/app_styles.dart';
+import 'package:pi_block/theme/app_ui_context.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 
 class NotificationsPage extends StatelessWidget {
@@ -109,7 +108,7 @@ class _NotificationsView extends StatelessWidget {
                   );
                 },
                 autoClose: true,
-                backgroundColor: slideError.value,
+                backgroundColor: context.ui.slideError,
                 icon: Icons.delete,
               ),
             ],
@@ -118,7 +117,7 @@ class _NotificationsView extends StatelessWidget {
         );
       },
       separatorBuilder: (context, index) {
-        return KListStyle.listDivider;
+        return KDivider.listDivider;
       },
     );
     return listView;
@@ -126,17 +125,13 @@ class _NotificationsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.ui; // updates AppUiTokens when theme changes
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Notifications"),
           elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              context.go("/home");
-            },
-          ),
+          leading: BackButton(),
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -165,14 +160,11 @@ class _NotificationsView extends StatelessWidget {
                     return const CustomErrorWidget(
                       message: "Error loading data",
                     );
-                  }
-                  if (state is NotificationsLoading) {
+                  } else if (state is NotificationsLoading) {
                     return const Center(child: CircularProgressIndicator());
-                  }
-                  if (state is NotificationsEmpty) {
+                  } else if (state is NotificationsEmpty) {
                     return const EmptyWidget(message: "No Messages");
-                  }
-                  if (state is NotificationsSuccess) {
+                  } else if (state is NotificationsSuccess) {
                     List<DiagnosticMessageModel> diagnosticMessagesList =
                         state.diagnosticMessagesList;
                     return Expanded(

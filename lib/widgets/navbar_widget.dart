@@ -1,45 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pi_block/data/notifiers.dart';
+import 'package:go_router/go_router.dart';
 
 class NavbarWidget extends StatelessWidget {
-  const NavbarWidget({super.key});
+  final StatefulNavigationShell navigationShell;
+
+  const NavbarWidget({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: selectedPageNotifier,
-      builder: (context, selectedpage, child) {
-        return BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: selectedpage,
-          onTap: (int index) {
-            selectedPageNotifier.value = index;
-          },
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard),
-              label: "Dashboard",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.auto_graph),
-              label: "Stats",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.list_alt),
-              label: "Query Log",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(FontAwesomeIcons.list),
-              label: "Domains",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(FontAwesomeIcons.shieldHalved),
-              label: "Lists",
-            ),
-          ],
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      currentIndex: navigationShell.currentIndex,
+      onTap: (index) {
+        navigationShell.goBranch(
+          index,
+          initialLocation: index == navigationShell.currentIndex,
         );
       },
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.dashboard),
+          label: "Dashboard",
+        ),
+        BottomNavigationBarItem(icon: Icon(Icons.auto_graph), label: "Stats"),
+        BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: "Query Log"),
+        BottomNavigationBarItem(
+          icon: Icon(FontAwesomeIcons.list),
+          label: "Domains",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(FontAwesomeIcons.shieldHalved),
+          label: "Lists",
+        ),
+      ],
     );
   }
 }

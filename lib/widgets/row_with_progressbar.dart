@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pi_block/theme/app_colors.dart';
 
 class RowWithProgressbar extends StatelessWidget {
   final String title;
@@ -79,7 +80,7 @@ class RowWithProgressbar extends StatelessWidget {
                       bottom: 4,
                     ),
                     child: LinearProgressIndicator(
-                      backgroundColor: Colors.grey.withAlpha(40),
+                      backgroundColor: KColors.linearProgressbarBackground,
                       borderRadius: BorderRadius.circular(25),
                       color: progressBarColor,
                       minHeight: 2,

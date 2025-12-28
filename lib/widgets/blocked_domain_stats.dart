@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/domains_stats/domains_blocked_bloc.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/domains_model.dart';
+import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/widgets/empty_card_widget.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/row_with_progressbar.dart';
 import 'package:pi_block/widgets/square_card_list_widget.dart';
+import 'package:pi_block/widgets/waiting_card_widget.dart';
 
 class BlockedDomainStats extends StatelessWidget {
   const BlockedDomainStats({super.key});
@@ -68,7 +69,7 @@ class BlockedDomainsListView extends StatelessWidget {
         } else if (state is DomainsBlockedEmpty) {
           return const EmptyCardWidget(header: _title, message: "No data");
         } else if (state is DomainsBlockedLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WaitingCardWidget(header: _title);
         } else if (state is DomainsBlockedLoaded) {
           DomainsModel domainsModel = state.domains;
           List<StatDomainModel> domains = domainsModel.domains;

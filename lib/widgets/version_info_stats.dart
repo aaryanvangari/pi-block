@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/dashboard/version_info_bloc.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/constants/pihole_urls.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/version_model.dart';
+import 'package:pi_block/theme/app_colors.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
+import 'package:pi_block/widgets/waiting_card_widget.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class VersionInfoStats extends StatelessWidget {
@@ -30,6 +33,8 @@ class VersionInfoStatsView extends StatefulWidget {
 }
 
 class _VersionInfoStatsViewState extends State<VersionInfoStatsView> {
+  static const _title = "Versions";
+
   VersionUpdateInfo getUpdateInfo(VersionModel model) {
     final core =
         model.version.core.local.version != model.version.core.remote.version;
@@ -104,7 +109,7 @@ class _VersionInfoStatsViewState extends State<VersionInfoStatsView> {
                   style: TextStyle(
                     color: isHeader
                         ? Theme.of(context).colorScheme.onSurface
-                        : Colors.blue,
+                        : KColors.links,
                     fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
@@ -141,11 +146,11 @@ class _VersionInfoStatsViewState extends State<VersionInfoStatsView> {
       builder: (context, state) {
         if (state.status == VersionStateStatus.failure) {
           return const ErrorCardWidget(
-            header: "Versions",
+            header: _title,
             message: "Error loading data",
           );
         } else if (state.status == VersionStateStatus.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WaitingCardWidget(header: _title);
         } else if (state.status == VersionStateStatus.success) {
           VersionModel versionModel = state.versionModel;
           final updateInfo = getUpdateInfo(versionModel);
@@ -170,7 +175,7 @@ class _VersionInfoStatsViewState extends State<VersionInfoStatsView> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        "Versions",
+                        _title,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,

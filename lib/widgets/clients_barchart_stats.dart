@@ -2,13 +2,15 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/charts/client_history_barchart_bloc.dart';
+import 'package:pi_block/components/chart_manager.dart';
 import 'package:pi_block/components/color_manager.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/clients_history_model.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/legend_widget.dart';
+import 'package:pi_block/widgets/waiting_card_widget.dart';
 
 class ClientsBarchartStats extends StatelessWidget {
   const ClientsBarchartStats({super.key});
@@ -34,22 +36,8 @@ class ClientsBarchartView extends StatefulWidget {
 class _ClientsBarchartViewState extends State<ClientsBarchartView> {
   Map<String, Color> clientColors = {};
   Map<String, String> clientNames = {};
-
-  /// We get 145 items of data and we are not interested in all of them
-  /// as it does not fit into mobile screen.
-  /// So we limit it to maybe 20-25 (barItemsNeeded) depending on screen width.
-  /// Sorting by timestamp.millisecondsSinceEpoch didnt work so
-  /// Iterating from 145-125 and decreasing one at a time
-  List<ClientHistoryEntry> _visibleHistory(
-    List<ClientHistoryEntry> history,
-    int barItemsNeeded,
-  ) {
-    final start = (history.length - 1 - barItemsNeeded).clamp(
-      0,
-      history.length,
-    );
-    return history.sublist(start);
-  }
+  ChartManager chartManager = ChartManager();
+  static const _title = "Client Avtivity";
 
   List<Legend> generateClientsLegend(Map<String, ClientInfo> clients) {
     List<Legend> legends = [];
@@ -82,7 +70,10 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
     int barItemsNeeded,
   ) {
     List<BarChartGroupData> barGroups = [];
-    final visibleHistory = _visibleHistory(history, barItemsNeeded);
+    final visibleHistory = chartManager.visibleClientHistory(
+      history,
+      barItemsNeeded,
+    );
 
     for (var i = 0; i < visibleHistory.length; i++) {
       ClientHistoryEntry clientHistoryEntry = visibleHistory[i];
@@ -101,7 +92,7 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
           BarChartRodStackItem(
             start.toDouble(),
             (start + count).toDouble(),
-            clientColors[key] ?? Colors.grey,
+            clientColors[key]!,
           ),
         );
         start = start + count;
@@ -135,7 +126,10 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
     Color tooltipTextColor,
   ) {
     List<List<TextSpan>> tooltips = [];
-    final visibleHistory = _visibleHistory(history, barItemsNeeded);
+    final visibleHistory = chartManager.visibleClientHistory(
+      history,
+      barItemsNeeded,
+    );
 
     for (var i = 0; i < visibleHistory.length; i++) {
       ClientHistoryEntry clientHistoryEntry = visibleHistory[i];
@@ -151,11 +145,11 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
         final count = entry.value;
         if (count > 0) {
           tooltipStackItems.add(
-            _tooltipLine(
-              clientNames[key] ?? "",
+            chartManager.tooltipLine(
+              clientNames[key]!,
               count,
               total,
-              clientColors[key] ?? Colors.grey,
+              clientColors[key]!,
               tooltipTextColor,
             ),
           );
@@ -165,66 +159,6 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
       tooltips.add(tooltipStackItems);
     }
     return tooltips;
-  }
-
-  Widget bottomTitles(double value, TitleMeta meta) {
-    const style = TextStyle(fontSize: 8);
-    DateTime xDateTime = DateTime.fromMillisecondsSinceEpoch(
-      (value as num).toInt(),
-    );
-    String xHourMinText = '${xDateTime.hour}:${xDateTime.minute}';
-    return SideTitleWidget(
-      meta: meta,
-      angle: -90 * 3.14 / 180,
-      fitInside: SideTitleFitInsideData(
-        enabled: true,
-        axisPosition: 0,
-        parentAxisSize: 0,
-        distanceFromEdge: -15,
-      ),
-      child: Text(xHourMinText, style: style),
-    );
-  }
-
-  Widget leftTitles(double value, TitleMeta meta) {
-    if (value == meta.max) {
-      return Container();
-    }
-    const style = TextStyle(fontSize: 12);
-    return SideTitleWidget(
-      meta: meta,
-      child: Text(meta.formattedValue, style: style),
-    );
-  }
-
-  String _percent(int value, int total) {
-    if (total == 0) return '0%';
-    return '${((value / total) * 100).toStringAsFixed(1)}%';
-  }
-
-  TextSpan _tooltipLine(
-    String label,
-    int value,
-    int total,
-    Color color,
-    Color textColor,
-  ) {
-    return TextSpan(
-      children: [
-        TextSpan(
-          text: '$label: ',
-          style: TextStyle(
-            color: color,
-            fontWeight: FontWeight.w600,
-            fontSize: 12,
-          ),
-        ),
-        TextSpan(
-          text: '$value (${_percent(value, total)})\n',
-          style: TextStyle(color: textColor, fontSize: 12),
-        ),
-      ],
-    );
   }
 
   @override
@@ -238,11 +172,11 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
       builder: (context, state) {
         if (state is ClientHistoryBarchartError) {
           return const ErrorCardWidget(
-            header: "Client Activity",
+            header: _title,
             message: "Error loading data",
           );
         } else if (state is ClientHistoryBarchartLoading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WaitingCardWidget(header: _title);
         } else if (state is ClientHistoryBarchartLoaded) {
           ClientHistoryModel clientHistoryModel = state.clientHistoryModel;
           List<ClientHistoryEntry> history = clientHistoryModel.history;
@@ -264,7 +198,7 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
                       vertical: 2,
                     ),
                     child: const Text(
-                      "Client Activity",
+                      _title,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -306,6 +240,7 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
                               enabled: true,
                               touchTooltipData: BarTouchTooltipData(
                                 maxContentWidth: chartTooltipWidth,
+                                fitInsideHorizontally: true,
                                 getTooltipColor: (group) =>
                                     Theme.of(context).colorScheme.onSurface,
                                 tooltipBorderRadius: BorderRadius.circular(8),
@@ -342,14 +277,14 @@ class _ClientsBarchartViewState extends State<ClientsBarchartView> {
                                 sideTitles: SideTitles(
                                   showTitles: true,
                                   reservedSize: 40,
-                                  getTitlesWidget: bottomTitles,
+                                  getTitlesWidget: chartManager.bottomTitles,
                                 ),
                               ),
                               leftTitles: AxisTitles(
                                 sideTitles: SideTitles(
                                   showTitles: true,
                                   reservedSize: 30,
-                                  getTitlesWidget: leftTitles,
+                                  getTitlesWidget: chartManager.leftTitles,
                                 ),
                               ),
                               topTitles: const AxisTitles(

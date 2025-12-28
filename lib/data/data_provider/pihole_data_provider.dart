@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:logging/logging.dart';
 import 'package:pi_block/components/pi_http_client.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
+import 'package:pi_block/constants/api_urls.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/lists_model.dart';
 
@@ -15,7 +15,7 @@ class PiholeDataProvider {
     try {
       var body = jsonEncode(<String, String>{'password': password});
       var result = await piHttpClient.post(
-        KUrls.auth,
+        ApiUrls.auth,
         null,
         body,
         uri.scheme,
@@ -40,7 +40,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> logout() async {
     try {
-      var result = await piHttpClient.delete(KUrls.auth, false);
+      var result = await piHttpClient.delete(ApiUrls.auth);
 
       PiUtils.handleAPIException(result, true);
 
@@ -58,7 +58,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getDiagnosticMessages() async {
     try {
-      var result = await piHttpClient.get(KUrls.messages);
+      var result = await piHttpClient.get(ApiUrls.messages);
       PiUtils.handleAPIException(result, false);
       log(
         result.toString(),
@@ -74,7 +74,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> deleteDiagnosticMessages(int id) async {
     try {
-      var result = await piHttpClient.delete('${KUrls.messages}/$id', false);
+      var result = await piHttpClient.delete('${ApiUrls.messages}/$id');
       PiUtils.handleAPIException(result, false);
 
       log(
@@ -94,7 +94,7 @@ class PiholeDataProvider {
         '_': DateTime.now().millisecondsSinceEpoch.toString(),
       };
       var result = await piHttpClient.get(
-        KUrls.lists,
+        ApiUrls.lists,
         queryParams: queryParameter,
       );
       PiUtils.handleAPIException(result, false);
@@ -122,7 +122,7 @@ class PiholeDataProvider {
       log(queryParameter.toString());
       log(body.toString());
 
-      var result = await piHttpClient.post(KUrls.lists, queryParameter, body);
+      var result = await piHttpClient.post(ApiUrls.lists, queryParameter, body);
       PiUtils.handleAPIException(result, false);
 
       log(
@@ -150,7 +150,7 @@ class PiholeDataProvider {
       String listEncoded = Uri.encodeComponent(item.address);
 
       var result = await piHttpClient.put(
-        '${KUrls.lists}/$listEncoded',
+        '${ApiUrls.lists}/$listEncoded',
         queryParameter,
         body,
       );
@@ -175,7 +175,7 @@ class PiholeDataProvider {
       var body = jsonEncode(batchDelete);
       log(body.toString());
 
-      var result = await piHttpClient.post(KUrls.listsDelete, null, body);
+      var result = await piHttpClient.post(ApiUrls.listsDelete, null, body);
       PiUtils.handleAPIException(result, false);
 
       log(
@@ -195,7 +195,7 @@ class PiholeDataProvider {
         '_': DateTime.now().millisecondsSinceEpoch.toString(),
       };
       var result = await piHttpClient.get(
-        KUrls.domains,
+        ApiUrls.domains,
         queryParams: queryParameter,
       );
       PiUtils.handleAPIException(result, false);
@@ -230,7 +230,7 @@ class PiholeDataProvider {
       String domainEncoded = Uri.encodeComponent(item.domain);
 
       var result = await piHttpClient.put(
-        '${KUrls.domains}/${item.type}/${item.kind}/$domainEncoded',
+        '${ApiUrls.domains}/${item.type}/${item.kind}/$domainEncoded',
         null,
         body,
       );
@@ -255,7 +255,7 @@ class PiholeDataProvider {
       var body = jsonEncode(batchDelete);
       log(body.toString());
 
-      var result = await piHttpClient.post(KUrls.domainsDelete, null, body);
+      var result = await piHttpClient.post(ApiUrls.domainsDelete, null, body);
       PiUtils.handleAPIException(result, false);
 
       log(
@@ -281,7 +281,7 @@ class PiholeDataProvider {
       log(body.toString());
 
       var result = await piHttpClient.post(
-        '${KUrls.domains}/${item.type}/${item.kind}',
+        '${ApiUrls.domains}/${item.type}/${item.kind}',
         null,
         body,
       );
@@ -300,7 +300,10 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getClients(Map<String, dynamic> blocked) async {
     try {
-      var result = await piHttpClient.get(KUrls.clients, queryParams: blocked);
+      var result = await piHttpClient.get(
+        ApiUrls.clients,
+        queryParams: blocked,
+      );
       PiUtils.handleAPIException(result, false);
       log(
         result.toString(),
@@ -316,7 +319,7 @@ class PiholeDataProvider {
   Future<Map<String, dynamic>> getDomains(Map<String, dynamic> blocked) async {
     try {
       var result = await piHttpClient.get(
-        KUrls.topDomains,
+        ApiUrls.topDomains,
         queryParams: blocked,
       );
       PiUtils.handleAPIException(result, false);
@@ -333,7 +336,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getQueriesHistory() async {
     try {
-      var result = await piHttpClient.get(KUrls.history);
+      var result = await piHttpClient.get(ApiUrls.history);
       PiUtils.handleAPIException(result, false);
       log(
         result.toString(),
@@ -348,7 +351,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getClientsHistory() async {
     try {
-      var result = await piHttpClient.get(KUrls.clientsHistory);
+      var result = await piHttpClient.get(ApiUrls.clientsHistory);
       PiUtils.handleAPIException(result, false);
       log(
         result.toString(),
@@ -363,7 +366,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getQueryTypes() async {
     try {
-      var result = await piHttpClient.get(KUrls.queryTypes);
+      var result = await piHttpClient.get(ApiUrls.queryTypes);
       PiUtils.handleAPIException(result, false);
       log(
         result.toString(),
@@ -378,7 +381,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getUpstreams() async {
     try {
-      var result = await piHttpClient.get(KUrls.upStreams);
+      var result = await piHttpClient.get(ApiUrls.upStreams);
       PiUtils.handleAPIException(result, false);
       log(
         result.toString(),
@@ -393,7 +396,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getSystemInfo() async {
     try {
-      var result = await piHttpClient.get(KUrls.system);
+      var result = await piHttpClient.get(ApiUrls.system);
       PiUtils.handleAPIException(result, false);
       log(
         result.toString(),
@@ -408,7 +411,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getHostInfo() async {
     try {
-      var result = await piHttpClient.get(KUrls.hosts);
+      var result = await piHttpClient.get(ApiUrls.hosts);
       PiUtils.handleAPIException(result, false);
       log(
         result.toString(),
@@ -423,7 +426,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getVersion() async {
     try {
-      var result = await piHttpClient.get(KUrls.versions);
+      var result = await piHttpClient.get(ApiUrls.versions);
       PiUtils.handleAPIException(result, false);
       log(
         result.toString(),
@@ -438,7 +441,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getSummary() async {
     try {
-      var result = await piHttpClient.get(KUrls.summary);
+      var result = await piHttpClient.get(ApiUrls.summary);
       PiUtils.handleAPIException(result, false);
 
       log(
@@ -455,7 +458,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getBlockingStatus() async {
     try {
-      var result = await piHttpClient.get(KUrls.dns);
+      var result = await piHttpClient.get(ApiUrls.dns);
       PiUtils.handleAPIException(result, false);
 
       log(
@@ -480,7 +483,7 @@ class PiholeDataProvider {
         "timer": timer,
       });
 
-      var result = await piHttpClient.post(KUrls.dns, null, body);
+      var result = await piHttpClient.post(ApiUrls.dns, null, body);
       PiUtils.handleAPIException(result, false);
       log(
         result.toString(),
@@ -503,7 +506,7 @@ class PiholeDataProvider {
       };
 
       var result = await piHttpClient.get(
-        KUrls.queries,
+        ApiUrls.queries,
         queryParams: queryParameter,
       );
       PiUtils.handleAPIException(result, false);
@@ -522,7 +525,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getPiholeConfiguration() async {
     try {
-      var result = await piHttpClient.get(KUrls.config);
+      var result = await piHttpClient.get(ApiUrls.config);
       PiUtils.handleAPIException(result, false);
 
       log(

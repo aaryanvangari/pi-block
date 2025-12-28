@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/dashboard/system_info_bloc.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/system_model.dart';
+import 'package:pi_block/theme/app_colors.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
 import 'package:pi_block/widgets/load_text.dart';
+import 'package:pi_block/widgets/waiting_card_widget.dart';
 
 class SystemInfoStats extends StatelessWidget {
   const SystemInfoStats({super.key});
@@ -26,6 +28,8 @@ enum MemoryType { ram, swap }
 
 class SystemInfoStatsView extends StatelessWidget {
   const SystemInfoStatsView({super.key});
+
+  static const _title = "System";
 
   String getMemoryInfo(MemoryType type, SystemModel systemModel) {
     String memoryInfo = "";
@@ -51,11 +55,11 @@ class SystemInfoStatsView extends StatelessWidget {
       final Color color;
 
       if (load < 1) {
-        color = Colors.green;
+        color = KColors.systemLoadLow;
       } else if (load < 2) {
-        color = Colors.orange;
+        color = KColors.systemLoadMedium;
       } else {
-        color = Colors.red;
+        color = KColors.systemLoadHigh;
       }
 
       return LoadTextWidget(title: load, color: color);
@@ -73,11 +77,11 @@ class SystemInfoStatsView extends StatelessWidget {
       builder: (context, state) {
         if (state.status == SystemStateStatus.failure) {
           return const ErrorCardWidget(
-            header: "System",
+            header: _title,
             message: "Error loading data",
           );
         } else if (state.status == SystemStateStatus.loading) {
-          return const Center(child: CircularProgressIndicator());
+          return const WaitingCardWidget(header: _title);
         } else if (state.status == SystemStateStatus.success) {
           SystemModel systemModel = state.systemModel;
 
@@ -92,7 +96,7 @@ class SystemInfoStatsView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    "System",
+                    _title,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 10),

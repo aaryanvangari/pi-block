@@ -15,6 +15,9 @@ class LogoWidget extends StatelessWidget {
             textStyle: Theme.of(context).textTheme.displayLarge,
             fontSize: (type == "drawer") ? 70 : 120,
             fontWeight: FontWeight.w700,
+            color: (type == "drawer")
+                ? Theme.of(context).colorScheme.onSurface
+                : Theme.of(context).colorScheme.surface,
           ),
         ),
         Text(
@@ -22,6 +25,9 @@ class LogoWidget extends StatelessWidget {
           style: TextStyle(
             fontSize: (type == "drawer") ? 30 : 40,
             fontWeight: FontWeight.bold,
+            color: (type == "drawer")
+                ? Theme.of(context).colorScheme.onSurface
+                : Theme.of(context).colorScheme.surface,
           ),
         ),
       ],
