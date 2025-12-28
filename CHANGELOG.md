@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased (2025-12-28)
+## [v5.0.2](https://github.com/aaryanvangari/pi-block/compare/v5.0.1...v5.0.2) (2025-12-28)
 
-## [v5.0.1](https://github.com/aaryanvangari/pi-block/compare/4.0.0...v5.0.1) (2025-12-28)
+## [v5.0.1](https://github.com/aaryanvangari/pi-block/compare/5.0.0...v5.0.1) (2025-12-28)
 
 ## [5.0.0](https://github.com/aaryanvangari/pi-block/compare/4.0.0...5.0.0) (2025-12-28)
 
@@ -161,3 +161,4 @@
 ### Features
 
 * initial import ([ab433fd](https://github.com/aaryanvangari/pi-block/commit/ab433fd))
+
