@@ -80,6 +80,7 @@ jobs:
       - name: Verify pubspec version matches tag
         run: |
           TAG_VERSION=${GITHUB_REF_NAME#v}
+          PUB_VERSION=${{ steps.flutter_version.outputs.version_number }}
 
           echo "pubspec.yaml version: " ${{ steps.flutter_version.outputs.version_number }}
           echo "pubspec.yaml build: " ${{ steps.flutter_version.outputs.build_number }}
