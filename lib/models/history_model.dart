@@ -1,7 +1,5 @@
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 /// Root response containing DNS query history and request duration
 class HistoryModel extends Equatable {
@@ -15,11 +13,7 @@ class HistoryModel extends Equatable {
 
   /// Creates a [HistoryModel] from JSON
   factory HistoryModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "HistoryModel.fromJson",
-    );
+    ModelLog.fromJson(HistoryModel, json);
     return HistoryModel(
       history: (json['history'] as List<dynamic>)
           .map((e) => HistoryEntry.fromJson(e))

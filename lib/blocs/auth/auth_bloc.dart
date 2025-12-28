@@ -1,9 +1,7 @@
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logging/logging.dart';
 import 'package:pi_block/error/exceptions/api_exception.dart';
+import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/services/user_session_service.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/session_model.dart';
@@ -14,6 +12,7 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final PiholeRepository piholeRepository;
+  final _log = AppLogger.get('AuthBloc');
   AuthBloc(this.piholeRepository) : super(AuthState()) {
     on<Login>(_login);
     on<Logout>(_logout);
@@ -88,7 +87,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await piholeRepository.logout();
     } catch (e) {
-      log(e.toString(), level: Level.FINE.value, name: "AuthBloc._logout");
+      _log.severe(() => '_logout: ${e.toString()}');
     }
 
     UserSessionService userSessionService = UserSessionService();

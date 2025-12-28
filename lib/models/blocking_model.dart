@@ -1,9 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 class BlockingModel extends Equatable {
   /// The current blocking status
@@ -22,11 +20,7 @@ class BlockingModel extends Equatable {
   });
 
   factory BlockingModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "BlockingModel.fromJson",
-    );
+    ModelLog.fromJson(BlockingModel, json);
     return BlockingModel(
       blocking: BlockingStatusExtension.fromJson(json['blocking']),
       // casting timer into int and double based on result otherwise dart throws error of wrong datatype

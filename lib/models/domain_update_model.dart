@@ -1,9 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 import 'package:pi_block/models/domain_model.dart';
 
 class DomainUpdateModel extends Equatable {
@@ -18,11 +16,7 @@ class DomainUpdateModel extends Equatable {
   });
 
   factory DomainUpdateModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "DomainUpdateModel.fromJson",
-    );
+    ModelLog.fromJson(DomainUpdateModel, json);
     return DomainUpdateModel(
       domains: (json["domains"] as List)
           .map((e) => DomainModel.fromJson(e as Map<String, dynamic>))

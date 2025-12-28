@@ -1,7 +1,5 @@
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 /// Root model representing the entire response
 class ClientsModel extends Equatable {
@@ -26,11 +24,7 @@ class ClientsModel extends Equatable {
 
   /// Create a ClientsModel instance from a JSON map
   factory ClientsModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "ClientsModel.fromJson",
-    );
+    ModelLog.fromJson(ClientsModel, json);
     return ClientsModel(
       clients: (json['clients'] as List<dynamic>)
           .map((e) => ClientModel.fromJson(e))

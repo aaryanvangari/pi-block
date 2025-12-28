@@ -1,9 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 /// Response model for DNS query list API
 class QueryListModel extends Equatable {
@@ -35,11 +33,7 @@ class QueryListModel extends Equatable {
   });
 
   factory QueryListModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "QueryListModel.fromJson",
-    );
+    ModelLog.fromJson(QueryListModel, json);
     return QueryListModel(
       queries: (json['queries'] as List<dynamic>)
           .map((e) => QueryModel.fromJson(e as Map<String, dynamic>))

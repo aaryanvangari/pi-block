@@ -1,9 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 import 'package:pi_block/models/lists_model.dart';
 
 /// Response model for list update operations
@@ -24,11 +22,7 @@ class ListUpdateModel extends Equatable {
   });
 
   factory ListUpdateModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "ListUpdateModel.fromJson",
-    );
+    ModelLog.fromJson(ListUpdateModel, json);
     return ListUpdateModel(
       lists: (json["lists"] as List)
           .map((e) => ListsModel.fromJson(e as Map<String, dynamic>))

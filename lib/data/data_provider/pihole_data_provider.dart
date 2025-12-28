@@ -1,15 +1,16 @@
 import 'dart:convert';
-import 'dart:developer';
 
-import 'package:logging/logging.dart';
 import 'package:pi_block/components/pi_http_client.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/constants/api_urls.dart';
+import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/lists_model.dart';
 
 class PiholeDataProvider {
   PiHttpClient piHttpClient = PiHttpClient();
+
+  final _log = AppLogger.get('PiholeDataProvider');
 
   Future<Map<String, dynamic>> login(Uri uri, String password) async {
     try {
@@ -26,11 +27,7 @@ class PiholeDataProvider {
 
       PiUtils.handleAPIException(result, true);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.login",
-      );
+      _log.fine(() => 'login: ${result["session"]["valid"].toString()}');
 
       return result;
     } catch (e) {
@@ -44,11 +41,7 @@ class PiholeDataProvider {
 
       PiUtils.handleAPIException(result, true);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.logout",
-      );
+      _log.fine(() => 'logout: ${result.toString()}');
 
       return result;
     } catch (e) {
@@ -60,11 +53,7 @@ class PiholeDataProvider {
     try {
       var result = await piHttpClient.get(ApiUrls.messages);
       PiUtils.handleAPIException(result, false);
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getDiagnosticMessages",
-      );
+      _log.fine(() => 'getDiagnosticMessages: ${result.toString()}');
 
       return result;
     } catch (e) {
@@ -77,11 +66,7 @@ class PiholeDataProvider {
       var result = await piHttpClient.delete('${ApiUrls.messages}/$id');
       PiUtils.handleAPIException(result, false);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.deleteDiagnosticMessages",
-      );
+      _log.fine(() => 'deleteDiagnosticMessages: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -99,11 +84,7 @@ class PiholeDataProvider {
       );
       PiUtils.handleAPIException(result, false);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getListsData",
-      );
+      _log.fine(() => 'getListsData: ${result.toString()}');
 
       return result;
     } catch (e) {
@@ -119,17 +100,13 @@ class PiholeDataProvider {
         "comment": item.comment,
         "groups": item.groups,
       });
-      log(queryParameter.toString());
-      log(body.toString());
+      _log.fine(() => 'addListsItem: ${queryParameter.toString()}');
+      _log.fine(() => 'addListsItem: ${body.toString()}');
 
       var result = await piHttpClient.post(ApiUrls.lists, queryParameter, body);
       PiUtils.handleAPIException(result, false);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.addListsItem",
-      );
+      _log.fine(() => 'addListsItem: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -145,8 +122,8 @@ class PiholeDataProvider {
         "type": item.type,
         "enabled": item.enabled,
       });
-      log(queryParameter.toString());
-      log(body.toString());
+      _log.fine(() => 'updateListsItem: ${queryParameter.toString()}');
+      _log.fine(() => 'updateListsItem: ${body.toString()}');
       String listEncoded = Uri.encodeComponent(item.address);
 
       var result = await piHttpClient.put(
@@ -156,11 +133,7 @@ class PiholeDataProvider {
       );
       PiUtils.handleAPIException(result, false);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.updateListsItem",
-      );
+      _log.fine(() => 'updateListsItem: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -173,16 +146,12 @@ class PiholeDataProvider {
         {"item": item.address, "type": item.type},
       ];
       var body = jsonEncode(batchDelete);
-      log(body.toString());
+      _log.fine(() => 'deleteListsItem: ${body.toString()}');
 
       var result = await piHttpClient.post(ApiUrls.listsDelete, null, body);
       PiUtils.handleAPIException(result, false);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.deleteListsItem",
-      );
+      _log.fine(() => 'deleteListsItem: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -199,11 +168,7 @@ class PiholeDataProvider {
         queryParams: queryParameter,
       );
       PiUtils.handleAPIException(result, false);
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getDomainsData",
-      );
+      _log.fine(() => 'getDomainsData: ${result.toString()}');
 
       return result;
     } catch (e) {
@@ -225,8 +190,8 @@ class PiholeDataProvider {
         "type": previousType,
         "enabled": item.enabled,
       });
-      log(queryParameter.toString());
-      log(body.toString());
+      _log.fine(() => 'updateDomainItem: ${queryParameter.toString()}');
+      _log.fine(() => 'updateDomainItem: ${body.toString()}');
       String domainEncoded = Uri.encodeComponent(item.domain);
 
       var result = await piHttpClient.put(
@@ -236,11 +201,7 @@ class PiholeDataProvider {
       );
       PiUtils.handleAPIException(result, false);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.updateDomainItem",
-      );
+      _log.fine(() => 'updateDomainItem: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -253,16 +214,12 @@ class PiholeDataProvider {
         {"item": item.domain, "type": item.type, "kind": item.kind},
       ];
       var body = jsonEncode(batchDelete);
-      log(body.toString());
+      _log.fine(() => 'deleteDomainsItem: ${body.toString()}');
 
       var result = await piHttpClient.post(ApiUrls.domainsDelete, null, body);
       PiUtils.handleAPIException(result, false);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.deleteDomainsItem",
-      );
+      _log.fine(() => 'deleteDomainsItem: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -278,7 +235,7 @@ class PiholeDataProvider {
         "type": item.type,
         "kind": item.kind,
       });
-      log(body.toString());
+      _log.fine(() => 'addDomainsItem: ${body.toString()}');
 
       var result = await piHttpClient.post(
         '${ApiUrls.domains}/${item.type}/${item.kind}',
@@ -287,11 +244,7 @@ class PiholeDataProvider {
       );
       PiUtils.handleAPIException(result, false);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.addDomainsItem",
-      );
+      _log.fine(() => 'addDomainsItem: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -305,11 +258,7 @@ class PiholeDataProvider {
         queryParams: blocked,
       );
       PiUtils.handleAPIException(result, false);
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getClients",
-      );
+      _log.fine(() => 'getClients: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -323,11 +272,7 @@ class PiholeDataProvider {
         queryParams: blocked,
       );
       PiUtils.handleAPIException(result, false);
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getDomains",
-      );
+      _log.fine(() => 'getDomains: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -338,11 +283,7 @@ class PiholeDataProvider {
     try {
       var result = await piHttpClient.get(ApiUrls.history);
       PiUtils.handleAPIException(result, false);
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getQueriesHistory",
-      );
+      _log.fine(() => 'getQueriesHistory: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -353,11 +294,7 @@ class PiholeDataProvider {
     try {
       var result = await piHttpClient.get(ApiUrls.clientsHistory);
       PiUtils.handleAPIException(result, false);
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getClientsHistory",
-      );
+      _log.fine(() => 'getClientsHistory: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -368,11 +305,7 @@ class PiholeDataProvider {
     try {
       var result = await piHttpClient.get(ApiUrls.queryTypes);
       PiUtils.handleAPIException(result, false);
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getQueryTypes",
-      );
+      _log.fine(() => 'getQueryTypes: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -383,11 +316,7 @@ class PiholeDataProvider {
     try {
       var result = await piHttpClient.get(ApiUrls.upStreams);
       PiUtils.handleAPIException(result, false);
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getUpstreams",
-      );
+      _log.fine(() => 'getUpstreams: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -398,11 +327,7 @@ class PiholeDataProvider {
     try {
       var result = await piHttpClient.get(ApiUrls.system);
       PiUtils.handleAPIException(result, false);
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getSystemInfo",
-      );
+      _log.fine(() => 'getSystemInfo: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -413,11 +338,7 @@ class PiholeDataProvider {
     try {
       var result = await piHttpClient.get(ApiUrls.hosts);
       PiUtils.handleAPIException(result, false);
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getHostInfo",
-      );
+      _log.fine(() => 'getHostInfo: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -428,11 +349,7 @@ class PiholeDataProvider {
     try {
       var result = await piHttpClient.get(ApiUrls.versions);
       PiUtils.handleAPIException(result, false);
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getVersion",
-      );
+      _log.fine(() => 'getVersion: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -444,11 +361,7 @@ class PiholeDataProvider {
       var result = await piHttpClient.get(ApiUrls.summary);
       PiUtils.handleAPIException(result, false);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getSummary",
-      );
+      _log.fine(() => 'getSummary: ${result.toString()}');
 
       return result;
     } catch (e) {
@@ -461,11 +374,7 @@ class PiholeDataProvider {
       var result = await piHttpClient.get(ApiUrls.dns);
       PiUtils.handleAPIException(result, false);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getBlockingStatus",
-      );
+      _log.fine(() => 'getBlockingStatus: ${result.toString()}');
 
       return result;
     } catch (e) {
@@ -485,11 +394,7 @@ class PiholeDataProvider {
 
       var result = await piHttpClient.post(ApiUrls.dns, null, body);
       PiUtils.handleAPIException(result, false);
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.onBlockingChanged",
-      );
+      _log.fine(() => 'onBlockingChanged: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
@@ -511,11 +416,7 @@ class PiholeDataProvider {
       );
       PiUtils.handleAPIException(result, false);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getQuerylogPage",
-      );
+      _log.fine(() => 'getQuerylogPage: ${result.toString()}');
 
       return result;
     } catch (e) {
@@ -528,11 +429,7 @@ class PiholeDataProvider {
       var result = await piHttpClient.get(ApiUrls.config);
       PiUtils.handleAPIException(result, false);
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeDataProvider.getPiholeConfiguration",
-      );
+      _log.fine(() => 'getPiholeConfiguration: ${result.toString()}');
 
       return result;
     } catch (e) {

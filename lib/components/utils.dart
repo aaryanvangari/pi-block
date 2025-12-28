@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:math' hide log;
 
 import 'package:flutter/material.dart';
@@ -9,64 +8,42 @@ import 'package:pi_block/error/exceptions/api_exception.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/error/exceptions/session_exception.dart';
 import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/app_settings_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class PiUtils {
+  static final Logger _log = AppLogger.get('PiUtils');
+
   static handleAPIException(dynamic result, bool isAuth) {
     if (isAuth) {
       if (result?.containsKey("session") &&
           result?["session"]?["sid"] == null) {
         String apiErrorMessage = result["session"]?["message"];
         // String apiErrorHint = result["session"]?["hint"] ?? "";
-        log(
-          result.toString(),
-          level: Level.SEVERE.value,
-          name: "PiUtils.handleAPIException",
-          error: result,
-        );
+        _log.severe('handleAPIException: ${result.toString()}', result);
         throw APIException(apiErrorMessage, "");
       } else if (result?.containsKey("error") ?? false) {
         String apiErrorMessage = result["error"]?["message"];
         String apiErrorHint = result["error"]?["hint"] ?? "";
-        log(
-          result.toString(),
-          level: Level.SEVERE.value,
-          name: "PiUtils.handleAPIException",
-          error: result,
-        );
+        _log.severe('handleAPIException: ${result.toString()}', result);
         throw APIException(apiErrorMessage, apiErrorHint);
       }
     } else {
       if (result?.containsKey("error") ?? false) {
         String apiErrorMessage = result["error"]?["message"];
         String apiErrorHint = result["error"]?["hint"] ?? "";
-        log(
-          result.toString(),
-          level: Level.SEVERE.value,
-          name: "PiUtils.handleAPIException",
-          error: result,
-        );
+        _log.severe('handleAPIException: ${result.toString()}', result);
         throw APIException(apiErrorMessage, apiErrorHint);
       } else if (result.keys.length == 0) {
-        log(
-          result.toString(),
-          level: Level.SEVERE.value,
-          name: "PiUtils.handleAPIException",
-          error: result,
-        );
+        _log.severe('handleAPIException: ${result.toString()}', result);
         throw Exception("Error loading data");
       }
     }
   }
 
   static handleGeneralException(BuildContext context, Object e) async {
-    log(
-      e.toString(),
-      level: Level.SEVERE.value,
-      name: "PiUtils.handleGeneralException",
-      error: e,
-    );
+    _log.severe('handleGeneralException: ${e.toString()}', e);
     String errorClass = e.runtimeType.toString();
     String errorTitle = e.toString().length > 15
         ? e.toString().substring(0, 15)

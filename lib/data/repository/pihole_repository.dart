@@ -1,7 +1,5 @@
-import 'dart:developer';
-
-import 'package:logging/logging.dart';
 import 'package:pi_block/data/data_provider/pihole_data_provider.dart';
+import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/blocking_model.dart';
 import 'package:pi_block/models/clients_history_model.dart';
 import 'package:pi_block/models/clients_model.dart';
@@ -26,16 +24,14 @@ class PiholeRepository {
 
   PiholeRepository(this.piholeDataProvider);
 
+  final _log = AppLogger.get('PiholeRepository');
+
   Future<SessionModel> login(Uri uri, String password) async {
     try {
       var result = await piholeDataProvider.login(uri, password);
       SessionModel sessionModel = SessionModel.fromJson(result);
 
-      log(
-        sessionModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.login",
-      );
+      _log.fine(() => 'login: ${sessionModel.session!.valid.toString()}');
 
       return sessionModel;
     } catch (e) {
@@ -51,11 +47,7 @@ class PiholeRepository {
         isDeleted = true;
       }
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.logout",
-      );
+      _log.fine(() => 'logout: ${result.toString()}');
 
       return isDeleted;
     } catch (e) {
@@ -74,11 +66,7 @@ class PiholeRepository {
                 ),
               )
               .toList();
-      log(
-        diagnosticMessagesList.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getDiagnosticMessages",
-      );
+      _log.fine(() => 'getDiagnosticMessages: ${diagnosticMessagesList.toString()}');
 
       return diagnosticMessagesList;
     } catch (e) {
@@ -94,11 +82,7 @@ class PiholeRepository {
         isDeleted = true;
       }
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.deleteDiagnosticMessages",
-      );
+      _log.fine(() => 'deleteDiagnosticMessages: ${result.toString()}');
 
       return isDeleted;
     } catch (e) {
@@ -113,11 +97,7 @@ class PiholeRepository {
           .map((json) => ListsModel.fromJson(json as Map<String, dynamic>))
           .toList();
 
-      log(
-        listsModels.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getListsData",
-      );
+      _log.fine(() => 'getListsData: ${listsModels.toString()}');
 
       return listsModels;
     } catch (e) {
@@ -130,11 +110,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.addListsItem(item);
       ListUpdateModel listUpdateModel = ListUpdateModel.fromJson(result);
 
-      log(
-        listUpdateModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.addListsItem",
-      );
+      _log.fine(() => 'addListsItem: ${listUpdateModel.toString()}');
 
       return listUpdateModel;
     } catch (e) {
@@ -147,11 +123,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.updateListsItem(item);
       ListUpdateModel listUpdateModel = ListUpdateModel.fromJson(result);
 
-      log(
-        listUpdateModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.updateListsItem",
-      );
+      _log.fine(() => 'updateListsItem: ${listUpdateModel.toString()}');
 
       return listUpdateModel;
     } catch (e) {
@@ -167,11 +139,7 @@ class PiholeRepository {
         isDeleted = true;
       }
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.deleteListsItem",
-      );
+      _log.fine(() => 'deleteListsItem: ${result.toString()}');
 
       return isDeleted;
     } catch (e) {
@@ -186,11 +154,7 @@ class PiholeRepository {
           .map((json) => DomainModel.fromJson(json as Map<String, dynamic>))
           .toList();
 
-      log(
-        domainModels.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getDomainsData",
-      );
+      _log.fine(() => 'getDomainsData: ${domainModels.toString()}');
 
       return domainModels;
     } catch (e) {
@@ -211,11 +175,7 @@ class PiholeRepository {
       );
       DomainUpdateModel domainUpdateModel = DomainUpdateModel.fromJson(result);
 
-      log(
-        domainUpdateModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.updateDomainItem",
-      );
+      _log.fine(() => 'updateDomainItem: ${domainUpdateModel.toString()}');
 
       return domainUpdateModel;
     } catch (e) {
@@ -231,11 +191,7 @@ class PiholeRepository {
         isDeleted = true;
       }
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.deleteDomainsItem",
-      );
+      _log.fine(() => 'deleteDomainsItem: ${result.toString()}');
 
       return isDeleted;
     } catch (e) {
@@ -248,11 +204,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.addDomainsItem(item);
       DomainUpdateModel domainUpdateModel = DomainUpdateModel.fromJson(result);
 
-      log(
-        domainUpdateModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.addDomainsItem",
-      );
+      _log.fine(() => 'addDomainsItem: ${domainUpdateModel.toString()}');
 
       return domainUpdateModel;
     } catch (e) {
@@ -265,11 +217,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getClients(blocked);
       ClientsModel clientsModel = ClientsModel.fromJson(result);
 
-      log(
-        clientsModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getClients",
-      );
+      _log.fine(() => 'getClients: ${clientsModel.toString()}');
 
       return clientsModel;
     } catch (e) {
@@ -282,11 +230,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getDomains(blocked);
       DomainsModel domainsModel = DomainsModel.fromJson(result);
 
-      log(
-        domainsModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getDomains",
-      );
+      _log.fine(() => 'getDomains: ${domainsModel.toString()}');
 
       return domainsModel;
     } catch (e) {
@@ -299,11 +243,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getQueriesHistory();
       HistoryModel historyModel = HistoryModel.fromJson(result);
 
-      log(
-        historyModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getQueriesHistory",
-      );
+      _log.fine(() => 'getQueriesHistory: ${historyModel.toString()}');
 
       return historyModel;
     } catch (e) {
@@ -317,11 +257,7 @@ class PiholeRepository {
       ClientHistoryModel clientHistoryModel = ClientHistoryModel.fromJson(
         result,
       );
-      log(
-        clientHistoryModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getClientsHistory",
-      );
+      _log.fine(() => 'getClientsHistory: ${clientHistoryModel.toString()}');
       return clientHistoryModel;
     } catch (e) {
       rethrow;
@@ -332,11 +268,7 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getQueryTypes();
       StatsQueryTypes statsQueryTypes = StatsQueryTypes.fromJson(result);
-      log(
-        statsQueryTypes.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getQueryTypes",
-      );
+      _log.fine(() => 'getQueryTypes: ${statsQueryTypes.toString()}');
       return statsQueryTypes;
     } catch (e) {
       rethrow;
@@ -347,11 +279,7 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getUpstreams();
       UpstreamsModel upstreamsModel = UpstreamsModel.fromJson(result);
-      log(
-        upstreamsModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getUpstreams",
-      );
+      _log.fine(() => 'getUpstreams: ${upstreamsModel.toString()}');
       return upstreamsModel;
     } catch (e) {
       rethrow;
@@ -363,11 +291,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getSystemInfo();
       SystemModel systemModel = SystemModel.fromJson(result);
 
-      log(
-        systemModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getSystemInfo",
-      );
+      _log.fine(() => 'getSystemInfo: ${systemModel.toString()}');
 
       return systemModel;
     } catch (e) {
@@ -380,11 +304,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getHostInfo();
       HostModel hostModel = HostModel.fromJson(result);
 
-      log(
-        hostModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getHostInfo",
-      );
+      _log.fine(() => 'getHostInfo: ${hostModel.toString()}');
 
       return hostModel;
     } catch (e) {
@@ -397,11 +317,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getVersion();
       VersionModel versionModel = VersionModel.fromJson(result);
 
-      log(
-        versionModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getVersion",
-      );
+      _log.fine(() => 'getVersion: ${versionModel.toString()}');
 
       return versionModel;
     } catch (e) {
@@ -414,11 +330,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getSummary();
       SummaryModel summaryModel = SummaryModel.fromJson(result);
 
-      log(
-        summaryModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getSummary",
-      );
+      _log.fine(() => 'getSummary: ${summaryModel.toString()}');
 
       return summaryModel;
     } catch (e) {
@@ -431,11 +343,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getBlockingStatus();
       BlockingModel blockingModel = BlockingModel.fromJson(result);
 
-      log(
-        blockingModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getBlockingStatus",
-      );
+      _log.fine(() => 'getBlockingStatus: ${blockingModel.toString()}');
 
       return blockingModel;
     } catch (e) {
@@ -448,11 +356,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.onBlockingChanged(status, timer);
       BlockingModel blockingModel = BlockingModel.fromJson(result);
 
-      log(
-        blockingModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.onBlockingChanged",
-      );
+      _log.fine(() => 'onBlockingChanged: ${blockingModel.toString()}');
 
       return blockingModel;
     } catch (e) {
@@ -465,11 +369,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getQuerylogPage(start, pageSize);
       QueryListModel queryListModel = QueryListModel.fromJson(result);
 
-      log(
-        queryListModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getQuerylogPage",
-      );
+      _log.fine(() => 'getQuerylogPage: ${queryListModel.toString()}');
 
       return queryListModel;
     } catch (e) {
@@ -482,11 +382,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getPiholeConfiguration();
       PiholeConfigModel piholeConfigModel = PiholeConfigModel.fromJson(result);
 
-      log(
-        piholeConfigModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getPiholeConfiguration",
-      );
+      _log.fine(() => 'getPiholeConfiguration: ${piholeConfigModel.toString()}');
 
       return piholeConfigModel;
     } catch (e) {
