@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
@@ -38,7 +39,7 @@ class ConfirmActionBottomSheet<B extends StateStreamableSource<S>, S>
     return WoltModalSheet.show(
       context: context,
       pageIndexNotifier: pageIndexNotifier,
-      modalTypeBuilder: (context) => WoltModalType.bottomSheet(),
+      modalTypeBuilder: (context) => PiUtils.getModalTypeBuilder(context),
       pageListBuilder: (context) {
         return [
           WoltModalSheetPage(

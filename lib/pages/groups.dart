@@ -185,7 +185,7 @@ class GroupsView extends StatelessWidget {
           ),
         ];
       },
-      modalTypeBuilder: (ctx) => WoltModalType.bottomSheet(),
+      modalTypeBuilder: (ctx) => PiUtils.getModalTypeBuilder(ctx),
     ).whenComplete(() {
       commentController.dispose();
       groupController.dispose();
@@ -355,7 +355,7 @@ class GroupsView extends StatelessWidget {
           ),
         ];
       },
-      modalTypeBuilder: (ctx) => WoltModalType.bottomSheet(), // adapt type
+      modalTypeBuilder: (ctx) => PiUtils.getModalTypeBuilder(ctx),
     ).whenComplete(() {
       commentController.dispose();
       groupController.dispose();

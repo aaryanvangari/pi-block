@@ -263,7 +263,7 @@ class DomainsView extends StatelessWidget {
           ),
         ];
       },
-      modalTypeBuilder: (ctx) => WoltModalType.bottomSheet(),
+      modalTypeBuilder: (ctx) => PiUtils.getModalTypeBuilder(ctx),
     ).whenComplete(() {
       commentController.dispose();
       domainController.dispose();
@@ -478,7 +478,7 @@ class DomainsView extends StatelessWidget {
           ),
         ];
       },
-      modalTypeBuilder: (ctx) => WoltModalType.bottomSheet(), // adapt type
+      modalTypeBuilder: (ctx) => PiUtils.getModalTypeBuilder(ctx),
     ).whenComplete(() {
       commentController.dispose();
       pageIndexNotifier.dispose();

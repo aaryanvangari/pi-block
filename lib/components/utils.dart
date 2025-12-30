@@ -11,6 +11,7 @@ import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/app_settings_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 class PiUtils {
   static final Logger _log = AppLogger.get('PiUtils');
@@ -145,5 +146,16 @@ class PiUtils {
         break;
     }
     return isDarkMode;
+  }
+
+  static WoltModalType getModalTypeBuilder(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    if (width < 523) {
+      return WoltModalType.bottomSheet();
+    } else if (width < 800) {
+      return WoltModalType.dialog();
+    } else {
+      return WoltModalType.sideSheet();
+    }
   }
 }
