@@ -15,6 +15,7 @@ import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/theme/app_ui_context.dart';
 import 'package:pi_block/widgets/cancel_button.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
+import 'package:pi_block/widgets/confirm_action_bottom_sheet.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/custom_multi_select_dropdown.dart';
@@ -22,7 +23,6 @@ import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/widgets/custom_toggle_switch.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
-import 'package:pi_block/widgets/simple_sheet.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 class ListsPage extends StatelessWidget {
@@ -609,48 +609,28 @@ class ListsView extends StatelessWidget {
 
   void deleteListModal(BuildContext context, ListsModel listsModel) {
     final listsBloc = context.read<ListsBloc>();
-    final pageIndexNotifier = ValueNotifier<int>(0);
-    WoltModalSheet.show(
+
+    ConfirmActionBottomSheet.show<ListsBloc, ListsState>(
       context: context,
-      pageIndexNotifier: pageIndexNotifier,
-      pageListBuilder: (context) {
-        return [
-          WoltModalSheetPage(
-            navBarHeight: 40,
-            pageTitle: Text(
-              "Delete List",
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            child: BlocProvider.value(
-              value: listsBloc,
-              child: BlocListener<ListsBloc, ListsState>(
-                listener: (context, state) {
-                  if (state.itemStatus == ListsItemStateStatus.success) {
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
-                  } else if (state.itemStatus == ListsItemStateStatus.failure) {
-                    PiUtils.handleGeneralException(context, state.error);
-                  }
-                },
-                child: SimpleBottomSheet(
-                  primaryTitle: "Delete",
-                  cancelFunction: () => Navigator.pop(context),
-                  primaryFunction: () => {
-                    listsBloc.add(DeleteListsItem(listsModel: listsModel)),
-                  },
-                  confirmationText: "Do you want to delete list?",
-                ),
-              ),
-            ),
-          ),
-        ];
-      },
-      modalTypeBuilder: (context) => WoltModalType.bottomSheet(), // adapt type
-    ).whenComplete(() {
-      pageIndexNotifier.dispose();
-    });
+      sheet: ConfirmActionBottomSheet<ListsBloc, ListsState>(
+        bloc: listsBloc,
+        title: 'Delete List',
+        confirmationText: 'Do you want to delete list?',
+        confirmButtonText: 'Delete',
+        onConfirm: () {
+          listsBloc.add(
+            DeleteListsItem(listsModel: listsModel),
+          );
+        },
+        isSuccess: (state) =>
+            state.itemStatus == ListsItemStateStatus.success,
+        isFailure: (state) =>
+            state.itemStatus == ListsItemStateStatus.failure,
+        onFailure: (context, state) {
+          PiUtils.handleGeneralException(context, state.error);
+        },
+      ),
+    );
   }
 
   Widget getLists(List<ListsModel> listsModels) {

@@ -12,11 +12,11 @@ import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/theme/app_ui_context.dart';
 import 'package:pi_block/widgets/cancel_button.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
+import 'package:pi_block/widgets/confirm_action_bottom_sheet.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/custom_toggle_switch.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
-import 'package:pi_block/widgets/simple_sheet.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
@@ -365,49 +365,28 @@ class GroupsView extends StatelessWidget {
 
   void deleteGroupModal(BuildContext context, GroupModel groupModel) {
     final groupsBloc = context.read<GroupsBloc>();
-    final pageIndexNotifier = ValueNotifier<int>(0);
-    WoltModalSheet.show(
+
+    ConfirmActionBottomSheet.show<GroupsBloc, GroupsState>(
       context: context,
-      pageIndexNotifier: pageIndexNotifier,
-      pageListBuilder: (context) {
-        return [
-          WoltModalSheetPage(
-            navBarHeight: 40,
-            pageTitle: Text(
-              "Delete Group",
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            child: BlocProvider.value(
-              value: groupsBloc,
-              child: BlocListener<GroupsBloc, GroupsState>(
-                listener: (context, state) {
-                  if (state.itemStatus == GroupsItemStateStatus.success) {
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
-                  } else if (state.itemStatus ==
-                      GroupsItemStateStatus.failure) {
-                    PiUtils.handleGeneralException(context, state.error);
-                  }
-                },
-                child: SimpleBottomSheet(
-                  primaryTitle: "Delete",
-                  cancelFunction: () => Navigator.pop(context),
-                  primaryFunction: () => {
-                    groupsBloc.add(DeleteGroupsItem(groupModel: groupModel)),
-                  },
-                  confirmationText: "Do you want to delete group?",
-                ),
-              ),
-            ),
-          ),
-        ];
-      },
-      modalTypeBuilder: (context) => WoltModalType.bottomSheet(), // adapt type
-    ).whenComplete(() {
-      pageIndexNotifier.dispose();
-    });
+      sheet: ConfirmActionBottomSheet<GroupsBloc, GroupsState>(
+        bloc: groupsBloc,
+        title: 'Delete Group',
+        confirmationText: 'Do you want to delete group?',
+        confirmButtonText: 'Delete',
+        onConfirm: () {
+          groupsBloc.add(
+            DeleteGroupsItem(groupModel: groupModel),
+          );
+        },
+        isSuccess: (state) =>
+            state.itemStatus == GroupsItemStateStatus.success,
+        isFailure: (state) =>
+            state.itemStatus == GroupsItemStateStatus.failure,
+        onFailure: (context, state) {
+          PiUtils.handleGeneralException(context, state.error);
+        },
+      ),
+    );
   }
 
   Widget _groupRow(GroupModel item, BuildContext context) {

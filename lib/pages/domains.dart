@@ -17,13 +17,13 @@ import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/theme/app_ui_context.dart';
 import 'package:pi_block/widgets/cancel_button.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
+import 'package:pi_block/widgets/confirm_action_bottom_sheet.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/custom_multi_select_dropdown.dart';
 import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/widgets/custom_toggle_switch.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
-import 'package:pi_block/widgets/simple_sheet.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
@@ -487,51 +487,28 @@ class DomainsView extends StatelessWidget {
 
   void deleteDomainModal(BuildContext context, DomainModel domainModel) {
     final domainsBloc = context.read<DomainsBloc>();
-    final pageIndexNotifier = ValueNotifier<int>(0);
-    WoltModalSheet.show(
+
+    ConfirmActionBottomSheet.show<DomainsBloc, DomainsState>(
       context: context,
-      pageIndexNotifier: pageIndexNotifier,
-      pageListBuilder: (context) {
-        return [
-          WoltModalSheetPage(
-            navBarHeight: 40,
-            pageTitle: Text(
-              "Delete Domain",
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            child: BlocProvider.value(
-              value: domainsBloc,
-              child: BlocListener<DomainsBloc, DomainsState>(
-                listener: (context, state) {
-                  if (state.itemStatus == DomainsItemStateStatus.success) {
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
-                  } else if (state.itemStatus ==
-                      DomainsItemStateStatus.failure) {
-                    PiUtils.handleGeneralException(context, state.error);
-                  }
-                },
-                child: SimpleBottomSheet(
-                  primaryTitle: "Delete",
-                  cancelFunction: () => Navigator.pop(context),
-                  primaryFunction: () => {
-                    domainsBloc.add(
-                      DeleteDomainsItem(domainModel: domainModel),
-                    ),
-                  },
-                  confirmationText: "Do you want to delete domain?",
-                ),
-              ),
-            ),
-          ),
-        ];
-      },
-      modalTypeBuilder: (context) => WoltModalType.bottomSheet(), // adapt type
-    ).whenComplete(() {
-      pageIndexNotifier.dispose();
-    });
+      sheet: ConfirmActionBottomSheet<DomainsBloc, DomainsState>(
+        bloc: domainsBloc,
+        title: 'Delete Domain',
+        confirmationText: 'Do you want to delete domain?',
+        confirmButtonText: 'Delete',
+        onConfirm: () {
+          domainsBloc.add(
+            DeleteDomainsItem(domainModel: domainModel),
+          );
+        },
+        isSuccess: (state) =>
+            state.itemStatus == DomainsItemStateStatus.success,
+        isFailure: (state) =>
+            state.itemStatus == DomainsItemStateStatus.failure,
+        onFailure: (context, state) {
+          PiUtils.handleGeneralException(context, state.error);
+        },
+      ),
+    );
   }
 
   Widget _domainRow(DomainModel item, BuildContext context) {
