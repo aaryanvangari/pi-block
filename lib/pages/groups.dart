@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_switch/flutter_switch.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:material_symbols_icons/symbols.dart';
-import 'package:pi_block/blocs/domains/domains_bloc.dart';
-import 'package:pi_block/blocs/groups/groups_bloc.dart'
-    hide ResetItemToggleError;
+import 'package:pi_block/blocs/groups/groups_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
-import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
@@ -19,51 +14,36 @@ import 'package:pi_block/widgets/cancel_button.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
-import 'package:pi_block/widgets/custom_multi_select_dropdown.dart';
-import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/widgets/custom_toggle_switch.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
-class DomainsPage extends StatelessWidget {
-  const DomainsPage({super.key});
+class GroupsPage extends StatelessWidget {
+  const GroupsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) =>
-              DomainsBloc(context.read<PiholeRepository>())..add(LoadDomains()),
-        ),
-        BlocProvider(
-          create: (_) =>
-              GroupsBloc(context.read<PiholeRepository>())..add(LoadGroups()),
-        ),
-      ],
-      child: DomainsView(),
+    return BlocProvider(
+      create: (_) =>
+          GroupsBloc(context.read<PiholeRepository>())..add(LoadGroups()),
+      child: GroupsView(),
     );
   }
 }
 
-class DomainsView extends StatelessWidget {
-  const DomainsView({super.key});
+class GroupsView extends StatelessWidget {
+  const GroupsView({super.key});
 
-  void addDomainFormModal(BuildContext ctx) {
+  void addGroupFormModal(BuildContext ctx) {
     final pageIndexNotifier = ValueNotifier<int>(0);
-    String type = "allow";
-    String kind = "exact";
     PiValidators piValidators = PiValidators();
 
     TextEditingController commentController = TextEditingController();
-    TextEditingController domainController = TextEditingController();
-    List<int> selectedGroupIds = [0];
-    final domainsBloc = ctx.read<DomainsBloc>();
+    TextEditingController groupController = TextEditingController();
     final groupsBloc = ctx.read<GroupsBloc>();
     final formKey = GlobalKey<FormState>();
-    groupsBloc.add(ResetGroupsSelection());
 
     WoltModalSheet.show(
       context: ctx,
@@ -71,18 +51,15 @@ class DomainsView extends StatelessWidget {
       pageListBuilder: (context) {
         return [
           WoltModalSheetPage(
+            useSafeArea: true,
             navBarHeight: 40,
-            resizeToAvoidBottomInset: true,
             pageTitle: Text(
-              "Add Domain",
+              "Add Group",
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            child: MultiBlocProvider(
-              providers: [
-                BlocProvider<DomainsBloc>.value(value: domainsBloc),
-                BlocProvider<GroupsBloc>.value(value: groupsBloc),
-              ],
+            child: BlocProvider.value(
+              value: groupsBloc,
               child: SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.only(
@@ -93,6 +70,7 @@ class DomainsView extends StatelessWidget {
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Form(
                         key: formKey,
@@ -103,14 +81,14 @@ class DomainsView extends StatelessWidget {
                                 TextFormField(
                                   autovalidateMode:
                                       AutovalidateMode.onUserInteraction,
-                                  controller: domainController,
+                                  controller: groupController,
                                   maxLines: 1,
                                   validator: (value) =>
-                                      piValidators.domainValidator(value),
+                                      piValidators.groupValidator(value),
                                   decoration: InputDecoration(
-                                    labelText: "Domain",
+                                    labelText: "Group",
                                     suffixIcon: IconButton(
-                                      onPressed: () => domainController.clear(),
+                                      onPressed: () => groupController.clear(),
                                       icon: Icon(Icons.clear),
                                     ),
                                   ),
@@ -133,75 +111,19 @@ class DomainsView extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 10),
-                                BlocBuilder<GroupsBloc, GroupsState>(
-                                  builder: (context, state) {
-                                    if (state.status ==
-                                        GroupsStateStatus.success) {
-                                      return CustomMultiSelectDropdown<
-                                        GroupModel
-                                      >(
-                                        hintText: 'Select Groups',
-                                        items: state.groups,
-                                        selectedItems: state.selectedGroups,
-                                        labelBuilder: (g) => g.name,
-                                        validator: (list) => list.isEmpty
-                                            ? 'Select at least one group'
-                                            : null,
-                                        onChanged: (groups) {
-                                          context.read<GroupsBloc>().add(
-                                            GroupsSelectionChanged(groups),
-                                          );
-                                          // Updating list of groupIds to set it up for
-                                          // sending data to backend
-                                          selectedGroupIds = state
-                                              .selectedGroups
-                                              .map((g) => g.id)
-                                              .toList();
-                                        },
-                                      );
-                                    }
-                                    return const SizedBox.shrink();
-                                  },
-                                ),
-                                const SizedBox(height: 10),
-                                Wrap(
-                                  spacing: 16,
-                                  runSpacing: 10,
-                                  children: [
-                                    CustomToggleSwitch(
-                                      initialLabelIndex: kind == "regex"
-                                          ? 0
-                                          : 1,
-                                      labels: ['Regex', 'Exact'],
-                                      onToggle: (index) => kind = (index == 0)
-                                          ? "regex"
-                                          : "exact",
-                                    ),
-                                    CustomToggleSwitch(
-                                      initialLabelIndex: type == "allow"
-                                          ? 0
-                                          : 1,
-                                      labels: ['Allow', 'Deny'],
-                                      onToggle: (index) => type = (index == 0)
-                                          ? "allow"
-                                          : "deny",
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    BlocConsumer<DomainsBloc, DomainsState>(
+                                    BlocConsumer<GroupsBloc, GroupsState>(
                                       listener: (context, state) {
                                         if (state.itemStatus ==
-                                            DomainsItemStateStatus.success) {
+                                            GroupsItemStateStatus.success) {
                                           if (Navigator.canPop(ctx)) {
                                             Navigator.pop(ctx);
                                           }
                                         } else if (state.itemStatus ==
-                                            DomainsItemStateStatus.failure) {
+                                            GroupsItemStateStatus.failure) {
                                           PiUtils.handleGeneralException(
                                             context,
                                             state.error,
@@ -211,22 +133,22 @@ class DomainsView extends StatelessWidget {
                                       builder: (context, state) {
                                         final isLoading =
                                             state.itemStatus ==
-                                            DomainsItemStateStatus.loading;
+                                            GroupsItemStateStatus.loading;
                                         return FilledButton(
                                           onPressed: () {
                                             if (formKey.currentState!
                                                 .validate()) {
-                                              DomainModel
-                                              domainModel = DomainModel(
-                                                domain: domainController.text,
+                                              GroupModel
+                                              groupModel = GroupModel(
+                                                name: groupController.text,
                                                 comment: commentController.text,
-                                                type: type,
-                                                kind: kind,
-                                                groups: selectedGroupIds,
+
+                                                /// New groups are always enabled
+                                                enabled: true,
                                               );
-                                              context.read<DomainsBloc>().add(
-                                                AddDomainsItem(
-                                                  domainModel: domainModel,
+                                              context.read<GroupsBloc>().add(
+                                                AddGroupsItem(
+                                                  groupModel: groupModel,
                                                 ),
                                               );
                                             }
@@ -266,30 +188,24 @@ class DomainsView extends StatelessWidget {
       modalTypeBuilder: (ctx) => WoltModalType.bottomSheet(),
     ).whenComplete(() {
       commentController.dispose();
-      domainController.dispose();
+      groupController.dispose();
       pageIndexNotifier.dispose();
     });
   }
 
-  void editDomainFormModal(BuildContext ctx, DomainModel domainModel) {
+  void editGroupFormModal(BuildContext ctx, GroupModel groupModel) {
     final pageIndexNotifier = ValueNotifier<int>(0);
-    String type = domainModel.type;
-    bool enabled = domainModel.enabled;
-    List<int> groups = domainModel.groups;
-    String comment = domainModel.comment;
-    String kind = domainModel.kind;
+    bool enabled = groupModel.enabled;
+    String comment = groupModel.comment;
+    String name = groupModel.name;
     PiValidators piValidators = PiValidators();
-    List<int> selectedGroupIds = groups;
-    final domainsBloc = ctx.read<DomainsBloc>();
-    final groupsBloc = ctx.read<GroupsBloc>();
-    final formKey = GlobalKey<FormState>();
-    final preSelectedGroupIds = groupsBloc.state.groups
-        .where((group) => groups.contains(group.id))
-        .toList();
-    groupsBloc.add(GroupsSelectionChanged(preSelectedGroupIds));
+
     TextEditingController commentController = TextEditingController(
       text: comment,
     );
+    TextEditingController groupController = TextEditingController(text: name);
+    final groupsBloc = ctx.read<GroupsBloc>();
+    final formKey = GlobalKey<FormState>();
 
     WoltModalSheet.show(
       context: ctx,
@@ -298,17 +214,13 @@ class DomainsView extends StatelessWidget {
         return [
           WoltModalSheetPage(
             navBarHeight: 40,
-            resizeToAvoidBottomInset: true,
             pageTitle: Text(
-              "Edit Domain",
+              "Edit Group",
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            child: MultiBlocProvider(
-              providers: [
-                BlocProvider<DomainsBloc>.value(value: domainsBloc),
-                BlocProvider<GroupsBloc>.value(value: groupsBloc),
-              ],
+            child: BlocProvider.value(
+              value: groupsBloc,
               child: SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.only(
@@ -330,6 +242,22 @@ class DomainsView extends StatelessWidget {
                                 TextFormField(
                                   autovalidateMode:
                                       AutovalidateMode.onUserInteraction,
+                                  controller: groupController,
+                                  maxLines: 1,
+                                  validator: (value) =>
+                                      piValidators.groupValidator(value),
+                                  decoration: InputDecoration(
+                                    labelText: "Group",
+                                    suffixIcon: IconButton(
+                                      onPressed: () => groupController.clear(),
+                                      icon: const Icon(Icons.clear),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                TextFormField(
+                                  autovalidateMode:
+                                      AutovalidateMode.onUserInteraction,
                                   controller: commentController,
                                   maxLines: 3,
                                   validator: (value) =>
@@ -344,37 +272,6 @@ class DomainsView extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 10),
-                                BlocBuilder<GroupsBloc, GroupsState>(
-                                  builder: (context, state) {
-                                    if (state.status ==
-                                        GroupsStateStatus.success) {
-                                      return CustomMultiSelectDropdown<
-                                        GroupModel
-                                      >(
-                                        hintText: 'Select Groups',
-                                        items: state.groups,
-                                        selectedItems: state.selectedGroups,
-                                        labelBuilder: (g) => g.name,
-                                        validator: (list) => list.isEmpty
-                                            ? 'Select at least one group'
-                                            : null,
-                                        onChanged: (groups) {
-                                          context.read<GroupsBloc>().add(
-                                            GroupsSelectionChanged(groups),
-                                          );
-                                          // Updating list of groupIds to set it up for
-                                          // sending data to backend
-                                          selectedGroupIds = state
-                                              .selectedGroups
-                                              .map((g) => g.id)
-                                              .toList();
-                                        },
-                                      );
-                                    }
-                                    return const SizedBox.shrink();
-                                  },
-                                ),
-                                const SizedBox(height: 10),
                                 Wrap(
                                   spacing: 16,
                                   runSpacing: 10,
@@ -385,24 +282,6 @@ class DomainsView extends StatelessWidget {
                                       onToggle: (index) =>
                                           enabled = (index == 0) ? true : false,
                                     ),
-                                    CustomToggleSwitch(
-                                      initialLabelIndex: kind == "regex"
-                                          ? 0
-                                          : 1,
-                                      labels: ['Regex', 'Exact'],
-                                      onToggle: (index) => kind = (index == 0)
-                                          ? "regex"
-                                          : "exact",
-                                    ),
-                                    CustomToggleSwitch(
-                                      initialLabelIndex: type == "allow"
-                                          ? 0
-                                          : 1,
-                                      labels: ['Allow', 'Deny'],
-                                      onToggle: (index) => type = (index == 0)
-                                          ? "allow"
-                                          : "deny",
-                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 10),
@@ -410,15 +289,15 @@ class DomainsView extends StatelessWidget {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    BlocConsumer<DomainsBloc, DomainsState>(
+                                    BlocConsumer<GroupsBloc, GroupsState>(
                                       listener: (context, state) {
                                         if (state.itemStatus ==
-                                            DomainsItemStateStatus.success) {
+                                            GroupsItemStateStatus.success) {
                                           if (Navigator.canPop(ctx)) {
                                             Navigator.pop(ctx);
                                           }
                                         } else if (state.itemStatus ==
-                                            DomainsItemStateStatus.failure) {
+                                            GroupsItemStateStatus.failure) {
                                           PiUtils.handleGeneralException(
                                             context,
                                             state.error,
@@ -428,20 +307,18 @@ class DomainsView extends StatelessWidget {
                                       builder: (context, state) {
                                         final isLoading =
                                             state.itemStatus ==
-                                            DomainsItemStateStatus.loading;
+                                            GroupsItemStateStatus.loading;
                                         return FilledButton(
                                           onPressed: () {
                                             if (formKey.currentState!
                                                 .validate()) {
-                                              context.read<DomainsBloc>().add(
-                                                UpdateDomainsItem(
-                                                  domainModel: domainModel,
-                                                  type: type,
-                                                  kind: kind,
+                                              context.read<GroupsBloc>().add(
+                                                UpdateGroupsItem(
+                                                  groupModel: groupModel,
                                                   comment:
                                                       commentController.text,
                                                   enabled: enabled,
-                                                  groups: selectedGroupIds,
+                                                  name: groupController.text,
                                                 ),
                                               );
                                             }
@@ -481,12 +358,13 @@ class DomainsView extends StatelessWidget {
       modalTypeBuilder: (ctx) => WoltModalType.bottomSheet(), // adapt type
     ).whenComplete(() {
       commentController.dispose();
+      groupController.dispose();
       pageIndexNotifier.dispose();
     });
   }
 
-  void deleteDomainModal(BuildContext context, DomainModel domainModel) {
-    final domainsBloc = context.read<DomainsBloc>();
+  void deleteGroupModal(BuildContext context, GroupModel groupModel) {
+    final groupsBloc = context.read<GroupsBloc>();
     final pageIndexNotifier = ValueNotifier<int>(0);
     WoltModalSheet.show(
       context: context,
@@ -496,20 +374,20 @@ class DomainsView extends StatelessWidget {
           WoltModalSheetPage(
             navBarHeight: 40,
             pageTitle: Text(
-              "Delete Domain",
+              "Delete Group",
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             child: BlocProvider.value(
-              value: domainsBloc,
-              child: BlocListener<DomainsBloc, DomainsState>(
+              value: groupsBloc,
+              child: BlocListener<GroupsBloc, GroupsState>(
                 listener: (context, state) {
-                  if (state.itemStatus == DomainsItemStateStatus.success) {
+                  if (state.itemStatus == GroupsItemStateStatus.success) {
                     if (Navigator.canPop(context)) {
                       Navigator.pop(context);
                     }
                   } else if (state.itemStatus ==
-                      DomainsItemStateStatus.failure) {
+                      GroupsItemStateStatus.failure) {
                     PiUtils.handleGeneralException(context, state.error);
                   }
                 },
@@ -517,11 +395,9 @@ class DomainsView extends StatelessWidget {
                   primaryTitle: "Delete",
                   cancelFunction: () => Navigator.pop(context),
                   primaryFunction: () => {
-                    domainsBloc.add(
-                      DeleteDomainsItem(domainModel: domainModel),
-                    ),
+                    groupsBloc.add(DeleteGroupsItem(groupModel: groupModel)),
                   },
-                  confirmationText: "Do you want to delete domain?",
+                  confirmationText: "Do you want to delete group?",
                 ),
               ),
             ),
@@ -534,7 +410,7 @@ class DomainsView extends StatelessWidget {
     });
   }
 
-  Widget _domainRow(DomainModel item, BuildContext context) {
+  Widget _groupRow(GroupModel item, BuildContext context) {
     return CustomExpansionTileWidget(
       isHeaderARow: true,
       headerItems: [
@@ -551,10 +427,10 @@ class DomainsView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            item.domain,
-                            style: (item.type == "deny")
-                                ? context.ui.listHeaderTitleBlock
-                                : context.ui.listHeaderTitleAllow,
+                            item.name,
+                            // style: (item.type == "deny")
+                            //     ? context.ui.listHeaderTitleBlock
+                            //     : context.ui.listHeaderTitleAllow,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -577,11 +453,8 @@ class DomainsView extends StatelessWidget {
                       activeColor: KColors.flutterSwitch,
                       value: item.enabled,
                       onToggle: (value) {
-                        context.read<DomainsBloc>().add(
-                          DomainItemToggled(
-                            domainModel: item,
-                            isEnabled: value,
-                          ),
+                        context.read<GroupsBloc>().add(
+                          GroupItemToggled(groupModel: item, isEnabled: value),
                         );
                       },
                     ),
@@ -591,29 +464,6 @@ class DomainsView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Wrap(
-                      spacing: 3,
-                      children: [
-                        CustomTagWidget(
-                          iconData: item.type == "deny"
-                              ? Icons.block
-                              : FontAwesomeIcons.check,
-                          color: item.type == "deny"
-                              ? KColors.deny
-                              : KColors.allow,
-                          title: item.type == "deny" ? "Deny" : "Allow",
-                        ),
-                        CustomTagWidget(
-                          iconData: item.kind == "regex"
-                              ? Symbols.regular_expression
-                              : Symbols.match_word,
-                          color: item.type == "deny"
-                              ? KColors.deny
-                              : KColors.allow,
-                          title: item.kind == "regex" ? "Regex" : "Exact",
-                        ),
-                      ],
-                    ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -638,30 +488,15 @@ class DomainsView extends StatelessWidget {
         ),
       ],
       contentTitleItems: [
-        const Text('Domain: ', style: KTextStyle.listExpandedTitle),
-        const Text('Unicode: ', style: KTextStyle.listExpandedTitle),
+        const Text('Group: ', style: KTextStyle.listExpandedTitle),
         const Text('Comment: ', style: KTextStyle.listExpandedTitle),
-        const Text('Groups: ', style: KTextStyle.listExpandedTitle),
         const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
         const Text('Added: ', style: KTextStyle.listExpandedTitle),
         const Text('Modified: ', style: KTextStyle.listExpandedTitle),
       ],
       contentValueItems: [
-        Text(item.domain, style: KTextStyle.listExpandedValue),
-        Text(item.unicode, style: KTextStyle.listExpandedValue),
+        Text(item.name, style: KTextStyle.listExpandedValue),
         Text(item.comment, style: KTextStyle.listExpandedValue),
-        BlocBuilder<GroupsBloc, GroupsState>(
-          builder: (context, state) {
-            if (state.status == GroupsStateStatus.success) {
-              String groupsListString = state.groups
-                  .where((group) => (item.groups.contains(group.id)))
-                  .map((group) => group.name)
-                  .join(' • ');
-              return Text(groupsListString);
-            }
-            return const SizedBox.shrink();
-          },
-        ),
         Text(item.id.toString(), style: KTextStyle.listExpandedValue),
         Text(
           '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
@@ -675,11 +510,11 @@ class DomainsView extends StatelessWidget {
     );
   }
 
-  Widget getDomains(List<DomainModel> domainModels) {
+  Widget getGroups(List<GroupModel> groupModels) {
     ListView listView = ListView.separated(
-      itemCount: domainModels.length,
+      itemCount: groupModels.length,
       itemBuilder: (context, index) {
-        var selectedPageItem = domainModels[index];
+        var selectedPageItem = groupModels[index];
         return Slidable(
           key: Key(selectedPageItem.id.toString()),
           startActionPane: ActionPane(
@@ -688,7 +523,7 @@ class DomainsView extends StatelessWidget {
             children: [
               SlidableAction(
                 onPressed: (context) {
-                  deleteDomainModal(context, selectedPageItem);
+                  deleteGroupModal(context, selectedPageItem);
                 },
                 autoClose: true,
                 backgroundColor: context.ui.slideError,
@@ -702,7 +537,7 @@ class DomainsView extends StatelessWidget {
             children: [
               SlidableAction(
                 onPressed: (context) {
-                  editDomainFormModal(context, selectedPageItem);
+                  editGroupFormModal(context, selectedPageItem);
                 },
                 autoClose: true,
                 backgroundColor: context.ui.slidePrimary,
@@ -710,7 +545,7 @@ class DomainsView extends StatelessWidget {
               ),
             ],
           ),
-          child: _domainRow(selectedPageItem, context),
+          child: _groupRow(selectedPageItem, context),
         );
       },
       separatorBuilder: (context, index) {
@@ -725,43 +560,48 @@ class DomainsView extends StatelessWidget {
     context.ui; // updates AppUiTokens when theme changes
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Groups"),
+          elevation: 0,
+          leading: BackButton(),
+        ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
               Expanded(
-                child: BlocConsumer<DomainsBloc, DomainsState>(
+                child: BlocConsumer<GroupsBloc, GroupsState>(
                   listener: (context, state) {
-                    if (state.status == DomainsStateStatus.failure) {
+                    if (state.status == GroupsStateStatus.failure) {
                       PiUtils.handleGeneralException(
                         context,
                         "An Error Occured",
                       );
                     } else if (state.itemToggleStatus ==
-                        DomainsItemToggleStateStatus.failure) {
-                      context.read<DomainsBloc>().add(ResetItemToggleError());
+                        GroupsItemToggleStateStatus.failure) {
+                      context.read<GroupsBloc>().add(ResetItemToggleError());
                       PiUtils.handleGeneralException(
                         context,
                         "An Error Occured",
                       );
                     } else if (state.itemStatus ==
-                        DomainsItemStateStatus.success) {
+                        GroupsItemStateStatus.success) {
                       GlobalSnackbar.info(context, state.message, "");
                     }
                   },
                   builder: (context, state) {
-                    if (state.status == DomainsStateStatus.loading) {
+                    if (state.status == GroupsStateStatus.loading) {
                       return const Center(child: CircularProgressIndicator());
-                    } else if (state.status == DomainsStateStatus.failure) {
+                    } else if (state.status == GroupsStateStatus.failure) {
                       return const CustomErrorWidget(
                         message: "Error loading data",
                       );
-                    } else if (state.domains.isEmpty) {
+                    } else if (state.groups.isEmpty) {
                       return const Center(
                         child: EmptyWidget(message: "No data"),
                       );
-                    } else if (state.status == DomainsStateStatus.success) {
-                      List<DomainModel> domainModels = state.domains;
+                    } else if (state.status == GroupsStateStatus.success) {
+                      List<GroupModel> groupModels = state.groups;
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -773,7 +613,7 @@ class DomainsView extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
-                                  "Domains",
+                                  "Groups",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -781,7 +621,7 @@ class DomainsView extends StatelessWidget {
                                 ),
                                 IconButton.filled(
                                   onPressed: () {
-                                    addDomainFormModal(context);
+                                    addGroupFormModal(context);
                                   },
                                   icon: Icon(Icons.add, size: 15),
                                   visualDensity: VisualDensity.compact,
@@ -789,7 +629,7 @@ class DomainsView extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Expanded(child: getDomains(domainModels)),
+                          Expanded(child: getGroups(groupModels)),
                         ],
                       );
                     }

@@ -5,6 +5,7 @@ import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/constants/api_urls.dart';
 import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/domain_model.dart';
+import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/models/lists_model.dart';
 
 class PiholeDataProvider {
@@ -245,6 +246,88 @@ class PiholeDataProvider {
       PiUtils.handleAPIException(result, false);
 
       _log.fine(() => 'addDomainsItem: ${result.toString()}');
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> getGroupsData() async {
+    try {
+      final queryParameter = <String, dynamic>{
+        '_': DateTime.now().millisecondsSinceEpoch.toString(),
+      };
+      var result = await piHttpClient.get(
+        ApiUrls.groups,
+        queryParams: queryParameter,
+      );
+      PiUtils.handleAPIException(result, false);
+      _log.fine(() => 'getGroupsData: ${result.toString()}');
+
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> updateGroupItem(
+    GroupModel item,
+    String previousName
+  ) async {
+    try {
+      var body = jsonEncode(<String, dynamic>{
+        "name": item.name,
+        "comment": item.comment,
+        "enabled": item.enabled,
+      });
+      _log.fine(() => 'updateGroupItem: ${body.toString()}');
+      String groupEncoded = Uri.encodeComponent(previousName);
+
+      var result = await piHttpClient.put(
+        '${ApiUrls.groups}/$groupEncoded',
+        null,
+        body,
+      );
+      PiUtils.handleAPIException(result, false);
+
+      _log.fine(() => 'updateGroupItem: ${result.toString()}');
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteGroupsItem(GroupModel item) async {
+    try {
+      List<Map<String, dynamic>> batchDelete = [
+        {"item": item.name},
+      ];
+      var body = jsonEncode(batchDelete);
+      _log.fine(() => 'deleteGroupsItem: ${body.toString()}');
+
+      var result = await piHttpClient.post(ApiUrls.groupsDelete, null, body);
+      PiUtils.handleAPIException(result, false);
+
+      _log.fine(() => 'deleteGroupsItem: ${result.toString()}');
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> addGroupsItem(GroupModel item) async {
+    try {
+      var body = jsonEncode(<String, dynamic>{
+        "name": [item.name],
+        "comment": item.comment,
+        "enabled": item.enabled,
+      });
+      _log.fine(() => 'addGroupsItem: ${body.toString()}');
+
+      var result = await piHttpClient.post(ApiUrls.groups, null, body);
+      PiUtils.handleAPIException(result, false);
+
+      _log.fine(() => 'addGroupsItem: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;

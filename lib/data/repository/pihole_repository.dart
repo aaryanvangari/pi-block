@@ -7,6 +7,8 @@ import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/domain_update_model.dart';
 import 'package:pi_block/models/domains_model.dart';
+import 'package:pi_block/models/groups_model.dart';
+import 'package:pi_block/models/groups_update_model.dart';
 import 'package:pi_block/models/history_model.dart';
 import 'package:pi_block/models/host_model.dart';
 import 'package:pi_block/models/lists_model.dart';
@@ -207,6 +209,63 @@ class PiholeRepository {
       _log.fine(() => 'addDomainsItem: ${domainUpdateModel.toString()}');
 
       return domainUpdateModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<GroupModel>> getGroupsData() async {
+    try {
+      var result = await piholeDataProvider.getGroupsData();
+      List<GroupModel> groupModels = (result['groups'] as List<dynamic>)
+          .map((json) => GroupModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      _log.fine(() => 'getGroupsData: ${groupModels.toString()}');
+
+      return groupModels;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<GroupUpdateModel> updateGroupItem(GroupModel item, String previousName) async {
+    try {
+      var result = await piholeDataProvider.updateGroupItem(item, previousName);
+      GroupUpdateModel groupUpdateModel = GroupUpdateModel.fromJson(result);
+
+      _log.fine(() => 'updateGroupItem: ${groupUpdateModel.toString()}');
+
+      return groupUpdateModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> deleteGroupsItem(GroupModel item) async {
+    try {
+      var result = await piholeDataProvider.deleteGroupsItem(item);
+      bool isDeleted = false;
+      if (result.containsKey("deleted") && result["deleted"]) {
+        isDeleted = true;
+      }
+
+      _log.fine(() => 'deleteGroupsItem: ${result.toString()}');
+
+      return isDeleted;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<GroupUpdateModel> addGroupsItem(GroupModel item) async {
+    try {
+      var result = await piholeDataProvider.addGroupsItem(item);
+      GroupUpdateModel groupUpdateModel = GroupUpdateModel.fromJson(result);
+
+      _log.fine(() => 'addGroupsItem: ${groupUpdateModel.toString()}');
+
+      return groupUpdateModel;
     } catch (e) {
       rethrow;
     }

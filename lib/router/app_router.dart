@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/pages/dashboard.dart';
 import 'package:pi_block/pages/domains.dart';
+import 'package:pi_block/pages/groups.dart';
 import 'package:pi_block/pages/lists.dart';
 import 'package:pi_block/pages/local_dns.dart';
 import 'package:pi_block/pages/login.dart';
@@ -134,6 +135,11 @@ class AppRouter {
           name: AppRoutes.localDns,
           path: AppRoutes.localDnsPath,
           builder: (context, state) => const LocalDnsPage(),
+        ),
+        GoRoute(
+          name: AppRoutes.groups,
+          path: AppRoutes.groupsPath,
+          builder: (context, state) => const GroupsPage(),
         ),
         GoRoute(
           name: AppRoutes.piholeConfiguration,

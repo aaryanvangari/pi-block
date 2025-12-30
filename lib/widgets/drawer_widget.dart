@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pi_block/router/app_routes.dart';
 import 'package:pi_block/theme/app_styles.dart';
@@ -44,6 +45,17 @@ class DrawerWidget extends StatelessWidget {
               //     ),
               //   ],
               // ),
+              ListTile(
+                title: Text(
+                  "Groups",
+                  style: KTextStyle.drawerEntryItemTitle,
+                ),
+                leading: Icon(FontAwesomeIcons.userGroup),
+                onTap: () {
+                  Navigator.of(context).pop(); // closes drawer
+                  context.pushNamed(AppRoutes.groups);
+                },
+              ),
               ListTile(
                 title: Text(
                   "Pi-Hole Configuration",

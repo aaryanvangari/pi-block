@@ -3,10 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:pi_block/blocs/groups/groups_bloc.dart' hide ResetItemToggleError;
 import 'package:pi_block/blocs/lists/lists_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
+import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
@@ -15,6 +17,7 @@ import 'package:pi_block/widgets/cancel_button.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
+import 'package:pi_block/widgets/custom_multi_select_dropdown.dart';
 import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/widgets/custom_toggle_switch.dart';
@@ -27,9 +30,17 @@ class ListsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          ListsBloc(context.read<PiholeRepository>())..add(LoadLists()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) =>
+              ListsBloc(context.read<PiholeRepository>())..add(LoadLists()),
+        ),
+        BlocProvider(
+          create: (_) =>
+              GroupsBloc(context.read<PiholeRepository>())..add(LoadGroups()),
+        ),
+      ],
       child: ListsView(),
     );
   }
@@ -141,6 +152,7 @@ class ListsView extends StatelessWidget {
       contentTitleItems: [
         const Text('Comment: ', style: KTextStyle.listExpandedTitle),
         const Text('Address: ', style: KTextStyle.listExpandedTitle),
+        const Text('Groups: ', style: KTextStyle.listExpandedTitle),
         const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
         const Text('Number of entries: ', style: KTextStyle.listExpandedTitle),
         const Text(
@@ -160,6 +172,18 @@ class ListsView extends StatelessWidget {
       contentValueItems: [
         Text(item.comment, style: KTextStyle.listExpandedValue),
         Text(item.address, style: KTextStyle.listExpandedValue),
+        BlocBuilder<GroupsBloc, GroupsState>(
+          builder: (context, state) {
+            if (state.status == GroupsStateStatus.success) {
+              String groupsListString = state.groups
+                  .where((group) => (item.groups.contains(group.id)))
+                  .map((group) => group.name)
+                  .join(' • ');
+              return Text(groupsListString);
+            }
+            return const SizedBox.shrink();
+          },
+        ),
         Text(item.id.toString(), style: KTextStyle.listExpandedValue),
         Text('${item.number}', style: KTextStyle.listExpandedValue),
         Text('${item.invalid_domains}', style: KTextStyle.listExpandedValue),
@@ -186,12 +210,18 @@ class ListsView extends StatelessWidget {
     List<int> groups = listsModel.groups;
     String comment = listsModel.comment;
     PiValidators piValidators = PiValidators();
+    List<int> selectedGroupIds = groups;
+    final listsBloc = ctx.read<ListsBloc>();
+    final groupsBloc = ctx.read<GroupsBloc>();
+    final formKey = GlobalKey<FormState>();
+    final preSelectedGroupIds = groupsBloc.state.groups
+        .where((group) => groups.contains(group.id))
+        .toList();
+    groupsBloc.add(GroupsSelectionChanged(preSelectedGroupIds));
 
     TextEditingController commentController = TextEditingController(
       text: comment,
     );
-    final listsBloc = ctx.read<ListsBloc>();
-    final formKey = GlobalKey<FormState>();
 
     WoltModalSheet.show(
       context: ctx,
@@ -200,13 +230,17 @@ class ListsView extends StatelessWidget {
         return [
           WoltModalSheetPage(
             navBarHeight: 40,
+            resizeToAvoidBottomInset: true,
             pageTitle: Text(
               "Edit List",
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            child: BlocProvider.value(
-              value: listsBloc,
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider<ListsBloc>.value(value: listsBloc),
+                BlocProvider<GroupsBloc>.value(value: groupsBloc),
+              ],
               child: SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.only(
@@ -240,6 +274,37 @@ class ListsView extends StatelessWidget {
                                       icon: Icon(Icons.clear),
                                     ),
                                   ),
+                                ),
+                                const SizedBox(height: 10),
+                                BlocBuilder<GroupsBloc, GroupsState>(
+                                  builder: (context, state) {
+                                    if (state.status ==
+                                        GroupsStateStatus.success) {
+                                      return CustomMultiSelectDropdown<
+                                        GroupModel
+                                      >(
+                                        hintText: 'Select Groups',
+                                        items: state.groups,
+                                        selectedItems: state.selectedGroups,
+                                        labelBuilder: (g) => g.name,
+                                        validator: (list) => list.isEmpty
+                                            ? 'Select at least one group'
+                                            : null,
+                                        onChanged: (groups) {
+                                          context.read<GroupsBloc>().add(
+                                            GroupsSelectionChanged(groups),
+                                          );
+                                          // Updating list of groupIds to set it up for
+                                          // sending data to backend
+                                          selectedGroupIds = state
+                                              .selectedGroups
+                                              .map((g) => g.id)
+                                              .toList();
+                                        },
+                                      );
+                                    }
+                                    return const SizedBox.shrink();
+                                  },
                                 ),
                                 const SizedBox(height: 10),
                                 Wrap(
@@ -288,7 +353,7 @@ class ListsView extends StatelessWidget {
                                                   comment:
                                                       commentController.text,
                                                   enabled: enabled,
-                                                  groups: groups,
+                                                  groups: selectedGroupIds,
                                                 ),
                                               );
                                             }
@@ -339,8 +404,11 @@ class ListsView extends StatelessWidget {
 
     TextEditingController commentController = TextEditingController();
     TextEditingController addressController = TextEditingController();
+    List<int> selectedGroupIds = [0];
     final listsBloc = ctx.read<ListsBloc>();
     final formKey = GlobalKey<FormState>();
+    final groupsBloc = ctx.read<GroupsBloc>();
+    groupsBloc.add(ResetGroupsSelection());
 
     WoltModalSheet.show(
       context: ctx,
@@ -349,13 +417,17 @@ class ListsView extends StatelessWidget {
         return [
           WoltModalSheetPage(
             navBarHeight: 40,
+            resizeToAvoidBottomInset: true,
             pageTitle: Text(
               "Add List",
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            child: BlocProvider.value(
-              value: listsBloc,
+            child: MultiBlocProvider(
+              providers: [
+                BlocProvider<ListsBloc>.value(value: listsBloc),
+                BlocProvider<GroupsBloc>.value(value: groupsBloc),
+              ],
               child: SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.only(
@@ -408,6 +480,37 @@ class ListsView extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 10),
+                                BlocBuilder<GroupsBloc, GroupsState>(
+                                  builder: (context, state) {
+                                    if (state.status ==
+                                        GroupsStateStatus.success) {
+                                      return CustomMultiSelectDropdown<
+                                        GroupModel
+                                      >(
+                                        hintText: 'Select Groups',
+                                        items: state.groups,
+                                        selectedItems: state.selectedGroups,
+                                        labelBuilder: (g) => g.name,
+                                        validator: (list) => list.isEmpty
+                                            ? 'Select at least one group'
+                                            : null,
+                                        onChanged: (groups) {
+                                          context.read<GroupsBloc>().add(
+                                            GroupsSelectionChanged(groups),
+                                          );
+                                          // Updating list of groupIds to set it up for
+                                          // sending data to backend
+                                          selectedGroupIds = state
+                                              .selectedGroups
+                                              .map((g) => g.id)
+                                              .toList();
+                                        },
+                                      );
+                                    }
+                                    return const SizedBox.shrink();
+                                  },
+                                ),
+                                const SizedBox(height: 10),
                                 Wrap(
                                   spacing: 16,
                                   runSpacing: 10,
@@ -455,6 +558,7 @@ class ListsView extends StatelessWidget {
                                                 type: type,
                                                 comment: commentController.text,
                                                 address: addressController.text,
+                                                groups: selectedGroupIds
                                               );
                                               context.read<ListsBloc>().add(
                                                 AddListsItem(
@@ -495,7 +599,7 @@ class ListsView extends StatelessWidget {
           ),
         ];
       },
-      modalTypeBuilder: (ctx) => WoltModalType.bottomSheet(), // adapt type
+      modalTypeBuilder: (ctx) => WoltModalType.bottomSheet(),
     ).whenComplete(() {
       commentController.dispose();
       addressController.dispose();

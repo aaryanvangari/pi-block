@@ -6,6 +6,8 @@ class ApiUrls {
   static const String topDomains = '$base/stats/top_domains';
   static const String domains = '$base/domains';
   static const String domainsDelete = '$base/domains:batchDelete';
+  static const String groups = '$base/groups';
+  static const String groupsDelete = '$base/groups:batchDelete';
   static const String clients = '$base/stats/top_clients';
   static const String queries = '$base/queries';
   static const String config = '$base/config';

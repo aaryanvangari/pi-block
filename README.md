@@ -12,9 +12,11 @@ Application to manage Pi-Hole instance.
 * Browse Query Log
 * Manage domains
 * Manage subscribed lists
+* Manage groups
 * Pi-Hole diagnostic messages
 * Pi-Hole configuration as JSON
 
-## Limitations
+## Testing
 
-* For now works on instances with default group
+* Manual testing done on Samsung Note 4
+* Manual testing done on Samsung Galaxy A52
