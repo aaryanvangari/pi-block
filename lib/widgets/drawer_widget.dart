@@ -46,13 +46,13 @@ class DrawerWidget extends StatelessWidget {
               //   ],
               // ),
               ListTile(
-                title: Text(
-                  "Groups",
-                  style: KTextStyle.drawerEntryItemTitle,
-                ),
+                title: Text("Groups", style: KTextStyle.drawerEntryItemTitle),
                 leading: Icon(FontAwesomeIcons.userGroup),
                 onTap: () {
-                  Navigator.of(context).pop(); // closes drawer
+                  if (Navigator.canPop(context)) {
+                    Navigator.of(context).pop(); // closes drawer
+                  }
+                  
                   context.pushNamed(AppRoutes.groups);
                 },
               ),
@@ -63,7 +63,9 @@ class DrawerWidget extends StatelessWidget {
                 ),
                 leading: Icon(Icons.code),
                 onTap: () {
-                  Navigator.of(context).pop(); // closes drawer
+                  if (Navigator.canPop(context)) {
+                    Navigator.of(context).pop(); // closes drawer
+                  }
                   context.pushNamed(AppRoutes.piholeConfiguration);
                 },
               ),
@@ -71,7 +73,9 @@ class DrawerWidget extends StatelessWidget {
                 title: Text("Settings", style: KTextStyle.drawerEntryItemTitle),
                 leading: Icon(Icons.settings),
                 onTap: () {
-                  Navigator.of(context).pop(); // closes drawer
+                  if (Navigator.canPop(context)) {
+                    Navigator.of(context).pop(); // closes drawer
+                  }
                   context.pushNamed(AppRoutes.settings);
                 },
               ),
