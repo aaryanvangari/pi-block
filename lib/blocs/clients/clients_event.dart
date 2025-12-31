@@ -11,6 +11,10 @@ final class LoadClients extends ClientsEvent {
   const LoadClients();
 }
 
+final class LoadClientsSuggestions extends ClientsEvent {
+  const LoadClientsSuggestions();
+}
+
 final class UpdateClientsItem extends ClientsEvent {
   const UpdateClientsItem({
     required this.clientModel,

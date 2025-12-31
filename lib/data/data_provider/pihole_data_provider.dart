@@ -253,6 +253,18 @@ class PiholeDataProvider {
     }
   }
 
+  Future<Map<String, dynamic>> getClientsSuggestionsData() async {
+    try {
+      var result = await piHttpClient.get(ApiUrls.clientsSuggestions);
+      PiUtils.handleAPIException(result, false);
+      _log.fine(() => 'getClientsSuggestionsData: ${result.toString()}');
+
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<Map<String, dynamic>> getClientsData() async {
     try {
       final queryParameter = <String, dynamic>{

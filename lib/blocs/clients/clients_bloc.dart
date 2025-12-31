@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pi_block/models/clients_suggestion_model.dart';
 import 'package:pi_block/models/clients_update_model.dart';
 import 'package:pi_block/models/client_model.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
@@ -15,17 +16,23 @@ class ClientsBloc extends Bloc<ClientsEvent, ClientsState> {
 
   late final _clientstreamController =
       BehaviorSubject<List<ClientModel>>.seeded(const []);
+  late final _clientSuggestionsstreamController =
+      BehaviorSubject<List<ClientSuggestionModel>>.seeded(const []);
 
   ClientsBloc(this.piholeRepository) : super(ClientsState()) {
     on<LoadClients>(_loadClients);
     on<UpdateClientsItem>(_updateClientsItem);
     on<AddClientsItem>(_addClientsItem);
     on<DeleteClientsItem>(_deleteClientsItem);
+    on<LoadClientsSuggestions>(_loadClientsSuggestions);
     _clientstreamController.add(const []);
+    _clientSuggestionsstreamController.add(const []);
   }
 
   Stream<List<ClientModel>> getClients() =>
       _clientstreamController.asBroadcastStream();
+  Stream<List<ClientSuggestionModel>> getClientsSuggestions() =>
+      _clientSuggestionsstreamController.asBroadcastStream();
 
   void _loadClients(LoadClients event, Emitter<ClientsState> emit) async {
     emit(
@@ -48,6 +55,36 @@ class ClientsBloc extends Bloc<ClientsEvent, ClientsState> {
     } catch (e) {
       emit(
         state.copyWith(status: ClientsStateStatus.failure, error: e.toString()),
+      );
+    }
+  }
+
+  void _loadClientsSuggestions(
+    LoadClientsSuggestions event,
+    Emitter<ClientsState> emit,
+  ) async {
+    emit(
+      state.copyWith(suggestionStatus: ClientsSuggestionsStateStatus.loading),
+    );
+    try {
+      final suggestions = await piholeRepository.getClientsSuggestionsData();
+      _clientSuggestionsstreamController.add(suggestions);
+      await emit.forEach<List<ClientSuggestionModel>>(
+        getClientsSuggestions(),
+        onData: (suggestions) => state.copyWith(
+          suggestionStatus: ClientsSuggestionsStateStatus.success,
+          suggestions: suggestions,
+        ),
+        onError: (_, _) => state.copyWith(
+          suggestionStatus: ClientsSuggestionsStateStatus.failure,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          suggestionStatus: ClientsSuggestionsStateStatus.failure,
+          error: e.toString(),
+        ),
       );
     }
   }

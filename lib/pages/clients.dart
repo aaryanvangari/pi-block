@@ -1,3 +1,4 @@
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -8,6 +9,7 @@ import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/client_model.dart';
+import 'package:pi_block/models/clients_suggestion_model.dart';
 import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/theme/app_ui_context.dart';
@@ -56,6 +58,10 @@ class ClientsView extends StatelessWidget {
     final groupsBloc = ctx.read<GroupsBloc>();
     final formKey = GlobalKey<FormState>();
     groupsBloc.add(ResetGroupsSelection());
+    clientsBloc.add(LoadClientsSuggestions());
+
+    final theme = Theme.of(ctx);
+    final colorScheme = theme.colorScheme;
 
     WoltModalSheet.show(
       context: ctx,
@@ -92,6 +98,72 @@ class ClientsView extends StatelessWidget {
                           builder: (ctx) {
                             return Column(
                               children: [
+                                BlocBuilder<ClientsBloc, ClientsState>(
+                                  builder: (context, state) {
+                                    if (state.suggestionStatus ==
+                                        ClientsSuggestionsStateStatus.success) {
+                                      return CustomDropdown<
+                                        ClientSuggestionModel
+                                      >.search(
+                                        items: state.suggestions,
+                                        hintText: 'Suggested Clients',
+                                        overlayHeight: 400,
+                                        decoration: CustomDropdownDecoration(
+                                          searchFieldDecoration:
+                                              SearchFieldDecoration(
+                                                fillColor: colorScheme.surface,
+                                              ),
+                                          expandedFillColor:
+                                              colorScheme.surface,
+                                          closedFillColor: Colors.transparent,
+                                          closedBorder: BoxBorder.all(
+                                            color: Colors.transparent,
+                                          ),
+                                          closedErrorBorder: BoxBorder.all(
+                                            color: Colors.transparent,
+                                          ),
+                                          errorStyle: TextStyle(
+                                            color: colorScheme.error,
+                                          ),
+                                          listItemDecoration:
+                                              ListItemDecoration(
+                                                selectedColor: colorScheme
+                                                    .secondaryContainer,
+                                                highlightColor: colorScheme
+                                                    .onSecondaryContainer,
+                                              ),
+                                          hintStyle: theme.textTheme.bodyLarge,
+                                        ),
+
+                                        onChanged: (client) {
+                                          if (client == null) return;
+
+                                          // parse data of format 'hostname (ip)' or 'macaddress'
+                                          final text = client.toString();
+                                          clientController.text =
+                                              RegExp(
+                                                r'\(([^)]+)\)',
+                                              ).firstMatch(text)?.group(1) ??
+                                              text;
+
+                                          // Move cursor to end
+                                          clientController.selection =
+                                              TextSelection.fromPosition(
+                                                TextPosition(
+                                                  offset: clientController
+                                                      .text
+                                                      .length,
+                                                ),
+                                              );
+                                        },
+                                      );
+                                    }
+                                    return const SizedBox.shrink();
+                                  },
+                                ),
+
+                                const SizedBox(height: 10),
+
                                 TextFormField(
                                   autovalidateMode:
                                       AutovalidateMode.onUserInteraction,

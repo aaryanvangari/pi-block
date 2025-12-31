@@ -4,6 +4,7 @@ import 'package:pi_block/models/blocking_model.dart';
 import 'package:pi_block/models/client_model.dart';
 import 'package:pi_block/models/clients_history_model.dart';
 import 'package:pi_block/models/clients_stats_model.dart';
+import 'package:pi_block/models/clients_suggestion_model.dart';
 import 'package:pi_block/models/clients_update_model.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/models/domain_model.dart';
@@ -211,6 +212,21 @@ class PiholeRepository {
       _log.fine(() => 'addDomainsItem: ${domainUpdateModel.toString()}');
 
       return domainUpdateModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<ClientSuggestionModel>> getClientsSuggestionsData() async {
+    try {
+      var result = await piholeDataProvider.getClientsSuggestionsData();
+      List<ClientSuggestionModel> clientSuggestionModels = (result['clients'] as List<dynamic>)
+          .map((json) => ClientSuggestionModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      _log.fine(() => 'getClientsSuggestionsData: ${clientSuggestionModels.toString()}');
+
+      return clientSuggestionModels;
     } catch (e) {
       rethrow;
     }
