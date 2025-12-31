@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
+import 'package:pi_block/pages/clients.dart';
 import 'package:pi_block/pages/dashboard.dart';
 import 'package:pi_block/pages/domains.dart';
 import 'package:pi_block/pages/groups.dart';
@@ -140,6 +141,11 @@ class AppRouter {
           name: AppRoutes.groups,
           path: AppRoutes.groupsPath,
           builder: (context, state) => const GroupsPage(),
+        ),
+        GoRoute(
+          name: AppRoutes.clients,
+          path: AppRoutes.clientsPath,
+          builder: (context, state) => const ClientsPage(),
         ),
         GoRoute(
           name: AppRoutes.piholeConfiguration,

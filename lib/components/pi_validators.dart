@@ -54,4 +54,16 @@ class PiValidators {
     }
     return null;
   }
+
+  clientValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Client is required";
+    }
+
+    /// #TODO client validation
+    // if (!validators.isFQDN(value)) {
+    //   return "Invalid Client";
+    // }
+    return null;
+  }
 }

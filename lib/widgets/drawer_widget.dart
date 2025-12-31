@@ -57,6 +57,17 @@ class DrawerWidget extends StatelessWidget {
                 },
               ),
               ListTile(
+                title: Text("Clients", style: KTextStyle.drawerEntryItemTitle),
+                leading: Icon(FontAwesomeIcons.laptop),
+                onTap: () {
+                  if (Navigator.canPop(context)) {
+                    Navigator.of(context).pop(); // closes drawer
+                  }
+
+                  context.pushNamed(AppRoutes.clients);
+                },
+              ),
+              ListTile(
                 title: Text(
                   "Pi-Hole Configuration",
                   style: KTextStyle.drawerEntryItemTitle,

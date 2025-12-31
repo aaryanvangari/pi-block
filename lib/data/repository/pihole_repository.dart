@@ -1,8 +1,10 @@
 import 'package:pi_block/data/data_provider/pihole_data_provider.dart';
 import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/blocking_model.dart';
+import 'package:pi_block/models/client_model.dart';
 import 'package:pi_block/models/clients_history_model.dart';
 import 'package:pi_block/models/clients_stats_model.dart';
+import 'package:pi_block/models/clients_update_model.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/domain_update_model.dart';
@@ -209,6 +211,67 @@ class PiholeRepository {
       _log.fine(() => 'addDomainsItem: ${domainUpdateModel.toString()}');
 
       return domainUpdateModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<ClientModel>> getClientsData() async {
+    try {
+      var result = await piholeDataProvider.getClientsData();
+      List<ClientModel> clientModels = (result['clients'] as List<dynamic>)
+          .map((json) => ClientModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      _log.fine(() => 'getClientsData: ${clientModels.toString()}');
+
+      return clientModels;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<ClientsUpdateModel> updateClientItem(ClientModel item) async {
+    try {
+      var result = await piholeDataProvider.updateClientItem(item);
+      ClientsUpdateModel clientsUpdateModel = ClientsUpdateModel.fromJson(
+        result,
+      );
+
+      _log.fine(() => 'updateDomainItem: ${clientsUpdateModel.toString()}');
+
+      return clientsUpdateModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> deleteClientsItem(ClientModel item) async {
+    try {
+      var result = await piholeDataProvider.deleteClientsItem(item);
+      bool isDeleted = false;
+      if (result.containsKey("deleted") && result["deleted"]) {
+        isDeleted = true;
+      }
+
+      _log.fine(() => 'deleteClientsItem: ${result.toString()}');
+
+      return isDeleted;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<ClientsUpdateModel> addClientsItem(ClientModel item) async {
+    try {
+      var result = await piholeDataProvider.addClientsItem(item);
+      ClientsUpdateModel clientsUpdateModel = ClientsUpdateModel.fromJson(
+        result,
+      );
+
+      _log.fine(() => 'addClientsItem: ${clientsUpdateModel.toString()}');
+
+      return clientsUpdateModel;
     } catch (e) {
       rethrow;
     }

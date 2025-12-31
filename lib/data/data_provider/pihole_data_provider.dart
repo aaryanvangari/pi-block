@@ -4,6 +4,7 @@ import 'package:pi_block/components/pi_http_client.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/constants/api_urls.dart';
 import 'package:pi_block/logging/app_logger.dart';
+import 'package:pi_block/models/client_model.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/models/lists_model.dart';
@@ -246,6 +247,84 @@ class PiholeDataProvider {
       PiUtils.handleAPIException(result, false);
 
       _log.fine(() => 'addDomainsItem: ${result.toString()}');
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> getClientsData() async {
+    try {
+      final queryParameter = <String, dynamic>{
+        '_': DateTime.now().millisecondsSinceEpoch.toString(),
+      };
+      var result = await piHttpClient.get(
+        ApiUrls.clients,
+        queryParams: queryParameter,
+      );
+      PiUtils.handleAPIException(result, false);
+      _log.fine(() => 'getClientsData: ${result.toString()}');
+
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> updateClientItem(ClientModel item) async {
+    try {
+      var body = jsonEncode(<String, dynamic>{
+        "comment": item.comment,
+        "groups": item.groups,
+      });
+      _log.fine(() => 'updateClientItem: ${body.toString()}');
+      String clientEncoded = Uri.encodeComponent(item.client);
+
+      var result = await piHttpClient.put(
+        '${ApiUrls.clients}/$clientEncoded',
+        null,
+        body,
+      );
+      PiUtils.handleAPIException(result, false);
+
+      _log.fine(() => 'updateClientItem: ${result.toString()}');
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteClientsItem(ClientModel item) async {
+    try {
+      List<Map<String, dynamic>> batchDelete = [
+        {"item": item.client},
+      ];
+      var body = jsonEncode(batchDelete);
+      _log.fine(() => 'deleteClientsItem: ${body.toString()}');
+
+      var result = await piHttpClient.post(ApiUrls.clientsDelete, null, body);
+      PiUtils.handleAPIException(result, false);
+
+      _log.fine(() => 'deleteClientsItem: ${result.toString()}');
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> addClientsItem(ClientModel item) async {
+    try {
+      var body = jsonEncode(<String, dynamic>{
+        "client": [item.client],
+        "comment": item.comment,
+        "groups": item.groups,
+      });
+      _log.fine(() => 'addClientsItem: ${body.toString()}');
+
+      var result = await piHttpClient.post(ApiUrls.clients, null, body);
+      PiUtils.handleAPIException(result, false);
+
+      _log.fine(() => 'addClientsItem: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;

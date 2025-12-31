@@ -11,6 +11,7 @@ abstract class AppRoutes {
   static const String domains = 'domains';
   static const String lists = 'lists';
   static const String groups = 'groups';
+  static const String clients = 'clients';
   static const String piholeConfiguration = 'piholeConfiguration';
 
   // Route paths
@@ -25,6 +26,7 @@ abstract class AppRoutes {
   static const String domainsPath = '/domains';
   static const String listsPath = '/lists';
   static const String groupsPath = '/groups';
+  static const String clientsPath = '/clients';
   static const String piholeConfigurationPath = '/pihole-configuration';
 
   const AppRoutes._(); // Prevent instantiation

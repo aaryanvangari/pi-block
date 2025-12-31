@@ -15,6 +15,8 @@ class ApiUrls {
   static const String messagesCount = '$base/info/messages/count';
   static const String lists = '$base/lists';
   static const String listsDelete = '$base/lists:batchDelete';
+  static const String clients = '$base/clients';
+  static const String clientsDelete = '$base/clients:batchDelete';
   static const String dns = '$base/dns/blocking';
   static const String summary = '$base/stats/summary';
   static const String system = '$base/info/system';
