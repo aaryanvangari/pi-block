@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/clients_stats/clients_blocked_bloc.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
-import 'package:pi_block/models/clients_model.dart';
+import 'package:pi_block/models/clients_stats_model.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/widgets/empty_card_widget.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
@@ -31,7 +31,7 @@ class BlockedClientsListView extends StatelessWidget {
   static const _title = "Top Clients (Blocked only)";
 
   Widget generateTopClientsData(
-    List<ClientModel> clients,
+    List<ClientStatsModel> clients,
     int totalQueries,
     Color progressBarColor,
     bool isBlocked,
@@ -71,8 +71,8 @@ class BlockedClientsListView extends StatelessWidget {
         } else if (state is ClientsBlockedLoading) {
           return const WaitingCardWidget(header: _title);
         } else if (state is ClientsBlockedLoaded) {
-          ClientsModel clientsModel = state.clients;
-          List<ClientModel> clients = clientsModel.clients;
+          ClientsStatsModel clientsModel = state.clients;
+          List<ClientStatsModel> clients = clientsModel.clients;
           int totalQueries = clientsModel.blockedQueries;
           var topClientsList = generateTopClientsData(
             clients,

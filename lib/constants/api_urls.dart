@@ -8,7 +8,7 @@ class ApiUrls {
   static const String domainsDelete = '$base/domains:batchDelete';
   static const String groups = '$base/groups';
   static const String groupsDelete = '$base/groups:batchDelete';
-  static const String clients = '$base/stats/top_clients';
+  static const String topClients = '$base/stats/top_clients';
   static const String queries = '$base/queries';
   static const String config = '$base/config';
   static const String messages = '$base/info/messages';

@@ -334,28 +334,32 @@ class PiholeDataProvider {
     }
   }
 
-  Future<Map<String, dynamic>> getClients(Map<String, dynamic> blocked) async {
+  Future<Map<String, dynamic>> getTopClients(
+    Map<String, dynamic> blocked,
+  ) async {
     try {
       var result = await piHttpClient.get(
-        ApiUrls.clients,
+        ApiUrls.topClients,
         queryParams: blocked,
       );
       PiUtils.handleAPIException(result, false);
-      _log.fine(() => 'getClients: ${result.toString()}');
+      _log.fine(() => 'getTopClients: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;
     }
   }
 
-  Future<Map<String, dynamic>> getDomains(Map<String, dynamic> blocked) async {
+  Future<Map<String, dynamic>> getTopDomains(
+    Map<String, dynamic> blocked,
+  ) async {
     try {
       var result = await piHttpClient.get(
         ApiUrls.topDomains,
         queryParams: blocked,
       );
       PiUtils.handleAPIException(result, false);
-      _log.fine(() => 'getDomains: ${result.toString()}');
+      _log.fine(() => 'getTopDomains: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;

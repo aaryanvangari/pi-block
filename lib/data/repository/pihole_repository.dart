@@ -2,7 +2,7 @@ import 'package:pi_block/data/data_provider/pihole_data_provider.dart';
 import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/blocking_model.dart';
 import 'package:pi_block/models/clients_history_model.dart';
-import 'package:pi_block/models/clients_model.dart';
+import 'package:pi_block/models/clients_stats_model.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/domain_update_model.dart';
@@ -271,12 +271,12 @@ class PiholeRepository {
     }
   }
 
-  Future<ClientsModel> getClients(Map<String, dynamic> blocked) async {
+  Future<ClientsStatsModel> getTopClients(Map<String, dynamic> blocked) async {
     try {
-      var result = await piholeDataProvider.getClients(blocked);
-      ClientsModel clientsModel = ClientsModel.fromJson(result);
+      var result = await piholeDataProvider.getTopClients(blocked);
+      ClientsStatsModel clientsModel = ClientsStatsModel.fromJson(result);
 
-      _log.fine(() => 'getClients: ${clientsModel.toString()}');
+      _log.fine(() => 'getTopClients: ${clientsModel.toString()}');
 
       return clientsModel;
     } catch (e) {
@@ -284,12 +284,12 @@ class PiholeRepository {
     }
   }
 
-  Future<DomainsModel> getDomains(Map<String, dynamic> blocked) async {
+  Future<DomainsModel> getTopDomains(Map<String, dynamic> blocked) async {
     try {
-      var result = await piholeDataProvider.getDomains(blocked);
+      var result = await piholeDataProvider.getTopDomains(blocked);
       DomainsModel domainsModel = DomainsModel.fromJson(result);
 
-      _log.fine(() => 'getDomains: ${domainsModel.toString()}');
+      _log.fine(() => 'getTopDomains: ${domainsModel.toString()}');
 
       return domainsModel;
     } catch (e) {

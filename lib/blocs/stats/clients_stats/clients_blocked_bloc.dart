@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pi_block/models/clients_model.dart';
+import 'package:pi_block/models/clients_stats_model.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 
 class ClientsBlockedBloc
@@ -16,7 +16,7 @@ class ClientsBlockedBloc
   ) async {
     emit(ClientsBlockedLoading());
     try {
-      final clients = await piholeRepository.getClients(event.blocked);
+      final clients = await piholeRepository.getTopClients(event.blocked);
       if (clients.clients.isEmpty) {
         emit(ClientsBlockedEmpty());
       } else {
@@ -44,7 +44,7 @@ class ClientsBlockedInitial extends ClientsBlockedState {}
 class ClientsBlockedLoading extends ClientsBlockedState {}
 
 class ClientsBlockedLoaded extends ClientsBlockedState {
-  final ClientsModel clients;
+  final ClientsStatsModel clients;
   ClientsBlockedLoaded(this.clients);
 }
 
