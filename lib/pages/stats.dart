@@ -3,6 +3,7 @@ import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/widgets/blocked_client_stats.dart';
 import 'package:pi_block/widgets/blocked_domain_stats.dart';
 import 'package:pi_block/widgets/clients_barchart_stats.dart';
+import 'package:pi_block/widgets/dns_cache_stats_piechart.dart';
 import 'package:pi_block/widgets/permitted_client_stats.dart';
 import 'package:pi_block/widgets/permitted_domain_stats.dart';
 import 'package:pi_block/widgets/queries_barchart_stats.dart';
@@ -29,6 +30,9 @@ class StatsPage extends StatelessWidget {
 
       /// Upstreams
       UpstreamsStats(),
+
+      // DNS Cache Piechart
+      DnsCacheStatsPiechart(),
 
       // ----------------
       // Stats Lists

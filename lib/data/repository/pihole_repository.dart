@@ -16,6 +16,7 @@ import 'package:pi_block/models/history_model.dart';
 import 'package:pi_block/models/host_model.dart';
 import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/models/lists_update_model.dart';
+import 'package:pi_block/models/metrics_model.dart';
 import 'package:pi_block/models/pihole_config_model.dart';
 import 'package:pi_block/models/query_model.dart';
 import 'package:pi_block/models/session_model.dart';
@@ -471,6 +472,19 @@ class PiholeRepository {
       _log.fine(() => 'getSummary: ${summaryModel.toString()}');
 
       return summaryModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<MetricsModel> getMetrics() async {
+    try {
+      var result = await piholeDataProvider.getMetrics();
+      MetricsModel metricsModel = MetricsModel.fromJson(result);
+
+      _log.fine(() => 'getMetrics: ${metricsModel.toString()}');
+
+      return metricsModel;
     } catch (e) {
       rethrow;
     }

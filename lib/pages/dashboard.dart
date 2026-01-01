@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/widgets/blocking_info_stats.dart';
+import 'package:pi_block/widgets/dhcp_server_stats.dart';
+import 'package:pi_block/widgets/dns_cache_stats.dart';
+import 'package:pi_block/widgets/dns_replies_stats%20.dart';
 import 'package:pi_block/widgets/host_info_stats.dart';
 import 'package:pi_block/widgets/session_info_stats.dart';
 import 'package:pi_block/widgets/summary_info_stats.dart';
@@ -30,6 +33,15 @@ class DashboardPage extends StatelessWidget {
 
       // Versions
       VersionInfoStats(),
+
+      // DNS Cache
+      DnsCacheStats(),
+
+      // DNS Replies
+      DnsRepliesStats(),
+
+      // DHCP Server Metrics
+      DhcpServerStats()
     ];
 
     return Scaffold(

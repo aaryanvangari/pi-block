@@ -9,6 +9,7 @@ class KTimers {
   static const snackbarInfo = 5;
   static const summary = 15;
   static const system = 15;
+  static const metrics = 15;
   static const session = 1;
 }
 

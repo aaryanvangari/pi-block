@@ -363,7 +363,7 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> updateGroupItem(
     GroupModel item,
-    String previousName
+    String previousName,
   ) async {
     try {
       var body = jsonEncode(<String, dynamic>{
@@ -541,6 +541,17 @@ class PiholeDataProvider {
 
       _log.fine(() => 'getSummary: ${result.toString()}');
 
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> getMetrics() async {
+    try {
+      var result = await piHttpClient.get(ApiUrls.metrics);
+      PiUtils.handleAPIException(result, false);
+      _log.fine(() => 'getMetrics: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;

@@ -23,6 +23,7 @@ class ApiUrls {
   static const String system = '$base/info/system';
   static const String hosts = '$base/info/host';
   static const String versions = '$base/info/version';
+  static const String metrics = '$base/info/metrics';
   static const String history = '$base/history';
   static const String clientsHistory = '$base/history/clients';
 }
