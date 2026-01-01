@@ -7,6 +7,7 @@ import 'package:pi_block/blocs/groups/groups_bloc.dart' hide ResetItemToggleErro
 import 'package:pi_block/blocs/lists/lists_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
+import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/models/lists_model.dart';
@@ -200,6 +201,216 @@ class ListsView extends StatelessWidget {
           style: KTextStyle.listExpandedValue,
         ),
       ],
+    );
+  }
+
+  Widget _domainRowCard(ListsModel item, BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            // header row
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.comment,
+                            style: (item.type == "block")
+                                ? context.ui.listHeaderTitleBlock
+                                : context.ui.listHeaderTitleAllow,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                          Text(
+                            item.address,
+                            style: KTextStyle.listHeaderSubTitle,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                    FlutterSwitch(
+                      height: 25.0,
+                      width: 45.0,
+                      padding: 4.0,
+                      toggleSize: 15.0,
+                      borderRadius: 20.0,
+                      activeColor: KColors.flutterSwitch,
+                      value: item.enabled,
+                      onToggle: (value) {
+                        context.read<ListsBloc>().add(
+                          ListItemToggled(listsModel: item, isEnabled: value),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Wrap(
+                      spacing: 3,
+                      children: [
+                        CustomTagWidget(
+                          iconData: FontAwesomeIcons.listOl,
+                          title: item.number.toString(),
+                        ),
+                        CustomTagWidget(
+                          iconData: (item.status == 1)
+                              ? FontAwesomeIcons.download
+                              : FontAwesomeIcons.clockRotateLeft,
+                          color: KColors.download,
+                          title: (item.status == 1) ? "Downloaded" : "Upstream",
+                        ),
+                        CustomTagWidget(
+                          iconData: (item.type == "block")
+                              ? Icons.block
+                              : FontAwesomeIcons.check,
+                          color: (item.type == "block")
+                              ? KColors.block
+                              : KColors.allow,
+                          title: (item.type == "block")
+                              ? "Blocklist"
+                              : "Allowlist",
+                        ),
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                          child: Icon(Icons.update, size: 16),
+                        ),
+                        Text(
+                          PiUtils.getTimeAgo(item.date_updated, "milliseconds"),
+                          style: KTextStyle.listHeaderTimeTitle,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // details
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Comment: ', style: KTextStyle.listExpandedTitle),
+                            const Text('Address: ', style: KTextStyle.listExpandedTitle),
+                            const Text('Groups: ', style: KTextStyle.listExpandedTitle),
+                            const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
+                            const Text('Number of entries: ', style: KTextStyle.listExpandedTitle),
+                            const Text(
+                              'Number of non-domains: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text('Added to Pi-Hole: ', style: KTextStyle.listExpandedTitle),
+                            const Text(
+                              'Database last modified: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Content last updated on: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(item.comment, style: KTextStyle.listExpandedValue),
+                            Text(item.address, style: KTextStyle.listExpandedValue),
+                            BlocBuilder<GroupsBloc, GroupsState>(
+                              builder: (context, state) {
+                                if (state.status == GroupsStateStatus.success) {
+                                  String groupsListString = state.groups
+                                      .where((group) => (item.groups.contains(group.id)))
+                                      .map((group) => group.name)
+                                      .join(' • ');
+                                  return Text(groupsListString);
+                                }
+                                return const SizedBox.shrink();
+                              },
+                            ),
+                            Text(item.id.toString(), style: KTextStyle.listExpandedValue),
+                            Text('${item.number}', style: KTextStyle.listExpandedValue),
+                            Text('${item.invalid_domains}', style: KTextStyle.listExpandedValue),
+                            Text(
+                              '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              '${PiUtils.getTimeAgo(item.date_updated, "milliseconds")} (${PiUtils.getDateFormatter(item.date_updated.toDouble())})',
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            // entity actions like edit and delete
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    editListFormModal(context, item);
+                  },
+                  icon: Icon(
+                    Icons.edit,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(170),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    deleteListModal(context, item);
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(170),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -752,7 +963,33 @@ class ListsView extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              Expanded(child: getLists(listsModels)),
+                              Expanded(
+                                child: LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    final width = constraints.maxWidth;
+
+                                    return width < 500
+                                        ? getLists(listsModels)
+                                        : GridView.builder(
+                                            padding: const EdgeInsets.all(10),
+                                            gridDelegate:
+                                                SliverGridDelegateWithMaxCrossAxisExtent(
+                                                  crossAxisSpacing: 8,
+                                                  mainAxisSpacing: 8,
+                                                  mainAxisExtent: KGridCardSizes.lists["height"]!.toDouble(),
+                                                  maxCrossAxisExtent: KGridCardSizes.lists["width"]!.toDouble(),
+                                                ),
+                                            itemCount: listsModels.length,
+                                            itemBuilder: (context, index) {
+                                              return _domainRowCard(
+                                                listsModels[index],
+                                                context,
+                                              );
+                                            },
+                                          );
+                                  },
+                                ),
+                              ),
                             ],
                           );
                         }

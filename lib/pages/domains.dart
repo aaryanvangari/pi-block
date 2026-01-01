@@ -9,6 +9,7 @@ import 'package:pi_block/blocs/groups/groups_bloc.dart'
     hide ResetItemToggleError;
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
+import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/groups_model.dart';
@@ -496,9 +497,7 @@ class DomainsView extends StatelessWidget {
         confirmationText: 'Do you want to delete domain?',
         confirmButtonText: 'Delete',
         onConfirm: () {
-          domainsBloc.add(
-            DeleteDomainsItem(domainModel: domainModel),
-          );
+          domainsBloc.add(DeleteDomainsItem(domainModel: domainModel));
         },
         isSuccess: (state) =>
             state.itemStatus == DomainsItemStateStatus.success,
@@ -652,6 +651,239 @@ class DomainsView extends StatelessWidget {
     );
   }
 
+  Widget _domainRowCard(DomainModel item, BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            // header row
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.domain,
+                            style: (item.type == "deny")
+                                ? context.ui.listHeaderTitleBlock
+                                : context.ui.listHeaderTitleAllow,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                          Text(
+                            item.comment,
+                            style: KTextStyle.listHeaderSubTitle,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    FlutterSwitch(
+                      height: 25.0,
+                      width: 45.0,
+                      padding: 4.0,
+                      toggleSize: 15.0,
+                      borderRadius: 20.0,
+                      activeColor: KColors.flutterSwitch,
+                      value: item.enabled,
+                      onToggle: (value) {
+                        context.read<DomainsBloc>().add(
+                          DomainItemToggled(
+                            domainModel: item,
+                            isEnabled: value,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Wrap(
+                      spacing: 3,
+                      children: [
+                        CustomTagWidget(
+                          iconData: item.type == "deny"
+                              ? Icons.block
+                              : FontAwesomeIcons.check,
+                          color: item.type == "deny"
+                              ? KColors.deny
+                              : KColors.allow,
+                          title: item.type == "deny" ? "Deny" : "Allow",
+                        ),
+                        CustomTagWidget(
+                          iconData: item.kind == "regex"
+                              ? Symbols.regular_expression
+                              : Symbols.match_word,
+                          color: item.type == "deny"
+                              ? KColors.deny
+                              : KColors.allow,
+                          title: item.kind == "regex" ? "Regex" : "Exact",
+                        ),
+                      ],
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                          child: const Icon(Icons.update, size: 16),
+                        ),
+                        Text(
+                          PiUtils.getTimeAgo(
+                            item.date_modified,
+                            "milliseconds",
+                          ),
+                          style: KTextStyle.listHeaderTimeTitle,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // details
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Domain: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Unicode: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Comment: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Groups: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Database ID: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Added: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Modified: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item.domain,
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              item.unicode,
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              item.comment,
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            BlocBuilder<GroupsBloc, GroupsState>(
+                              builder: (context, state) {
+                                if (state.status == GroupsStateStatus.success) {
+                                  String groupsListString = state.groups
+                                      .where(
+                                        (group) =>
+                                            (item.groups.contains(group.id)),
+                                      )
+                                      .map((group) => group.name)
+                                      .join(' • ');
+                                  return Text(groupsListString);
+                                }
+                                return const SizedBox.shrink();
+                              },
+                            ),
+                            Text(
+                              item.id.toString(),
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            // entity actions like edit and delete
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    editDomainFormModal(context, item);
+                  },
+                  icon: Icon(
+                    Icons.edit,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(170),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    deleteDomainModal(context, item);
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(170),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget getDomains(List<DomainModel> domainModels) {
     ListView listView = ListView.separated(
       itemCount: domainModels.length,
@@ -766,7 +998,33 @@ class DomainsView extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Expanded(child: getDomains(domainModels)),
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final width = constraints.maxWidth;
+
+                                return width < 500
+                                    ? getDomains(domainModels)
+                                    : GridView.builder(
+                                        padding: const EdgeInsets.all(10),
+                                        gridDelegate:
+                                            SliverGridDelegateWithMaxCrossAxisExtent(
+                                              crossAxisSpacing: 8,
+                                              mainAxisSpacing: 8,
+                                              mainAxisExtent: KGridCardSizes.domains["height"]!.toDouble(),
+                                              maxCrossAxisExtent: KGridCardSizes.domains["width"]!.toDouble(),
+                                            ),
+                                        itemCount: domainModels.length,
+                                        itemBuilder: (context, index) {
+                                          return _domainRowCard(
+                                            domainModels[index],
+                                            context,
+                                          );
+                                        },
+                                      );
+                              },
+                            ),
+                          ),
                         ],
                       );
                     }

@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pager/pager.dart';
 import 'package:pi_block/blocs/querylog/querylog_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
+import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/constants/features/querylog.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/query_model.dart';
@@ -274,6 +275,205 @@ class _QueryLogViewState extends State<_QueryLogView> {
     );
   }
 
+  Widget _querylogRowCard(QueryModel item, BuildContext context) {
+    bool isBlocked = false;
+    isBlocked =
+        QuerylogConstants.queryStatus[item.status].containsKey("blocked") &&
+        QuerylogConstants.queryStatus[item.status]["blocked"];
+    var queryStatusConstant = QuerylogConstants.queryStatus[item.status];
+    bool isDarkMode = PiUtils.getDarkMode(context);
+    String queryStatusColor = queryStatusConstant["colorName"];
+    Color queryStatusColorWithAlpha = isDarkMode
+        ? KQueryLogColors.queryLogColors[queryStatusColor]["dark"]
+        : KQueryLogColors.queryLogColors[queryStatusColor]["light"];
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            // header row
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.domain,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: queryStatusColorWithAlpha,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                    CustomTagWidget(title: item.type),
+                  ],
+                ),
+                Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.client.name,
+                            style: KTextStyle.listHeaderSubTitle,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5.0,
+                        vertical: 2,
+                      ),
+                      child: buildStatusCell(item.status),
+                    ),
+                  ],
+                ),
+                Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            PiUtils.getDateFormatter(item.time),
+                            style: KTextStyle.listHeaderSubTitle,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5.0,
+                        // vertical: 2,
+                      ),
+                      child: Text(PiUtils.calculateTime(item.reply.time)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // details
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Domain: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Received on: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Client: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Reply: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Database ID: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Query Status: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              getDomainName(item),
+                              style: KTextStyle.listExpandedValue,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 3,
+                            ),
+                            Text(
+                              PiUtils.getDateFormatter(item.time),
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              '${item.client.name} (${item.client.ip})',
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              item.reply.type,
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              '${item.id}',
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            getStatusHumanReadableText(
+                              item,
+                              queryStatusColorWithAlpha,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            // entity actions like edit and delete
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    allowDenyQuerylogModal(context, item, isBlocked);
+                  },
+                  icon: Icon(
+                    isBlocked ? Icons.check : Icons.block,
+                    color: isBlocked
+                        ? context.ui.slidePrimary.withAlpha(170)
+                        : context.ui.slideError.withAlpha(170),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void allowDenyQuerylogModal(
     BuildContext context,
     QueryModel item,
@@ -328,7 +528,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
           ),
         ];
       },
-      modalTypeBuilder: (context) => WoltModalType.bottomSheet(), // adapt type
+      modalTypeBuilder: (context) => PiUtils.getModalTypeBuilder(context),
     ).whenComplete(() {
       pageIndexNotifier.dispose();
     });
@@ -453,7 +653,33 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                 ),
                               ),
                             ),
-                            Expanded(child: generateQueryLogData(queryModels)),
+                            Expanded(
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  final width = constraints.maxWidth;
+
+                                  return width < 500
+                                      ? generateQueryLogData(queryModels)
+                                      : GridView.builder(
+                                          padding: const EdgeInsets.all(10),
+                                          gridDelegate:
+                                              SliverGridDelegateWithMaxCrossAxisExtent(
+                                                crossAxisSpacing: 8,
+                                                mainAxisSpacing: 8,
+                                                mainAxisExtent: KGridCardSizes.querylog["height"]!.toDouble(),
+                                                maxCrossAxisExtent: KGridCardSizes.querylog["width"]!.toDouble(),
+                                              ),
+                                          itemCount: queryModels.length,
+                                          itemBuilder: (context, index) {
+                                            return _querylogRowCard(
+                                              queryModels[index],
+                                              context,
+                                            );
+                                          },
+                                        );
+                                },
+                              ),
+                            ),
                             Center(
                               child: Pager(
                                 currentItemsPerPage: state.itemsPerPage,

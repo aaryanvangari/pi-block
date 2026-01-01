@@ -7,6 +7,7 @@ import 'package:pi_block/blocs/groups/groups_bloc.dart'
     hide ResetItemToggleError;
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
+import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/client_model.dart';
 import 'package:pi_block/models/clients_suggestion_model.dart';
@@ -605,6 +606,156 @@ class ClientsView extends StatelessWidget {
     );
   }
 
+  Widget _clientRowCard(ClientModel item, BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            // header row
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.comment,
+                            style: KTextStyle.listHeaderTitle,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                          Text(
+                            item.client,
+                            style: KTextStyle.listHeaderSubTitle,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                          child: const Icon(Icons.update, size: 16),
+                        ),
+                        Text(
+                          PiUtils.getTimeAgo(
+                            item.date_modified,
+                            "milliseconds",
+                          ),
+                          style: KTextStyle.listHeaderTimeTitle,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // details
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Client: ', style: KTextStyle.listExpandedTitle),
+                            const Text('Comment: ', style: KTextStyle.listExpandedTitle),
+                            const Text('Groups: ', style: KTextStyle.listExpandedTitle),
+                            const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
+                            const Text('Added: ', style: KTextStyle.listExpandedTitle),
+                            const Text('Modified: ', style: KTextStyle.listExpandedTitle),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(item.client, style: KTextStyle.listExpandedValue),
+                            Text(item.comment, style: KTextStyle.listExpandedValue),
+                            BlocBuilder<GroupsBloc, GroupsState>(
+                              builder: (context, state) {
+                                if (state.status == GroupsStateStatus.success) {
+                                  String groupsListString = state.groups
+                                      .where((group) => (item.groups.contains(group.id)))
+                                      .map((group) => group.name)
+                                      .join(' • ');
+                                  return Text(groupsListString);
+                                }
+                                return const SizedBox.shrink();
+                              },
+                            ),
+                            Text(item.id.toString(), style: KTextStyle.listExpandedValue),
+                            Text(
+                              '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            // entity actions like edit and delete
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    editClientFormModal(context, item);
+                  },
+                  icon: Icon(
+                    Icons.edit,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(170),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    deleteClientModal(context, item);
+                  },
+                  icon: Icon(
+                    Icons.delete,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withAlpha(170),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget getClients(List<ClientModel> clientModels) {
     ListView listView = ListView.separated(
       itemCount: clientModels.length,
@@ -717,7 +868,35 @@ class ClientsView extends StatelessWidget {
                               ],
                             ),
                           ),
-                          Expanded(child: getClients(clientModels)),
+                          Expanded(
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                final width = constraints.maxWidth;
+
+                                return width < 500
+                                    ? getClients(clientModels)
+                                    : GridView.builder(
+                                        padding: const EdgeInsets.all(10),
+                                        gridDelegate:
+                                            SliverGridDelegateWithMaxCrossAxisExtent(
+                                              crossAxisSpacing: 8,
+                                              mainAxisSpacing: 8,
+                                              mainAxisExtent: KGridCardSizes.clients["height"]!.toDouble(),
+                                              maxCrossAxisExtent: KGridCardSizes.clients["width"]!.toDouble(),
+                                              // mainAxisExtent: 250,
+                                              // maxCrossAxisExtent: 400,
+                                            ),
+                                        itemCount: clientModels.length,
+                                        itemBuilder: (context, index) {
+                                          return _clientRowCard(
+                                            clientModels[index],
+                                            context,
+                                          );
+                                        },
+                                      );
+                              },
+                            ),
+                          ),
                         ],
                       );
                     }

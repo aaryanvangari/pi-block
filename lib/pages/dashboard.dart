@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/widgets/blocking_info_stats.dart';
 import 'package:pi_block/widgets/host_info_stats.dart';
 import 'package:pi_block/widgets/session_info_stats.dart';
@@ -31,11 +32,6 @@ class DashboardPage extends StatelessWidget {
       VersionInfoStats(),
     ];
 
-    int crossAxisCount(double width) {
-      int minimumWidthOfWidget = 350;
-      return (width / minimumWidthOfWidget).toInt();
-    }
-
     return Scaffold(
       body: SingleChildScrollView(
         child: LayoutBuilder(
@@ -52,11 +48,11 @@ class DashboardPage extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount(width),
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     crossAxisSpacing: 8.0, // Space between columns
                     mainAxisSpacing: 8.0, // Space between rows
-                    childAspectRatio: 1.0,
+                    mainAxisExtent: KGridCardSizes.dashboard["height"]!.toDouble(),
+                    maxCrossAxisExtent: KGridCardSizes.dashboard["width"]!.toDouble(),
                   ),
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),

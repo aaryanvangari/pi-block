@@ -11,3 +11,13 @@ class KTimers {
   static const system = 15;
   static const session = 1;
 }
+
+class KGridCardSizes {
+  static const dashboard = {"width": 450, "height": 400};
+  static const stats = {"width": 500, "height": 450};
+  static const querylog = {"width": 400, "height": 250};
+  static const domains = {"width": 400, "height": 275};
+  static const lists = {"width": 450, "height": 300};
+  static const groups = {"width": 400, "height": 230};
+  static const clients = {"width": 400, "height": 250};
+}

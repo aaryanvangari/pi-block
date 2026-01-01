@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/widgets/blocked_client_stats.dart';
 import 'package:pi_block/widgets/blocked_domain_stats.dart';
 import 'package:pi_block/widgets/clients_barchart_stats.dart';
@@ -46,11 +47,6 @@ class StatsPage extends StatelessWidget {
       BlockedClientStats()
     ];
 
-    int crossAxisCount(double width) {
-      int minimumWidthOfWidget = 450;
-      return (width / minimumWidthOfWidget).toInt();
-    }
-
     return Scaffold(
       // appBar: AppBar(),
       body: SingleChildScrollView(
@@ -68,11 +64,11 @@ class StatsPage extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: GridView.builder(
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount(width),
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     crossAxisSpacing: 8.0, // Space between columns
                     mainAxisSpacing: 8.0, // Space between rows
-                    childAspectRatio: 0.95,
+                    mainAxisExtent: KGridCardSizes.stats["height"]!.toDouble(),
+                    maxCrossAxisExtent: KGridCardSizes.stats["width"]!.toDouble(),
                   ),
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
