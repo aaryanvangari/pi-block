@@ -11,6 +11,7 @@ class CustomPieChart extends StatefulWidget {
   final double outerMargin;
   final double startDegree;
   final double? space;
+  final TextStyle? labelStyle;
 
   const CustomPieChart({
     super.key,
@@ -21,6 +22,7 @@ class CustomPieChart extends StatefulWidget {
     this.outerMargin = 40,
     this.startDegree = -90,
     this.space,
+    this.labelStyle
   });
 
   @override
@@ -165,7 +167,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
                         const SizedBox(width: 10),
                         Text(
                           d.name,
-                          style: TextStyle(
+                          style: widget.labelStyle ?? TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 15,
                             color: Theme.of(context).colorScheme.primary,

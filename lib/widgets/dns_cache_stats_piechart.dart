@@ -95,7 +95,15 @@ class DnsCacheStatsPiechartView extends StatelessWidget {
           case SectionStatus.success:
             DnsCache dnsCache = state.data!;
             var pieDataList = generateDnsCachePieData(dnsCache, context);
-            return SquareCardPiechartWidget(title: _title, items: pieDataList);
+            return SquareCardPiechartWidget(
+              title: _title,
+              items: pieDataList,
+              labelStyle: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            );
           default:
             return const SizedBox.shrink();
         }
