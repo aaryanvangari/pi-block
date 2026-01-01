@@ -883,8 +883,6 @@ class ClientsView extends StatelessWidget {
                                               mainAxisSpacing: 8,
                                               mainAxisExtent: KGridCardSizes.clients["height"]!.toDouble(),
                                               maxCrossAxisExtent: KGridCardSizes.clients["width"]!.toDouble(),
-                                              // mainAxisExtent: 250,
-                                              // maxCrossAxisExtent: 400,
                                             ),
                                         itemCount: clientModels.length,
                                         itemBuilder: (context, index) {
