@@ -101,7 +101,6 @@ class DnsCacheStatsPiechartView extends StatelessWidget {
               labelStyle: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 13,
-                color: Theme.of(context).colorScheme.primary,
               ),
             );
           default:

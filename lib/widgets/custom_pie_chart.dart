@@ -137,7 +137,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
                               radialLen: widget.radialLine,
                               horizontalLen: widget.horizontalLine,
                               startDegreeDeg: widget.startDegree,
-                              labelColor: Theme.of(context).colorScheme.primary,
+                              labelColor: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ),
@@ -170,7 +170,7 @@ class _CustomPieChartState extends State<CustomPieChart> {
                           style: widget.labelStyle ?? TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 15,
-                            color: Theme.of(context).colorScheme.primary,
+                            // color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],
