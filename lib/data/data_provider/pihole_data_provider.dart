@@ -590,13 +590,14 @@ class PiholeDataProvider {
     }
   }
 
-  Future<Map<String, dynamic>> getQuerylogPage(int start, int pageSize) async {
+  Future<Map<String, dynamic>> getQuerylogPage(String searchTerm, int start, int pageSize) async {
     try {
       final queryParameter = <String, dynamic>{
         'start': ((start - 1) * pageSize).toString(),
         'length': pageSize.toString(),
         // 'status': 'GRAVITY_CNAME',
-        // 'domain': '*googlevideo*'
+        if (searchTerm.trim().isNotEmpty)
+        'domain': '*${searchTerm.trim()}*',
       };
 
       var result = await piHttpClient.get(

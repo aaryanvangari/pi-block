@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -6,6 +8,7 @@ import 'package:pi_block/blocs/querylog/querylog_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/constants/features/querylog.dart';
+import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/query_model.dart';
 import 'package:pi_block/components/utils.dart';
@@ -45,6 +48,8 @@ class _QueryLogViewState extends State<_QueryLogView> {
 
   int _lastItemsPerPage = 0;
   int _lastPagesPerView = 0;
+  final TextEditingController searchController = TextEditingController();
+  Timer? _debounce;
 
   int calculatePagesPerView({
     required double availableWidth,
@@ -573,6 +578,39 @@ class _QueryLogViewState extends State<_QueryLogView> {
     return listView;
   }
 
+  void onSearchChanged(
+    BuildContext context,
+    String query,
+    int page,
+    int itemsPerPage,
+  ) {
+    const int minSearchLength = 3;
+    String trimmedQuery = query.trim();
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      // log('Searching for: $query');
+      if (trimmedQuery.isEmpty) {
+        context.read<QuerylogBloc>().add(LoadQuerylog(page, itemsPerPage));
+      }
+      if (trimmedQuery.length < minSearchLength) {
+        return;
+      }
+      
+      // valid case where seach happens
+      context.read<QuerylogBloc>().add(
+        SearchQuerylog(query, page, itemsPerPage),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     context.ui; // updates AppUiTokens when theme changes
@@ -645,12 +683,89 @@ class _QueryLogViewState extends State<_QueryLogView> {
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8.0,
                               ),
-                              child: const Text(
-                                "Query Log",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        "Query Log",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          isQuerylogSearchVisible.value =
+                                              !isQuerylogSearchVisible.value;
+                                        },
+                                        icon: Icon(Icons.search),
+                                      ),
+                                    ],
+                                  ),
+                                  ValueListenableBuilder(
+                                    valueListenable: isQuerylogSearchVisible,
+                                    builder: (context, searchVisible, child) {
+                                      return AnimatedSwitcher(
+                                        duration: const Duration(
+                                          milliseconds: 250,
+                                        ),
+                                        transitionBuilder: (child, animation) {
+                                          return SizeTransition(
+                                            sizeFactor: animation,
+                                            axisAlignment: -1,
+                                            child: FadeTransition(
+                                              opacity: animation,
+                                              child: child,
+                                            ),
+                                          );
+                                        },
+                                        child: searchVisible
+                                            ? Padding(
+                                                key: const ValueKey('search'),
+                                                padding: const EdgeInsets.only(
+                                                  top: 8,
+                                                ),
+                                                child: TextFormField(
+                                                  autovalidateMode:
+                                                      AutovalidateMode
+                                                          .onUserInteraction,
+                                                  controller: searchController,
+                                                  onChanged: (value) =>
+                                                      onSearchChanged(
+                                                        context,
+                                                        value,
+                                                        state.page,
+                                                        state.itemsPerPage,
+                                                      ),
+                                                  decoration: InputDecoration(
+                                                    labelText: "Search Domains",
+                                                    helperText: "Type at least 3 characters",
+                                                    suffixIcon: IconButton(
+                                                      onPressed: () {
+                                                        searchController
+                                                            .clear();
+                                                        onSearchChanged(
+                                                          context,
+                                                          '',
+                                                          state.page,
+                                                          state.itemsPerPage,
+                                                        );
+                                                      },
+                                                      icon: Icon(Icons.clear),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            : const SizedBox(
+                                                key: ValueKey('empty'),
+                                              ),
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
                             Expanded(
@@ -666,8 +781,13 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                               SliverGridDelegateWithMaxCrossAxisExtent(
                                                 crossAxisSpacing: 8,
                                                 mainAxisSpacing: 8,
-                                                mainAxisExtent: KGridCardSizes.querylog["height"]!.toDouble(),
-                                                maxCrossAxisExtent: KGridCardSizes.querylog["width"]!.toDouble(),
+                                                mainAxisExtent: KGridCardSizes
+                                                    .querylog["height"]!
+                                                    .toDouble(),
+                                                maxCrossAxisExtent:
+                                                    KGridCardSizes
+                                                        .querylog["width"]!
+                                                        .toDouble(),
                                               ),
                                           itemCount: queryModels.length,
                                           itemBuilder: (context, index) {
@@ -688,9 +808,19 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                     (state.recordsFiltered / state.itemsPerPage)
                                         .ceil(),
                                 onPageChanged: (page) {
-                                  context.read<QuerylogBloc>().add(
-                                    LoadQuerylog(page, state.itemsPerPage),
-                                  );
+                                  if (searchController.text.trim().isNotEmpty) {
+                                    context.read<QuerylogBloc>().add(
+                                      SearchQuerylog(
+                                        searchController.text,
+                                        page,
+                                        state.itemsPerPage,
+                                      ),
+                                    );
+                                  } else {
+                                    context.read<QuerylogBloc>().add(
+                                      LoadQuerylog(page, state.itemsPerPage),
+                                    );
+                                  }
                                 },
                                 pagesView: state.pagesPerView,
                                 numberButtonSelectedColor: Theme.of(

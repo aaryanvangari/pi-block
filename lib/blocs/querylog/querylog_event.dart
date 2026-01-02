@@ -16,6 +16,16 @@ final class LoadQuerylog extends QuerylogEvent {
   List<Object> get props => [start, itemsPerPage];
 }
 
+final class SearchQuerylog extends QuerylogEvent {
+  final String searchTerm;
+  final int start;
+  final int itemsPerPage;
+  const SearchQuerylog(this.searchTerm, this.start, this.itemsPerPage);
+
+  @override
+  List<Object> get props => [start, itemsPerPage];
+}
+
 final class AllowDenyQuerylogDomain extends QuerylogEvent {
   const AllowDenyQuerylogDomain({required this.queryModel, required this.type});
 

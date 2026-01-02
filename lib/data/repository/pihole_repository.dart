@@ -516,9 +516,9 @@ class PiholeRepository {
     }
   }
 
-  Future<QueryListModel> getQuerylogPage(int start, int pageSize) async {
+  Future<QueryListModel> getQuerylogPage(String searchTerm, int start, int pageSize) async {
     try {
-      var result = await piholeDataProvider.getQuerylogPage(start, pageSize);
+      var result = await piholeDataProvider.getQuerylogPage(searchTerm, start, pageSize);
       QueryListModel queryListModel = QueryListModel.fromJson(result);
 
       _log.fine(() => 'getQuerylogPage: ${queryListModel.toString()}');
