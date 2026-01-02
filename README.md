@@ -13,6 +13,7 @@ Application to manage Pi-Hole instance.
 * Manage domains, lists, groups, clients
 * Pi-Hole diagnostic messages
 * Pi-Hole configuration as JSON
+* Pi-Hole logs like Dnsmasq, FTL and http web server
 * Responsive design
 * Automatically refresh key features data
 
