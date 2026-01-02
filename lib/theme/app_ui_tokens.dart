@@ -9,6 +9,8 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
   final TextStyle listHeaderTitleAllow;
   final TextStyle listHeaderTitleBlock;
   final Color tagBackground;
+  final Color editIconColor;
+  final Color deleteIconColor;
 
   const AppUiTokens({
     required this.slidePrimary,
@@ -18,6 +20,8 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
     required this.listHeaderTitleAllow,
     required this.listHeaderTitleBlock,
     required this.tagBackground,
+    required this.editIconColor,
+    required this.deleteIconColor,
   });
 
   @override
@@ -29,6 +33,8 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
     TextStyle? listHeaderTitleAllow,
     TextStyle? listHeaderTitleBlock,
     Color? tagBackground,
+    Color? editIconColor,
+    Color? deleteIconColor,
   }) {
     return AppUiTokens(
       slidePrimary: slidePrimary ?? this.slidePrimary,
@@ -40,6 +46,8 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
       listHeaderTitleAllow: listHeaderTitleAllow ?? this.listHeaderTitleAllow,
       listHeaderTitleBlock: listHeaderTitleBlock ?? this.listHeaderTitleBlock,
       tagBackground: tagBackground ?? this.tagBackground,
+      editIconColor: editIconColor ?? this.editIconColor,
+      deleteIconColor: deleteIconColor ?? this.deleteIconColor,
     );
   }
 
@@ -71,6 +79,8 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
         t,
       )!,
       tagBackground: Color.lerp(tagBackground, other.tagBackground, t)!,
+      editIconColor: Color.lerp(editIconColor, other.editIconColor, t)!,
+      deleteIconColor: Color.lerp(deleteIconColor, other.deleteIconColor, t)!,
     );
   }
 }

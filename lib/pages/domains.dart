@@ -861,9 +861,7 @@ class DomainsView extends StatelessWidget {
                   tooltip: "Edit",
                   icon: Icon(
                     Icons.edit,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withAlpha(170),
+                    color: context.ui.editIconColor,
                   ),
                 ),
                 IconButton(
@@ -873,9 +871,7 @@ class DomainsView extends StatelessWidget {
                   tooltip: "Delete",
                   icon: Icon(
                     Icons.delete,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.error.withAlpha(170),
+                    color: context.ui.deleteIconColor,
                   ),
                 ),
               ],
