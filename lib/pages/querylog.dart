@@ -464,6 +464,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
                   onPressed: () {
                     allowDenyQuerylogModal(context, item, isBlocked);
                   },
+                  tooltip: isBlocked ? "Allow" : "Deny",
                   icon: Icon(
                     isBlocked ? Icons.check : Icons.block,
                     color: isBlocked

@@ -388,6 +388,7 @@ class ListsView extends StatelessWidget {
                   onPressed: () {
                     editListFormModal(context, item);
                   },
+                  tooltip: "Edit",
                   icon: Icon(
                     Icons.edit,
                     color: Theme.of(
@@ -399,6 +400,7 @@ class ListsView extends StatelessWidget {
                   onPressed: () {
                     deleteListModal(context, item);
                   },
+                  tooltip: "Delete",
                   icon: Icon(
                     Icons.delete,
                     color: Theme.of(

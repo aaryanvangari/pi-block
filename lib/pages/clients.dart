@@ -730,6 +730,7 @@ class ClientsView extends StatelessWidget {
                   onPressed: () {
                     editClientFormModal(context, item);
                   },
+                  tooltip: "Edit",
                   icon: Icon(
                     Icons.edit,
                     color: Theme.of(
@@ -741,6 +742,7 @@ class ClientsView extends StatelessWidget {
                   onPressed: () {
                     deleteClientModal(context, item);
                   },
+                  tooltip: "Delete",
                   icon: Icon(
                     Icons.delete,
                     color: Theme.of(

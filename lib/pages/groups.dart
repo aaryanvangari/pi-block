@@ -614,6 +614,7 @@ class GroupsView extends StatelessWidget {
                   onPressed: () {
                     editGroupFormModal(context, item);
                   },
+                  tooltip: "Edit",
                   icon: Icon(
                     Icons.edit,
                     color: Theme.of(
@@ -625,6 +626,7 @@ class GroupsView extends StatelessWidget {
                   onPressed: () {
                     deleteGroupModal(context, item);
                   },
+                  tooltip: "Delete",
                   icon: Icon(
                     Icons.delete,
                     color: Theme.of(

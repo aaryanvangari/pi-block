@@ -858,6 +858,7 @@ class DomainsView extends StatelessWidget {
                   onPressed: () {
                     editDomainFormModal(context, item);
                   },
+                  tooltip: "Edit",
                   icon: Icon(
                     Icons.edit,
                     color: Theme.of(
@@ -869,6 +870,7 @@ class DomainsView extends StatelessWidget {
                   onPressed: () {
                     deleteDomainModal(context, item);
                   },
+                  tooltip: "Delete",
                   icon: Icon(
                     Icons.delete,
                     color: Theme.of(
