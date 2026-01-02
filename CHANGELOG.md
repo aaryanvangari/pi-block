@@ -1,5 +1,39 @@
 # Changelog
 
+## [v5.1.0](https://github.com/aaryanvangari/pi-block/compare/v5.0.2...v5.1.0) (2026-01-02)
+
+### ✨ Features
+
+* add logs in readme ([fbf6432](https://github.com/aaryanvangari/pi-block/commit/fbf6432f350838c1afcf9625067d7abccd2906c8)).
+* implement pi-hole logs ([6b80da7](https://github.com/aaryanvangari/pi-block/commit/6b80da71a28925c6395c00e817fe73d6d380fda2)).
+* update readme with current developments ([75aa5c0](https://github.com/aaryanvangari/pi-block/commit/75aa5c0820373e2b7bfb6c6b02432c8dd771905c)).
+* get edit and delete icon colors from theme ([57c3192](https://github.com/aaryanvangari/pi-block/commit/57c31921e596719a8c942640897e912ca67eb0c9)).
+* red color for delete icon to notify its danger action ([84d7784](https://github.com/aaryanvangari/pi-block/commit/84d77845818f6926bc0e9994830f51f63a8233bf)).
+* add tooltips for buttons in grid view cards ([1bd2f77](https://github.com/aaryanvangari/pi-block/commit/1bd2f77c6c5970114d47d1c2ea218f24588f95d5)).
+* search for domains in querylog page ([1a2edca](https://github.com/aaryanvangari/pi-block/commit/1a2edca230ed5139fba0e6cc1534f20f944f77cc)).
+* custom label style for pie charts ([38cf704](https://github.com/aaryanvangari/pi-block/commit/38cf704e1c95677ec8bd4aa31b9a2c252e60c0b5)).
+* add dns and dhcp metrics ([3021f1f](https://github.com/aaryanvangari/pi-block/commit/3021f1f7dc5482da75a8e58a32d434244b6a0627)).
+* responsive design with cards for all pages ([c9e0b28](https://github.com/aaryanvangari/pi-block/commit/c9e0b2839b1c283449cd5cc57ff74fe65f361f43)).
+* suggestions while adding clients ([6b4cb8f](https://github.com/aaryanvangari/pi-block/commit/6b4cb8f788574ebbb9deea33eeaca0dc0fcd6682)).
+* add clients page ([f3d9516](https://github.com/aaryanvangari/pi-block/commit/f3d951610656b2f7323dc721047337c1a93b7fe6)).
+* organize client stats with new model, route, data methods ([256341f](https://github.com/aaryanvangari/pi-block/commit/256341f88c9d6f669dbad0abe293d3edd832d32d)).
+* responsive stats page ([ba23fe1](https://github.com/aaryanvangari/pi-block/commit/ba23fe1c3dcb882952af99460af12a2f0941675f)).
+* responsive main scaffold ([b7fd669](https://github.com/aaryanvangari/pi-block/commit/b7fd669844450e47cf4eff4289004dfdc3a6d723)).
+* responsive dashboard ([1205e63](https://github.com/aaryanvangari/pi-block/commit/1205e63c3f73889720c5ac87c918b31cdc228968)).
+* responsive WoltModalSheet ([f6ae8db](https://github.com/aaryanvangari/pi-block/commit/f6ae8db5d2f9fa9ffc36d959ef51df1d981817ae)).
+* generalize delete actions into a widget ([67016fc](https://github.com/aaryanvangari/pi-block/commit/67016fcd508ce7daa661b7b5b3e084bc61b34a5d)).
+* add groups page and groups dropdown in lists, domains pages ([a79f561](https://github.com/aaryanvangari/pi-block/commit/a79f561bb031d9106d5fe5532397d2df6aa71fed)).
+* organize logging ([575f24e](https://github.com/aaryanvangari/pi-block/commit/575f24ec0e3110046736dcbc7ab905da2eabcf11)).
+
+### 🐛 Bug Fixes
+
+* fix clients barchart tooltips overflow in desktop mode ([64cc61e](https://github.com/aaryanvangari/pi-block/commit/64cc61e8f14fef825387098eb2e73fbc33fa24d3)).
+* fix piechart label and legend colors ([a6fda58](https://github.com/aaryanvangari/pi-block/commit/a6fda58f9a1f091272840100481cd12a6a2c188f)).
+* responsive issues on stats page for dns cache widget ([d30da4e](https://github.com/aaryanvangari/pi-block/commit/d30da4e9eb981d080663a8fb2c879fa136adce87)).
+* remove commented code ([2ad0c6d](https://github.com/aaryanvangari/pi-block/commit/2ad0c6d1c0461b451f8a249e0a5b9c03aecaaecd)).
+* fix issue where drawer can be removed from navigation in desktop mode ([c6a2545](https://github.com/aaryanvangari/pi-block/commit/c6a2545d2f79632e2c699b3a3fca84e25e862143)).
+* tooltip issue in mobile clients ([316aa46](https://github.com/aaryanvangari/pi-block/commit/316aa46199d71d96583ddfe4bb2b0c8c7da48f06)).
+
 ## [v5.0.2](https://github.com/aaryanvangari/pi-block/compare/v5.0.1...v5.0.2) (2025-12-28)
 
 ## [v5.0.1](https://github.com/aaryanvangari/pi-block/compare/5.0.0...v5.0.1) (2025-12-28)
@@ -161,4 +195,5 @@
 ### Features
 
 * initial import ([ab433fd](https://github.com/aaryanvangari/pi-block/commit/ab433fd))
+
 
