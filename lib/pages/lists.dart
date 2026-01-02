@@ -405,7 +405,7 @@ class ListsView extends StatelessWidget {
                     Icons.delete,
                     color: Theme.of(
                       context,
-                    ).colorScheme.onSurface.withAlpha(170),
+                    ).colorScheme.error.withAlpha(170),
                   ),
                 ),
               ],
