@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pi_block/blocs/app_bloc_observer.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
+import 'package:pi_block/blocs/dashboard/metrics_bloc.dart';
+import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/pages/appview.dart';
 import 'package:pi_block/services/settings_service.dart';
 import 'package:pi_block/constants/hive/hive_boxes.dart';
@@ -44,6 +46,7 @@ class _MainAppState extends State<MainApp> {
   @override
   void initState() {
     initTheme();
+    AppLogger.init();
     super.initState();
   }
 
@@ -67,6 +70,14 @@ class _MainAppState extends State<MainApp> {
             BlocProvider<AuthBloc>(
               create: (context) => AuthBloc(context.read<PiholeRepository>()),
               lazy: false,
+            ),
+
+            /// setting up here since this bloc provides data for 4 different widgets
+            /// and I can call the event only once here and all widgets have data
+            BlocProvider<MetricsBloc>(
+              create: (context) =>
+                  MetricsBloc(context.read<PiholeRepository>())
+                    ..add(LoadMetrics()),
             ),
           ],
           child: AppView(),

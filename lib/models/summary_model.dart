@@ -1,9 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 /// ==================== SUMMARY ====================
 class SummaryModel extends Equatable {
@@ -35,11 +33,7 @@ class SummaryModel extends Equatable {
 
   factory SummaryModel.fromJson(Map<String, dynamic>? json) {
     if (json == null || json.isEmpty) return SummaryModel.empty();
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "SummaryModel.fromJson",
-    );
+    ModelLog.fromJson(SummaryModel, json);
     return SummaryModel(
       queries: Queries.fromJson(json['queries']),
       clients: Clients.fromJson(json['clients']),

@@ -1,9 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 class PiholeConfigModel extends Equatable {
   final Config config;
@@ -12,11 +10,7 @@ class PiholeConfigModel extends Equatable {
   const PiholeConfigModel({required this.config, required this.took});
 
   factory PiholeConfigModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "PiholeConfigModel.fromJson",
-    );
+    ModelLog.fromJson(PiholeConfigModel, json);
     return PiholeConfigModel(
       config: Config.fromJson(json['config']),
       took: (json['took'] as num).toDouble(),

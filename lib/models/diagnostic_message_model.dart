@@ -1,9 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 class DiagnosticMessageModel extends Equatable {
   final int id;
@@ -21,11 +19,7 @@ class DiagnosticMessageModel extends Equatable {
   });
 
   factory DiagnosticMessageModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "DiagnosticMessageModel.fromJson",
-    );
+    ModelLog.fromJson(DiagnosticMessageModel, json);
     return DiagnosticMessageModel(
       id: json["id"] ?? 0,
       timestamp: json["timestamp"].toDouble() ?? 0,

@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:http/http.dart' as http;
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/services/user_session_service.dart';
 import 'package:pi_block/models/user_session_model.dart';
 
@@ -11,6 +10,8 @@ class PiHttpClient {
 
   PiHttpClient({http.Client? httpClient})
     : _httpClient = httpClient ?? http.Client();
+
+  final _log = AppLogger.get('PiHttpClient');
 
   dynamic get(String urlEndpoint, {dynamic queryParams}) async {
     dynamic result;
@@ -33,12 +34,7 @@ class PiHttpClient {
         url = Uri(scheme: scheme, host: server, port: port, path: urlEndpoint);
       }
 
-      log(
-        url.toString(),
-        level: Level.INFO.value,
-        name: "PiHttpClient.get",
-        time: DateTime.now(),
-      );
+      _log.info('get: ${url.toString()}');
 
       http.Response response = await _httpClient.get(
         url,
@@ -48,20 +44,11 @@ class PiHttpClient {
         },
       );
 
-      log(
-        response.statusCode.toString(),
-        level: Level.INFO.value,
-        name: "PiHttpClient.get",
-      );
+      _log.info('get: ${response.statusCode.toString()}');
       result = jsonDecode(response.body);
       return result;
     } catch (e) {
-      log(
-        e.toString(),
-        level: Level.SEVERE.value,
-        name: "PiHttpClient.get",
-        error: e,
-      );
+      _log.severe('get: ${e.toString()}', e);
       rethrow;
     }
   }
@@ -106,12 +93,7 @@ class PiHttpClient {
         url = Uri(scheme: scheme, host: server, port: port, path: urlEndpoint);
       }
 
-      log(
-        url.toString(),
-        level: Level.INFO.value,
-        name: "PiHttpClient.post",
-        time: DateTime.now(),
-      );
+      _log.info('post: ${url.toString()}');
 
       http.Response response = await _httpClient.post(
         url,
@@ -119,12 +101,7 @@ class PiHttpClient {
         body: body,
       );
 
-      log(
-        response.statusCode.toString(),
-        level: Level.INFO.value,
-        name: "PiHttpClient.post",
-        time: DateTime.now(),
-      );
+      _log.info('post: ${response.statusCode.toString()}');
 
       /// #TODO Refactor
       if (response.statusCode == 204) {
@@ -133,12 +110,7 @@ class PiHttpClient {
       result = jsonDecode(response.body);
       return result;
     } catch (e) {
-      log(
-        e.toString(),
-        level: Level.SEVERE.value,
-        name: "PiHttpClient.post",
-        error: e,
-      );
+      _log.severe('post: ${e.toString()}', e);
       rethrow;
     }
   }
@@ -163,12 +135,7 @@ class PiHttpClient {
         url = Uri(scheme: scheme, host: server, port: port, path: urlEndpoint);
       }
 
-      log(
-        url.toString(),
-        level: Level.INFO.value,
-        name: "PiHttpClient.delete",
-        time: DateTime.now(),
-      );
+      _log.info('delete: ${url.toString()}');
       var response = await _httpClient.delete(
         url,
         headers: <String, String>{
@@ -176,12 +143,8 @@ class PiHttpClient {
           "sid": sid.toString(),
         },
       );
-      log(
-        response.statusCode.toString(),
-        level: Level.INFO.value,
-        name: "PiHttpClient.delete",
-        time: DateTime.now(),
-      );
+
+      _log.info('delete: ${response.statusCode.toString()}');
 
       if (response.statusCode == 204) {
         return {"deleted": true};
@@ -189,12 +152,7 @@ class PiHttpClient {
         return {"deleted": false};
       }
     } catch (e) {
-      log(
-        e.toString(),
-        level: Level.SEVERE.value,
-        name: "PiHttpClient.delete",
-        error: e,
-      );
+      _log.severe('delete: ${e.toString()}', e);
       rethrow;
     }
   }
@@ -239,12 +197,7 @@ class PiHttpClient {
         url = Uri(scheme: scheme, host: server, port: port, path: urlEndpoint);
       }
 
-      log(
-        url.toString(),
-        level: Level.INFO.value,
-        name: "PiHttpClient.put",
-        time: DateTime.now(),
-      );
+      _log.info('put: ${url.toString()}');
 
       http.Response response = await _httpClient.put(
         url,
@@ -252,21 +205,11 @@ class PiHttpClient {
         body: body,
       );
 
-      log(
-        response.statusCode.toString(),
-        level: Level.INFO.value,
-        name: "PiHttpClient.put",
-        time: DateTime.now(),
-      );
+      _log.info('put: ${response.statusCode.toString()}');
       result = jsonDecode(response.body);
       return result;
     } catch (e) {
-      log(
-        e.toString(),
-        level: Level.SEVERE.value,
-        name: "PiHttpClient.put",
-        error: e,
-      );
+      _log.severe('put: ${e.toString()}', e);
       rethrow;
     }
   }

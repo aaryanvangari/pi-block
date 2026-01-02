@@ -1,7 +1,5 @@
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 /// Root model representing the entire response
 class DomainsModel extends Equatable {
@@ -26,11 +24,7 @@ class DomainsModel extends Equatable {
 
   /// Create a DomainsModel instance from a JSON map
   factory DomainsModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "DomainsModel.fromJson",
-    );
+    ModelLog.fromJson(DomainsModel, json);
     return DomainsModel(
       domains: (json['domains'] as List<dynamic>)
           .map((e) => StatDomainModel.fromJson(e))

@@ -65,66 +65,97 @@ class _LoginPageState extends State<LoginPage> {
                               builder: (context) {
                                 return Column(
                                   children: [
-                                    Tooltip(
-                                      message:
-                                          "Pi-Hole server url. \nExamples \nhttps://pihole.example.com \nhttp://pihole.local \nhttp://192.168.1.2:8053",
-                                      padding: EdgeInsets.all(10.0),
-                                      margin: EdgeInsets.all(20),
-                                      verticalOffset: 10,
-                                      preferBelow: false,
-                                      child: TextFormField(
-                                        autovalidateMode:
-                                            AutovalidateMode.onUserInteraction,
-                                        controller: _serverUrlController,
-                                        validator: (value) => piValidators
-                                            .serverUrlValidator(value),
-                                        decoration: InputDecoration(
-                                          labelText: "Pi-Hole Server Url",
-                                          suffixIcon: IconButton(
-                                            onPressed:
-                                                _serverUrlController.clear,
-                                            icon: Icon(Icons.clear),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextFormField(
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            controller: _serverUrlController,
+                                            validator: (value) => piValidators
+                                                .serverUrlValidator(value),
+                                            decoration: InputDecoration(
+                                              labelText: "Pi-Hole Server Url",
+                                              suffixIcon: IconButton(
+                                                onPressed:
+                                                    _serverUrlController.clear,
+                                                icon: Icon(Icons.clear),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: 5.0,
+                                          ),
+                                          child: Tooltip(
+                                            message:
+                                                "Pi-Hole server URL.\n\n"
+                                                "Examples:\n"
+                                                "https://pihole.example.com\n"
+                                                "http://pihole.local\n"
+                                                "http://192.168.1.2:8053",
+                                            padding: const EdgeInsets.all(10),
+                                            margin: const EdgeInsets.all(20),
+                                            preferBelow: false,
+                                            child: const Icon(
+                                              Icons.info_outline,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     const SizedBox(height: 20),
-                                    Tooltip(
-                                      message:
-                                          "API Token which is used for FTLCONF_webserver_api_password in environment file",
-                                      padding: EdgeInsets.all(10.0),
-                                      margin: EdgeInsets.all(20),
-                                      verticalOffset: 10,
-                                      preferBelow: false,
-                                      child: TextFormField(
-                                        autovalidateMode:
-                                            AutovalidateMode.onUserInteraction,
-                                        controller: _passwordController,
-                                        obscureText: passwordVisible,
-                                        enableSuggestions: false,
-                                        autocorrect: false,
-                                        validator: (value) => piValidators
-                                            .apiTokenValidator(value),
-                                        decoration: InputDecoration(
-                                          labelText: "API Token",
-                                          suffixIcon: IconButton(
-                                            icon: Icon(
-                                              passwordVisible
-                                                  ? Icons.visibility
-                                                  : Icons.visibility_off,
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextFormField(
+                                            autovalidateMode: AutovalidateMode
+                                                .onUserInteraction,
+                                            controller: _passwordController,
+                                            obscureText: passwordVisible,
+                                            enableSuggestions: false,
+                                            autocorrect: false,
+                                            validator: (value) => piValidators
+                                                .apiTokenValidator(value),
+                                            decoration: InputDecoration(
+                                              labelText: "API Token",
+                                              suffixIcon: IconButton(
+                                                icon: Icon(
+                                                  passwordVisible
+                                                      ? Icons.visibility
+                                                      : Icons.visibility_off,
+                                                ),
+                                                onPressed: () {
+                                                  setState(() {
+                                                    passwordVisible =
+                                                        !passwordVisible;
+                                                  });
+                                                },
+                                              ),
                                             ),
-                                            onPressed: () {
-                                              setState(() {
-                                                passwordVisible =
-                                                    !passwordVisible;
-                                              });
-                                            },
+                                            keyboardType:
+                                                TextInputType.visiblePassword,
+                                            textInputAction:
+                                                TextInputAction.done,
                                           ),
                                         ),
-                                        keyboardType:
-                                            TextInputType.visiblePassword,
-                                        textInputAction: TextInputAction.done,
-                                      ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: 5.0,
+                                          ),
+                                          child: Tooltip(
+                                            message:
+                                                "API Token which is used for FTLCONF_webserver_api_password in environment file",
+                                            padding: EdgeInsets.all(10.0),
+                                            margin: EdgeInsets.all(20),
+                                            preferBelow: false,
+                                            child: const Icon(
+                                              Icons.info_outline,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     const SizedBox(height: 20),
                                     BlocConsumer<AuthBloc, AuthState>(

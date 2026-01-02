@@ -17,7 +17,7 @@ class DomainsPermittedBloc
   ) async {
     emit(DomainsPermittedLoading());
     try {
-      final domains = await piholeRepository.getDomains(event.blocked);
+      final domains = await piholeRepository.getTopDomains(event.blocked);
       if (domains.domains.isEmpty) {
         emit(DomainsPermittedEmpty());
       } else {

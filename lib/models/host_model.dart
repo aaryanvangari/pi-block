@@ -1,8 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 /// ---------------------------------------------------------------------------
 /// HOST MODEL
@@ -20,7 +19,7 @@ class HostModel extends Equatable {
   factory HostModel.empty() => HostModel(host: Host.empty(), took: 0);
 
   factory HostModel.fromJson(Map<String, dynamic> json) {
-    log(json.toString(), level: Level.FINEST.value, name: "HostModel.fromJson");
+    ModelLog.fromJson(HostModel, json);
     return HostModel(
       host: Host.fromJson(json['host']),
       took: (json['took'] as num?)?.toDouble() ?? 0,

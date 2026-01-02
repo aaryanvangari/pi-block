@@ -5,10 +5,12 @@ import 'package:pi_block/widgets/custom_pie_chart.dart';
 class SquareCardPiechartWidget extends StatelessWidget {
   final String title;
   final List<PieData> items;
+  final TextStyle? labelStyle;
   const SquareCardPiechartWidget({
     super.key,
     required this.title,
     required this.items,
+    this.labelStyle,
   });
 
   @override
@@ -38,6 +40,7 @@ class SquareCardPiechartWidget extends StatelessWidget {
               horizontalLine: 10,
               outerMargin: 20,
               data: items,
+              labelStyle: labelStyle,
             ),
           ],
         ),

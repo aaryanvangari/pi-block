@@ -1,9 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 /// ---------------------------------------------------------------------------
 /// SYSTEM MODEL
@@ -21,11 +19,7 @@ class SystemModel extends Equatable {
       SystemModel(system: SystemInfo.empty(), took: 0);
 
   factory SystemModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "SystemModel.fromJson",
-    );
+    ModelLog.fromJson(SystemModel, json);
     return SystemModel(
       system: SystemInfo.fromJson(json['system']),
       took: (json['took'] as num?)?.toDouble() ?? 0,

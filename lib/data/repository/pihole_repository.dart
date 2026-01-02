@@ -1,18 +1,23 @@
-import 'dart:developer';
-
-import 'package:logging/logging.dart';
 import 'package:pi_block/data/data_provider/pihole_data_provider.dart';
+import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/blocking_model.dart';
+import 'package:pi_block/models/client_model.dart';
 import 'package:pi_block/models/clients_history_model.dart';
-import 'package:pi_block/models/clients_model.dart';
+import 'package:pi_block/models/clients_stats_model.dart';
+import 'package:pi_block/models/clients_suggestion_model.dart';
+import 'package:pi_block/models/clients_update_model.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/domain_update_model.dart';
 import 'package:pi_block/models/domains_model.dart';
+import 'package:pi_block/models/groups_model.dart';
+import 'package:pi_block/models/groups_update_model.dart';
 import 'package:pi_block/models/history_model.dart';
 import 'package:pi_block/models/host_model.dart';
 import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/models/lists_update_model.dart';
+import 'package:pi_block/models/logs_model.dart';
+import 'package:pi_block/models/metrics_model.dart';
 import 'package:pi_block/models/pihole_config_model.dart';
 import 'package:pi_block/models/query_model.dart';
 import 'package:pi_block/models/session_model.dart';
@@ -26,16 +31,14 @@ class PiholeRepository {
 
   PiholeRepository(this.piholeDataProvider);
 
+  final _log = AppLogger.get('PiholeRepository');
+
   Future<SessionModel> login(Uri uri, String password) async {
     try {
       var result = await piholeDataProvider.login(uri, password);
       SessionModel sessionModel = SessionModel.fromJson(result);
 
-      log(
-        sessionModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.login",
-      );
+      _log.fine(() => 'login: ${sessionModel.session!.valid.toString()}');
 
       return sessionModel;
     } catch (e) {
@@ -51,11 +54,7 @@ class PiholeRepository {
         isDeleted = true;
       }
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.logout",
-      );
+      _log.fine(() => 'logout: ${result.toString()}');
 
       return isDeleted;
     } catch (e) {
@@ -74,10 +73,8 @@ class PiholeRepository {
                 ),
               )
               .toList();
-      log(
-        diagnosticMessagesList.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getDiagnosticMessages",
+      _log.fine(
+        () => 'getDiagnosticMessages: ${diagnosticMessagesList.toString()}',
       );
 
       return diagnosticMessagesList;
@@ -94,11 +91,7 @@ class PiholeRepository {
         isDeleted = true;
       }
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.deleteDiagnosticMessages",
-      );
+      _log.fine(() => 'deleteDiagnosticMessages: ${result.toString()}');
 
       return isDeleted;
     } catch (e) {
@@ -113,11 +106,7 @@ class PiholeRepository {
           .map((json) => ListsModel.fromJson(json as Map<String, dynamic>))
           .toList();
 
-      log(
-        listsModels.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getListsData",
-      );
+      _log.fine(() => 'getListsData: ${listsModels.toString()}');
 
       return listsModels;
     } catch (e) {
@@ -130,11 +119,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.addListsItem(item);
       ListUpdateModel listUpdateModel = ListUpdateModel.fromJson(result);
 
-      log(
-        listUpdateModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.addListsItem",
-      );
+      _log.fine(() => 'addListsItem: ${listUpdateModel.toString()}');
 
       return listUpdateModel;
     } catch (e) {
@@ -147,11 +132,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.updateListsItem(item);
       ListUpdateModel listUpdateModel = ListUpdateModel.fromJson(result);
 
-      log(
-        listUpdateModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.updateListsItem",
-      );
+      _log.fine(() => 'updateListsItem: ${listUpdateModel.toString()}');
 
       return listUpdateModel;
     } catch (e) {
@@ -167,11 +148,7 @@ class PiholeRepository {
         isDeleted = true;
       }
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.deleteListsItem",
-      );
+      _log.fine(() => 'deleteListsItem: ${result.toString()}');
 
       return isDeleted;
     } catch (e) {
@@ -186,11 +163,7 @@ class PiholeRepository {
           .map((json) => DomainModel.fromJson(json as Map<String, dynamic>))
           .toList();
 
-      log(
-        domainModels.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getDomainsData",
-      );
+      _log.fine(() => 'getDomainsData: ${domainModels.toString()}');
 
       return domainModels;
     } catch (e) {
@@ -211,11 +184,7 @@ class PiholeRepository {
       );
       DomainUpdateModel domainUpdateModel = DomainUpdateModel.fromJson(result);
 
-      log(
-        domainUpdateModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.updateDomainItem",
-      );
+      _log.fine(() => 'updateDomainItem: ${domainUpdateModel.toString()}');
 
       return domainUpdateModel;
     } catch (e) {
@@ -231,11 +200,7 @@ class PiholeRepository {
         isDeleted = true;
       }
 
-      log(
-        result.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.deleteDomainsItem",
-      );
+      _log.fine(() => 'deleteDomainsItem: ${result.toString()}');
 
       return isDeleted;
     } catch (e) {
@@ -248,11 +213,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.addDomainsItem(item);
       DomainUpdateModel domainUpdateModel = DomainUpdateModel.fromJson(result);
 
-      log(
-        domainUpdateModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.addDomainsItem",
-      );
+      _log.fine(() => 'addDomainsItem: ${domainUpdateModel.toString()}');
 
       return domainUpdateModel;
     } catch (e) {
@@ -260,16 +221,155 @@ class PiholeRepository {
     }
   }
 
-  Future<ClientsModel> getClients(Map<String, dynamic> blocked) async {
+  Future<List<ClientSuggestionModel>> getClientsSuggestionsData() async {
     try {
-      var result = await piholeDataProvider.getClients(blocked);
-      ClientsModel clientsModel = ClientsModel.fromJson(result);
+      var result = await piholeDataProvider.getClientsSuggestionsData();
+      List<ClientSuggestionModel> clientSuggestionModels =
+          (result['clients'] as List<dynamic>)
+              .map(
+                (json) => ClientSuggestionModel.fromJson(
+                  json as Map<String, dynamic>,
+                ),
+              )
+              .toList();
 
-      log(
-        clientsModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getClients",
+      _log.fine(
+        () => 'getClientsSuggestionsData: ${clientSuggestionModels.toString()}',
       );
+
+      return clientSuggestionModels;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<ClientModel>> getClientsData() async {
+    try {
+      var result = await piholeDataProvider.getClientsData();
+      List<ClientModel> clientModels = (result['clients'] as List<dynamic>)
+          .map((json) => ClientModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      _log.fine(() => 'getClientsData: ${clientModels.toString()}');
+
+      return clientModels;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<ClientsUpdateModel> updateClientItem(ClientModel item) async {
+    try {
+      var result = await piholeDataProvider.updateClientItem(item);
+      ClientsUpdateModel clientsUpdateModel = ClientsUpdateModel.fromJson(
+        result,
+      );
+
+      _log.fine(() => 'updateDomainItem: ${clientsUpdateModel.toString()}');
+
+      return clientsUpdateModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> deleteClientsItem(ClientModel item) async {
+    try {
+      var result = await piholeDataProvider.deleteClientsItem(item);
+      bool isDeleted = false;
+      if (result.containsKey("deleted") && result["deleted"]) {
+        isDeleted = true;
+      }
+
+      _log.fine(() => 'deleteClientsItem: ${result.toString()}');
+
+      return isDeleted;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<ClientsUpdateModel> addClientsItem(ClientModel item) async {
+    try {
+      var result = await piholeDataProvider.addClientsItem(item);
+      ClientsUpdateModel clientsUpdateModel = ClientsUpdateModel.fromJson(
+        result,
+      );
+
+      _log.fine(() => 'addClientsItem: ${clientsUpdateModel.toString()}');
+
+      return clientsUpdateModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<List<GroupModel>> getGroupsData() async {
+    try {
+      var result = await piholeDataProvider.getGroupsData();
+      List<GroupModel> groupModels = (result['groups'] as List<dynamic>)
+          .map((json) => GroupModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+
+      _log.fine(() => 'getGroupsData: ${groupModels.toString()}');
+
+      return groupModels;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<GroupUpdateModel> updateGroupItem(
+    GroupModel item,
+    String previousName,
+  ) async {
+    try {
+      var result = await piholeDataProvider.updateGroupItem(item, previousName);
+      GroupUpdateModel groupUpdateModel = GroupUpdateModel.fromJson(result);
+
+      _log.fine(() => 'updateGroupItem: ${groupUpdateModel.toString()}');
+
+      return groupUpdateModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> deleteGroupsItem(GroupModel item) async {
+    try {
+      var result = await piholeDataProvider.deleteGroupsItem(item);
+      bool isDeleted = false;
+      if (result.containsKey("deleted") && result["deleted"]) {
+        isDeleted = true;
+      }
+
+      _log.fine(() => 'deleteGroupsItem: ${result.toString()}');
+
+      return isDeleted;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<GroupUpdateModel> addGroupsItem(GroupModel item) async {
+    try {
+      var result = await piholeDataProvider.addGroupsItem(item);
+      GroupUpdateModel groupUpdateModel = GroupUpdateModel.fromJson(result);
+
+      _log.fine(() => 'addGroupsItem: ${groupUpdateModel.toString()}');
+
+      return groupUpdateModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<ClientsStatsModel> getTopClients(Map<String, dynamic> blocked) async {
+    try {
+      var result = await piholeDataProvider.getTopClients(blocked);
+      ClientsStatsModel clientsModel = ClientsStatsModel.fromJson(result);
+
+      _log.fine(() => 'getTopClients: ${clientsModel.toString()}');
 
       return clientsModel;
     } catch (e) {
@@ -277,16 +377,12 @@ class PiholeRepository {
     }
   }
 
-  Future<DomainsModel> getDomains(Map<String, dynamic> blocked) async {
+  Future<DomainsModel> getTopDomains(Map<String, dynamic> blocked) async {
     try {
-      var result = await piholeDataProvider.getDomains(blocked);
+      var result = await piholeDataProvider.getTopDomains(blocked);
       DomainsModel domainsModel = DomainsModel.fromJson(result);
 
-      log(
-        domainsModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getDomains",
-      );
+      _log.fine(() => 'getTopDomains: ${domainsModel.toString()}');
 
       return domainsModel;
     } catch (e) {
@@ -299,11 +395,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getQueriesHistory();
       HistoryModel historyModel = HistoryModel.fromJson(result);
 
-      log(
-        historyModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getQueriesHistory",
-      );
+      _log.fine(() => 'getQueriesHistory: ${historyModel.toString()}');
 
       return historyModel;
     } catch (e) {
@@ -317,11 +409,7 @@ class PiholeRepository {
       ClientHistoryModel clientHistoryModel = ClientHistoryModel.fromJson(
         result,
       );
-      log(
-        clientHistoryModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getClientsHistory",
-      );
+      _log.fine(() => 'getClientsHistory: ${clientHistoryModel.toString()}');
       return clientHistoryModel;
     } catch (e) {
       rethrow;
@@ -332,11 +420,7 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getQueryTypes();
       StatsQueryTypes statsQueryTypes = StatsQueryTypes.fromJson(result);
-      log(
-        statsQueryTypes.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getQueryTypes",
-      );
+      _log.fine(() => 'getQueryTypes: ${statsQueryTypes.toString()}');
       return statsQueryTypes;
     } catch (e) {
       rethrow;
@@ -347,11 +431,7 @@ class PiholeRepository {
     try {
       var result = await piholeDataProvider.getUpstreams();
       UpstreamsModel upstreamsModel = UpstreamsModel.fromJson(result);
-      log(
-        upstreamsModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getUpstreams",
-      );
+      _log.fine(() => 'getUpstreams: ${upstreamsModel.toString()}');
       return upstreamsModel;
     } catch (e) {
       rethrow;
@@ -363,11 +443,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getSystemInfo();
       SystemModel systemModel = SystemModel.fromJson(result);
 
-      log(
-        systemModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getSystemInfo",
-      );
+      _log.fine(() => 'getSystemInfo: ${systemModel.toString()}');
 
       return systemModel;
     } catch (e) {
@@ -380,11 +456,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getHostInfo();
       HostModel hostModel = HostModel.fromJson(result);
 
-      log(
-        hostModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getHostInfo",
-      );
+      _log.fine(() => 'getHostInfo: ${hostModel.toString()}');
 
       return hostModel;
     } catch (e) {
@@ -397,11 +469,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getVersion();
       VersionModel versionModel = VersionModel.fromJson(result);
 
-      log(
-        versionModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getVersion",
-      );
+      _log.fine(() => 'getVersion: ${versionModel.toString()}');
 
       return versionModel;
     } catch (e) {
@@ -414,13 +482,22 @@ class PiholeRepository {
       var result = await piholeDataProvider.getSummary();
       SummaryModel summaryModel = SummaryModel.fromJson(result);
 
-      log(
-        summaryModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getSummary",
-      );
+      _log.fine(() => 'getSummary: ${summaryModel.toString()}');
 
       return summaryModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<MetricsModel> getMetrics() async {
+    try {
+      var result = await piholeDataProvider.getMetrics();
+      MetricsModel metricsModel = MetricsModel.fromJson(result);
+
+      _log.fine(() => 'getMetrics: ${metricsModel.toString()}');
+
+      return metricsModel;
     } catch (e) {
       rethrow;
     }
@@ -431,11 +508,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.getBlockingStatus();
       BlockingModel blockingModel = BlockingModel.fromJson(result);
 
-      log(
-        blockingModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getBlockingStatus",
-      );
+      _log.fine(() => 'getBlockingStatus: ${blockingModel.toString()}');
 
       return blockingModel;
     } catch (e) {
@@ -448,11 +521,7 @@ class PiholeRepository {
       var result = await piholeDataProvider.onBlockingChanged(status, timer);
       BlockingModel blockingModel = BlockingModel.fromJson(result);
 
-      log(
-        blockingModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.onBlockingChanged",
-      );
+      _log.fine(() => 'onBlockingChanged: ${blockingModel.toString()}');
 
       return blockingModel;
     } catch (e) {
@@ -460,16 +529,20 @@ class PiholeRepository {
     }
   }
 
-  Future<QueryListModel> getQuerylogPage(int start, int pageSize) async {
+  Future<QueryListModel> getQuerylogPage(
+    String searchTerm,
+    int start,
+    int pageSize,
+  ) async {
     try {
-      var result = await piholeDataProvider.getQuerylogPage(start, pageSize);
+      var result = await piholeDataProvider.getQuerylogPage(
+        searchTerm,
+        start,
+        pageSize,
+      );
       QueryListModel queryListModel = QueryListModel.fromJson(result);
 
-      log(
-        queryListModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getQuerylogPage",
-      );
+      _log.fine(() => 'getQuerylogPage: ${queryListModel.toString()}');
 
       return queryListModel;
     } catch (e) {
@@ -482,13 +555,50 @@ class PiholeRepository {
       var result = await piholeDataProvider.getPiholeConfiguration();
       PiholeConfigModel piholeConfigModel = PiholeConfigModel.fromJson(result);
 
-      log(
-        piholeConfigModel.toString(),
-        level: Level.FINE.value,
-        name: "PiholeRepository.getPiholeConfiguration",
+      _log.fine(
+        () => 'getPiholeConfiguration: ${piholeConfigModel.toString()}',
       );
 
       return piholeConfigModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<LogsModel> getDnsmasqLogs(int nextID) async {
+    try {
+      var result = await piholeDataProvider.getDnsmasqLogs(nextID);
+      LogsModel logsModel = LogsModel.fromJson(result);
+
+      _log.fine(() => 'getDnsmasqLogs: ${logsModel.toString()}');
+
+      return logsModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<LogsModel> getFtlLogs(int nextID) async {
+    try {
+      var result = await piholeDataProvider.getFtlLogs(nextID);
+      LogsModel logsModel = LogsModel.fromJson(result);
+
+      _log.fine(() => 'getFtlLogs: ${logsModel.toString()}');
+
+      return logsModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<LogsModel> getWebserverLogs(int nextID) async {
+    try {
+      var result = await piholeDataProvider.getWebserverLogs(nextID);
+      LogsModel logsModel = LogsModel.fromJson(result);
+
+      _log.fine(() => 'getWebserverLogs: ${logsModel.toString()}');
+
+      return logsModel;
     } catch (e) {
       rethrow;
     }

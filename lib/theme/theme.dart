@@ -409,6 +409,8 @@ class MaterialTheme {
       color: KColors.listHeaderTitleBlockLight,
     ),
     tagBackground: cs.onSurfaceVariant.withAlpha(50),
+    editIconColor: cs.onSurface.withAlpha(170),
+    deleteIconColor: cs.error.withAlpha(170),
   );
 
   AppUiTokens darkUiTokens(ColorScheme cs) => AppUiTokens(
@@ -427,6 +429,8 @@ class MaterialTheme {
       color: KColors.listHeaderTitleBlockDark,
     ),
     tagBackground: cs.onSurfaceVariant.withAlpha(50),
+    editIconColor: cs.onSurface.withAlpha(170),
+    deleteIconColor: cs.error.withAlpha(170),
   );
 }
 

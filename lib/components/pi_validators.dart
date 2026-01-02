@@ -23,7 +23,7 @@ class PiValidators {
 
   commentValidator(String? value) {
     if (!validators.isLength(value ?? "", 0, 100)) {
-      return ("Comment can be max 100 characters long.");
+      return ("Comment can be max 100 characters.");
     }
     return null;
   }
@@ -42,6 +42,28 @@ class PiValidators {
     if (!validators.isFQDN(value)) {
       return "Invalid Domain";
     }
+    return null;
+  }
+
+  groupValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Group is required";
+    }
+    if (!validators.isLength(value, 0, 50)) {
+      return "Group can be max 50 characters.";
+    }
+    return null;
+  }
+
+  clientValidator(String? value) {
+    if (value == null || value.isEmpty) {
+      return "Client is required";
+    }
+
+    /// #TODO client validation
+    // if (!validators.isFQDN(value)) {
+    //   return "Invalid Client";
+    // }
     return null;
   }
 }

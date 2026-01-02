@@ -167,7 +167,7 @@ class _BlockingInfoViewState extends State<BlockingInfoView> {
                 crossAxisCount: 3,
                 crossAxisSpacing: 8.0, // Space between columns
                 mainAxisSpacing: 8.0, // Space between rows
-                childAspectRatio: 1.0,
+                childAspectRatio: 1.3,
               ),
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),

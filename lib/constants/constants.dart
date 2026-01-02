@@ -9,5 +9,19 @@ class KTimers {
   static const snackbarInfo = 5;
   static const summary = 15;
   static const system = 15;
+  static const metrics = 15;
   static const session = 1;
+  static const dnsmasq = 5;
+  static const ftl = 25;
+  static const webserver = 15;
+}
+
+class KGridCardSizes {
+  static const dashboard = {"width": 450, "height": 400};
+  static const stats = {"width": 600, "height": 550};
+  static const querylog = {"width": 400, "height": 250};
+  static const domains = {"width": 400, "height": 275};
+  static const lists = {"width": 450, "height": 300};
+  static const groups = {"width": 400, "height": 230};
+  static const clients = {"width": 400, "height": 250};
 }

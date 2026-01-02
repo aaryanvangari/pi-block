@@ -1,9 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 /// Represents a single blocklist or allowlist entry
 class ListsModel extends Equatable {
@@ -63,11 +61,7 @@ class ListsModel extends Equatable {
   });
 
   factory ListsModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "ListsModel.fromJson",
-    );
+    ModelLog.fromJson(ListsModel, json);
     return ListsModel(
       address: json["address"] ?? "",
       comment: json["comment"] ?? "",

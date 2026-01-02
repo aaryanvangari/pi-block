@@ -1,12 +1,10 @@
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 /// Root model representing the entire response
-class ClientsModel extends Equatable {
+class ClientsStatsModel extends Equatable {
   /// List of clients who made queries
-  final List<ClientModel> clients;
+  final List<ClientStatsModel> clients;
 
   /// Total number of queries across all clients
   final int totalQueries;
@@ -17,23 +15,19 @@ class ClientsModel extends Equatable {
   /// Time in seconds it took to process the request
   final double took;
 
-  const ClientsModel({
+  const ClientsStatsModel({
     required this.clients,
     required this.totalQueries,
     required this.blockedQueries,
     required this.took,
   });
 
-  /// Create a ClientsModel instance from a JSON map
-  factory ClientsModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "ClientsModel.fromJson",
-    );
-    return ClientsModel(
+  /// Create a ClientsStatsModel instance from a JSON map
+  factory ClientsStatsModel.fromJson(Map<String, dynamic> json) {
+    ModelLog.fromJson(ClientsStatsModel, json);
+    return ClientsStatsModel(
       clients: (json['clients'] as List<dynamic>)
-          .map((e) => ClientModel.fromJson(e))
+          .map((e) => ClientStatsModel.fromJson(e))
           .toList(),
       totalQueries: json['total_queries'] ?? 0,
       blockedQueries: json['blocked_queries'] ?? 0,
@@ -41,7 +35,7 @@ class ClientsModel extends Equatable {
     );
   }
 
-  /// Convert ClientsModel instance to JSON
+  /// Convert ClientsStatsModel instance to JSON
   Map<String, dynamic> toJson() {
     return {
       'clients': clients.map((e) => e.toJson()).toList(),
@@ -51,12 +45,12 @@ class ClientsModel extends Equatable {
     };
   }
 
-  ClientsModel copyWith({
-    List<ClientModel>? clients,
+  ClientsStatsModel copyWith({
+    List<ClientStatsModel>? clients,
     int? totalQueries,
     int? blockedQueries,
     double? took,
-  }) => ClientsModel(
+  }) => ClientsStatsModel(
     clients: clients ?? this.clients,
     totalQueries: totalQueries ?? this.totalQueries,
     blockedQueries: blockedQueries ?? this.blockedQueries,
@@ -68,7 +62,7 @@ class ClientsModel extends Equatable {
 }
 
 /// Model representing a client entry
-class ClientModel extends Equatable {
+class ClientStatsModel extends Equatable {
   /// Client IP address (IPv4 or IPv6)
   final String ip;
 
@@ -78,31 +72,32 @@ class ClientModel extends Equatable {
   /// Number of queries made by this client
   final int count;
 
-  const ClientModel({
+  const ClientStatsModel({
     required this.ip,
     required this.name,
     required this.count,
   });
 
-  /// Create a ClientModel instance from JSON map
-  factory ClientModel.fromJson(Map<String, dynamic> json) {
-    return ClientModel(
+  /// Create a ClientStatsModel instance from JSON map
+  factory ClientStatsModel.fromJson(Map<String, dynamic> json) {
+    return ClientStatsModel(
       ip: json['ip'] ?? "",
       name: json['name'] ?? "",
       count: json['count'] ?? 0,
     );
   }
 
-  /// Convert ClientModel instance to JSON
+  /// Convert ClientStatsModel instance to JSON
   Map<String, dynamic> toJson() {
     return {'ip': ip, 'name': name, 'count': count};
   }
 
-  ClientModel copyWith({String? ip, String? name, int? count}) => ClientModel(
-    ip: ip ?? this.ip,
-    name: name ?? this.name,
-    count: count ?? this.count,
-  );
+  ClientStatsModel copyWith({String? ip, String? name, int? count}) =>
+      ClientStatsModel(
+        ip: ip ?? this.ip,
+        name: name ?? this.name,
+        count: count ?? this.count,
+      );
 
   @override
   List<Object> get props => [ip, name, count];

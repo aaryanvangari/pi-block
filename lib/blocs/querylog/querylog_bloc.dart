@@ -16,6 +16,7 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
 
   QuerylogBloc(this.piholeRepository) : super(QuerylogState()) {
     on<LoadQuerylog>(_loadQuerylog);
+    on<SearchQuerylog>(_searchQuerylog);
     on<AllowDenyQuerylogDomain>(_allowdenyQuerylogDomain);
     on<UpdateItemsPerPage>(_updateItemsPerPage);
     on<UpdatePagesPerView>(_updatePagesPerView);
@@ -34,6 +35,45 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
     );
     try {
       QueryListModel queryListModel = await piholeRepository.getQuerylogPage(
+        "",
+        event.start,
+        event.itemsPerPage,
+      );
+      final queries = queryListModel.queries;
+      _querylogStreamController.add(queries);
+      await emit.forEach<List<QueryModel>>(
+        getQuerylog(),
+        onData: (queries) => state.copyWith(
+          status: QuerylogStateStatus.success,
+          queries: queries,
+          recordsFiltered: queryListModel.recordsFiltered,
+          page: event.start,
+        ),
+        onError: (_, _) => state.copyWith(status: QuerylogStateStatus.failure),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: QuerylogStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
+  void _searchQuerylog(
+    SearchQuerylog event,
+    Emitter<QuerylogState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: QuerylogStateStatus.loading,
+        itemStatus: QuerylogItemStateStatus.initial,
+      ),
+    );
+    try {
+      QueryListModel queryListModel = await piholeRepository.getQuerylogPage(
+        event.searchTerm,
         event.start,
         event.itemsPerPage,
       );

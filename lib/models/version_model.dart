@@ -1,9 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 /// ---------------------------------------------------------------------------
 /// VERSION MODEL
@@ -21,11 +19,7 @@ class VersionModel extends Equatable {
       VersionModel(version: Version.empty(), took: 0);
 
   factory VersionModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "VersionModel.fromJson",
-    );
+    ModelLog.fromJson(VersionModel, json);
     return VersionModel(
       version: Version.fromJson(json['version']),
       took: (json['took'] as num?)?.toDouble() ?? 0,

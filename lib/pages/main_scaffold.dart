@@ -20,12 +20,29 @@ class MainScaffold extends StatelessWidget {
   /// Nothing of content goes here like dashboard page or stats page etc.,
   /// Whenver the page changes from navigation bar the content changes but layout remains same
   const MainScaffold({super.key, required this.navigationShell});
+  static const double _drawerBreakpoint = 900;
+  static const double _drawerWidth = 280;
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    final isDesktop = width >= _drawerBreakpoint;
+
+    final drawer = BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state.status == AuthStateStatus.failure) {
+          GlobalSnackbar.error(context, state.error, state.errorDescription);
+        }
+      },
+      child: DrawerWidget(
+        onLogout: () => context.read<AuthBloc>().add(Logout()),
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
         elevation: 3,
+        automaticallyImplyLeading: !isDesktop, // hide hamburger on desktop
         actions: [
           IconButton(
             onPressed: () async {
@@ -77,17 +94,18 @@ class MainScaffold extends StatelessWidget {
           ],
         ),
       ),
-      body: navigationShell,
-      drawer: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state.status == AuthStateStatus.failure) {
-            GlobalSnackbar.error(context, state.error, state.errorDescription);
-          }
-        },
-        child: DrawerWidget(
-          onLogout: () => context.read<AuthBloc>().add(Logout()),
-        ),
-      ),
+      body: isDesktop
+          ? Row(
+              children: [
+                SizedBox(width: _drawerWidth, child: drawer),
+                const VerticalDivider(width: 1),
+                Expanded(child: navigationShell),
+              ],
+            )
+          : navigationShell,
+
+      // drawer closed only on mobile
+      drawer: isDesktop ? null : drawer,
       bottomNavigationBar: NavbarWidget(navigationShell: navigationShell),
     );
   }

@@ -1,9 +1,7 @@
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:logging/logging.dart';
 import 'package:pi_block/constants/hive/hive_typeids.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 part 'session_model.g.dart';
 
@@ -18,11 +16,7 @@ class SessionModel extends Equatable {
 
   /// Factory constructor to create SessionModel from JSON
   factory SessionModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "SessionModel.fromJson",
-    );
+    ModelLog.fromJson(SessionModel, json);
     return SessionModel(
       session: json['session'] != null
           ? Session.fromJson(json['session'])

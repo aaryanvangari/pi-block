@@ -1,9 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'dart:developer';
-
 import 'package:equatable/equatable.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/model_log.dart';
 
 class DomainModel extends Equatable {
   final String domain;
@@ -31,11 +29,7 @@ class DomainModel extends Equatable {
   });
 
   factory DomainModel.fromJson(Map<String, dynamic> json) {
-    log(
-      json.toString(),
-      level: Level.FINEST.value,
-      name: "DomainModel.fromJson",
-    );
+    ModelLog.fromJson(DomainModel, json);
     return DomainModel(
       domain: json["domain"] ?? "",
       unicode: json["unicode"] ?? "",

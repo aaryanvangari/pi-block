@@ -1,46 +1,32 @@
-import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logging/logging.dart';
+import 'package:pi_block/logging/app_logger.dart';
 
 class AppBlocObserver extends BlocObserver {
+  final _log = AppLogger.get('AppBlocObserver');
+
   @override
   void onCreate(BlocBase bloc) {
     super.onCreate(bloc);
-    log(
-      '${bloc.runtimeType} Created',
-      level: Level.FINER.value,
-      name: "AppBlocObserver.onCreate",
-    );
+    _log.finer(() => 'onCreate: ${bloc.runtimeType} Created');
   }
 
   @override
   void onChange(BlocBase bloc, Change change) {
     super.onChange(bloc, change);
-    log(
-      '${bloc.runtimeType} Changed - $change',
-      level: Level.FINER.value,
-      name: "AppBlocObserver.onChange",
-    );
+    _log.finer(() => 'onChange: ${bloc.runtimeType} Changed - $change');
   }
 
   @override
   void onTransition(Bloc bloc, Transition transition) {
     super.onTransition(bloc, transition);
-    log(
-      '${bloc.runtimeType} Transitioned - $transition',
-      level: Level.FINER.value,
-      name: "AppBlocObserver.onTransition",
+    _log.finer(
+      () => 'onTransition: ${bloc.runtimeType} Transitioned - $transition',
     );
   }
 
   @override
   void onError(BlocBase bloc, Object error, StackTrace stackTrace) {
-    log(
-      '${bloc.runtimeType} Error - $error',
-      level: Level.SEVERE.value,
-      name: "AppBlocObserver.onError",
-    );
+    _log.finer(() => 'onError: ${bloc.runtimeType} Error - $error');
     super.onError(bloc, error, stackTrace);
   }
 }

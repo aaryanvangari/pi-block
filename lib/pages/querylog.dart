@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pager/pager.dart';
 import 'package:pi_block/blocs/querylog/querylog_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
+import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/constants/features/querylog.dart';
+import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/query_model.dart';
 import 'package:pi_block/components/utils.dart';
@@ -44,6 +48,8 @@ class _QueryLogViewState extends State<_QueryLogView> {
 
   int _lastItemsPerPage = 0;
   int _lastPagesPerView = 0;
+  final TextEditingController searchController = TextEditingController();
+  Timer? _debounce;
 
   int calculatePagesPerView({
     required double availableWidth,
@@ -274,6 +280,206 @@ class _QueryLogViewState extends State<_QueryLogView> {
     );
   }
 
+  Widget _querylogRowCard(QueryModel item, BuildContext context) {
+    bool isBlocked = false;
+    isBlocked =
+        QuerylogConstants.queryStatus[item.status].containsKey("blocked") &&
+        QuerylogConstants.queryStatus[item.status]["blocked"];
+    var queryStatusConstant = QuerylogConstants.queryStatus[item.status];
+    bool isDarkMode = PiUtils.getDarkMode(context);
+    String queryStatusColor = queryStatusConstant["colorName"];
+    Color queryStatusColorWithAlpha = isDarkMode
+        ? KQueryLogColors.queryLogColors[queryStatusColor]["dark"]
+        : KQueryLogColors.queryLogColors[queryStatusColor]["light"];
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            // header row
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.domain,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: queryStatusColorWithAlpha,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                    CustomTagWidget(title: item.type),
+                  ],
+                ),
+                Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.client.name,
+                            style: KTextStyle.listHeaderSubTitle,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5.0,
+                        vertical: 2,
+                      ),
+                      child: buildStatusCell(item.status),
+                    ),
+                  ],
+                ),
+                Flex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            PiUtils.getDateFormatter(item.time),
+                            style: KTextStyle.listHeaderSubTitle,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5.0,
+                        // vertical: 2,
+                      ),
+                      child: Text(PiUtils.calculateTime(item.reply.time)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            // details
+            LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Domain: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Received on: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Client: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Reply: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Database ID: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Query Status: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                          ],
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              getDomainName(item),
+                              style: KTextStyle.listExpandedValue,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 3,
+                            ),
+                            Text(
+                              PiUtils.getDateFormatter(item.time),
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              '${item.client.name} (${item.client.ip})',
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              item.reply.type,
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              '${item.id}',
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            getStatusHumanReadableText(
+                              item,
+                              queryStatusColorWithAlpha,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            // entity actions like edit and delete
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    allowDenyQuerylogModal(context, item, isBlocked);
+                  },
+                  tooltip: isBlocked ? "Allow" : "Deny",
+                  icon: Icon(
+                    isBlocked ? Icons.check : Icons.block,
+                    color: isBlocked
+                        ? context.ui.slidePrimary.withAlpha(170)
+                        : context.ui.slideError.withAlpha(170),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   void allowDenyQuerylogModal(
     BuildContext context,
     QueryModel item,
@@ -328,7 +534,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
           ),
         ];
       },
-      modalTypeBuilder: (context) => WoltModalType.bottomSheet(), // adapt type
+      modalTypeBuilder: (context) => PiUtils.getModalTypeBuilder(context),
     ).whenComplete(() {
       pageIndexNotifier.dispose();
     });
@@ -371,6 +577,39 @@ class _QueryLogViewState extends State<_QueryLogView> {
       },
     );
     return listView;
+  }
+
+  void onSearchChanged(
+    BuildContext context,
+    String query,
+    int page,
+    int itemsPerPage,
+  ) {
+    const int minSearchLength = 3;
+    String trimmedQuery = query.trim();
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+    _debounce = Timer(const Duration(milliseconds: 400), () {
+      // log('Searching for: $query');
+      if (trimmedQuery.isEmpty) {
+        context.read<QuerylogBloc>().add(LoadQuerylog(page, itemsPerPage));
+      }
+      if (trimmedQuery.length < minSearchLength) {
+        return;
+      }
+
+      // valid case where seach happens
+      context.read<QuerylogBloc>().add(
+        SearchQuerylog(query, page, itemsPerPage),
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    _debounce?.cancel();
+    super.dispose();
   }
 
   @override
@@ -445,15 +684,124 @@ class _QueryLogViewState extends State<_QueryLogView> {
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8.0,
                               ),
-                              child: const Text(
-                                "Query Log",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        "Query Log",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          isQuerylogSearchVisible.value =
+                                              !isQuerylogSearchVisible.value;
+                                        },
+                                        icon: Icon(Icons.search),
+                                      ),
+                                    ],
+                                  ),
+                                  ValueListenableBuilder(
+                                    valueListenable: isQuerylogSearchVisible,
+                                    builder: (context, searchVisible, child) {
+                                      return AnimatedSwitcher(
+                                        duration: const Duration(
+                                          milliseconds: 250,
+                                        ),
+                                        transitionBuilder: (child, animation) {
+                                          return SizeTransition(
+                                            sizeFactor: animation,
+                                            axisAlignment: -1,
+                                            child: FadeTransition(
+                                              opacity: animation,
+                                              child: child,
+                                            ),
+                                          );
+                                        },
+                                        child: searchVisible
+                                            ? Padding(
+                                                key: const ValueKey('search'),
+                                                padding: const EdgeInsets.only(
+                                                  top: 8,
+                                                ),
+                                                child: TextFormField(
+                                                  autovalidateMode:
+                                                      AutovalidateMode
+                                                          .onUserInteraction,
+                                                  controller: searchController,
+                                                  onChanged: (value) =>
+                                                      onSearchChanged(
+                                                        context,
+                                                        value,
+                                                        state.page,
+                                                        state.itemsPerPage,
+                                                      ),
+                                                  decoration: InputDecoration(
+                                                    labelText: "Search Domains",
+                                                    helperText:
+                                                        "Type at least 3 characters",
+                                                    suffixIcon: IconButton(
+                                                      onPressed: () {
+                                                        searchController
+                                                            .clear();
+                                                        onSearchChanged(
+                                                          context,
+                                                          '',
+                                                          state.page,
+                                                          state.itemsPerPage,
+                                                        );
+                                                      },
+                                                      icon: Icon(Icons.clear),
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            : const SizedBox(
+                                                key: ValueKey('empty'),
+                                              ),
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
-                            Expanded(child: generateQueryLogData(queryModels)),
+                            Expanded(
+                              child: LayoutBuilder(
+                                builder: (context, constraints) {
+                                  final width = constraints.maxWidth;
+
+                                  return width < 500
+                                      ? generateQueryLogData(queryModels)
+                                      : GridView.builder(
+                                          padding: const EdgeInsets.all(10),
+                                          gridDelegate:
+                                              SliverGridDelegateWithMaxCrossAxisExtent(
+                                                crossAxisSpacing: 8,
+                                                mainAxisSpacing: 8,
+                                                mainAxisExtent: KGridCardSizes
+                                                    .querylog["height"]!
+                                                    .toDouble(),
+                                                maxCrossAxisExtent:
+                                                    KGridCardSizes
+                                                        .querylog["width"]!
+                                                        .toDouble(),
+                                              ),
+                                          itemCount: queryModels.length,
+                                          itemBuilder: (context, index) {
+                                            return _querylogRowCard(
+                                              queryModels[index],
+                                              context,
+                                            );
+                                          },
+                                        );
+                                },
+                              ),
+                            ),
                             Center(
                               child: Pager(
                                 currentItemsPerPage: state.itemsPerPage,
@@ -462,9 +810,19 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                     (state.recordsFiltered / state.itemsPerPage)
                                         .ceil(),
                                 onPageChanged: (page) {
-                                  context.read<QuerylogBloc>().add(
-                                    LoadQuerylog(page, state.itemsPerPage),
-                                  );
+                                  if (searchController.text.trim().isNotEmpty) {
+                                    context.read<QuerylogBloc>().add(
+                                      SearchQuerylog(
+                                        searchController.text,
+                                        page,
+                                        state.itemsPerPage,
+                                      ),
+                                    );
+                                  } else {
+                                    context.read<QuerylogBloc>().add(
+                                      LoadQuerylog(page, state.itemsPerPage),
+                                    );
+                                  }
                                 },
                                 pagesView: state.pagesPerView,
                                 numberButtonSelectedColor: Theme.of(

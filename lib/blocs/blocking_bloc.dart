@@ -1,17 +1,17 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logging/logging.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/notifiers.dart';
+import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/blocking_model.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BlockingBloc extends Bloc<BlockingEvent, BlockingState> {
   final PiholeRepository piholeRepository;
+  final _log = AppLogger.get('BlockingBloc');
 
   final _blockingController = StreamController<bool>();
   Stream<bool> get blockingStream => _blockingController.stream;
@@ -49,21 +49,13 @@ class BlockingBloc extends Bloc<BlockingEvent, BlockingState> {
       int currentMilliSeconds = DateTime.now().millisecondsSinceEpoch;
       double differenceInSeconds =
           (blockingTimerValidTill - currentMilliSeconds) / 1000;
-      log(
-        "differenceInSeconds $differenceInSeconds",
-        level: Level.FINE.value,
-        name: "DashboardPage.handleBlockingTimer",
-      );
+      _log.fine('_getBlocking: differenceInSeconds $differenceInSeconds');
       if (blockingTimerValidTill > currentMilliSeconds) {
         blockedTimerNotifier.value = Duration(
           seconds: differenceInSeconds.toInt(),
         );
       } else {
-        log(
-          "blockingTimer Invalidated",
-          level: Level.FINE.value,
-          name: "DashboardPage.handleBlockingTimer",
-        );
+        _log.fine('_getBlocking: blockingTimer Invalidated');
         // Resetting blockingTimer as its invalidated
         await prefs.setInt(KConstants.blockingTimer, 0);
         await prefs.setInt(KConstants.blockingTimerAddedAt, 0);
