@@ -679,24 +679,51 @@ class ClientsView extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Client: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Comment: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Groups: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Added: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Modified: ', style: KTextStyle.listExpandedTitle),
+                            const Text(
+                              'Client: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Comment: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Groups: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Database ID: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Added: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Modified: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
                           ],
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(item.client, style: KTextStyle.listExpandedValue),
-                            Text(item.comment, style: KTextStyle.listExpandedValue),
+                            Text(
+                              item.client,
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              item.comment,
+                              style: KTextStyle.listExpandedValue,
+                            ),
                             BlocBuilder<GroupsBloc, GroupsState>(
                               builder: (context, state) {
                                 if (state.status == GroupsStateStatus.success) {
                                   String groupsListString = state.groups
-                                      .where((group) => (item.groups.contains(group.id)))
+                                      .where(
+                                        (group) =>
+                                            (item.groups.contains(group.id)),
+                                      )
                                       .map((group) => group.name)
                                       .join(' • ');
                                   return Text(groupsListString);
@@ -704,7 +731,10 @@ class ClientsView extends StatelessWidget {
                                 return const SizedBox.shrink();
                               },
                             ),
-                            Text(item.id.toString(), style: KTextStyle.listExpandedValue),
+                            Text(
+                              item.id.toString(),
+                              style: KTextStyle.listExpandedValue,
+                            ),
                             Text(
                               '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
                               style: KTextStyle.listExpandedValue,
@@ -731,20 +761,14 @@ class ClientsView extends StatelessWidget {
                     editClientFormModal(context, item);
                   },
                   tooltip: "Edit",
-                  icon: Icon(
-                    Icons.edit,
-                    color: context.ui.editIconColor,
-                  ),
+                  icon: Icon(Icons.edit, color: context.ui.editIconColor),
                 ),
                 IconButton(
                   onPressed: () {
                     deleteClientModal(context, item);
                   },
                   tooltip: "Delete",
-                  icon: Icon(
-                    Icons.delete,
-                    color: context.ui.deleteIconColor,
-                  ),
+                  icon: Icon(Icons.delete, color: context.ui.deleteIconColor),
                 ),
               ],
             ),
@@ -879,8 +903,12 @@ class ClientsView extends StatelessWidget {
                                             SliverGridDelegateWithMaxCrossAxisExtent(
                                               crossAxisSpacing: 8,
                                               mainAxisSpacing: 8,
-                                              mainAxisExtent: KGridCardSizes.clients["height"]!.toDouble(),
-                                              maxCrossAxisExtent: KGridCardSizes.clients["width"]!.toDouble(),
+                                              mainAxisExtent: KGridCardSizes
+                                                  .clients["height"]!
+                                                  .toDouble(),
+                                              maxCrossAxisExtent: KGridCardSizes
+                                                  .clients["width"]!
+                                                  .toDouble(),
                                             ),
                                         itemCount: clientModels.length,
                                         itemBuilder: (context, index) {

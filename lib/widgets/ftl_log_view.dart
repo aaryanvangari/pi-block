@@ -17,7 +17,8 @@ class FtlLogView extends StatefulWidget {
   State<FtlLogView> createState() => _FtlLogViewState();
 }
 
-class _FtlLogViewState extends State<FtlLogView> with AutomaticKeepAliveClientMixin {
+class _FtlLogViewState extends State<FtlLogView>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -25,11 +26,7 @@ class _FtlLogViewState extends State<FtlLogView> with AutomaticKeepAliveClientMi
     final scheme = Theme.of(context).colorScheme;
 
     final normalized = switch (priority) {
-      'ERR' ||
-      'ERROR' ||
-      'EMERG' ||
-      'ALERT' ||
-      'CRIT' => 'ERROR',
+      'ERR' || 'ERROR' || 'EMERG' || 'ALERT' || 'CRIT' => 'ERROR',
       'WARN' || 'WARNING' => 'WARNING',
       'INFO' => 'INFO',
       _ => null,
@@ -59,7 +56,9 @@ class _FtlLogViewState extends State<FtlLogView> with AutomaticKeepAliveClientMi
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               getLogPriority(context, logModel.prio),
-              (logModel.prio != null) ? const SizedBox(width: 8): const SizedBox.shrink(),
+              (logModel.prio != null)
+                  ? const SizedBox(width: 8)
+                  : const SizedBox.shrink(),
               Text(
                 DateFormat(
                   'yyyy-MM-dd HH:mm:ss.SSS',

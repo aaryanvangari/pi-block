@@ -106,10 +106,10 @@ class ClientSuggestionModel extends Equatable {
   @override
   String toString() {
     if (names != null && names!.isNotEmpty) {
-    return addresses != null && addresses!.isNotEmpty
-        ? '$names ($addresses)'
-        : names!;
-  }
+      return addresses != null && addresses!.isNotEmpty
+          ? '$names ($addresses)'
+          : names!;
+    }
     return hwaddr ?? "";
   }
 

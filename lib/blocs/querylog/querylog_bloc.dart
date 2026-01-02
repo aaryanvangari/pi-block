@@ -61,7 +61,10 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
     }
   }
 
-  void _searchQuerylog(SearchQuerylog event, Emitter<QuerylogState> emit) async {
+  void _searchQuerylog(
+    SearchQuerylog event,
+    Emitter<QuerylogState> emit,
+  ) async {
     emit(
       state.copyWith(
         status: QuerylogStateStatus.loading,

@@ -23,7 +23,7 @@ class GroupsState extends Equatable {
     this.error = "",
     this.toggleError = "",
     this.message = "",
-    this.selectedGroups = const []
+    this.selectedGroups = const [],
   });
 
   GroupsState copyWith({
@@ -34,7 +34,7 @@ class GroupsState extends Equatable {
     String? error,
     String? toggleError,
     String? message,
-    List<GroupModel>? selectedGroups
+    List<GroupModel>? selectedGroups,
   }) {
     return GroupsState(
       groups: groups ?? this.groups,
@@ -44,7 +44,7 @@ class GroupsState extends Equatable {
       error: error ?? this.error,
       toggleError: toggleError ?? this.toggleError,
       message: message ?? this.message,
-      selectedGroups: selectedGroups ?? this.selectedGroups
+      selectedGroups: selectedGroups ?? this.selectedGroups,
     );
   }
 
@@ -57,6 +57,6 @@ class GroupsState extends Equatable {
     error,
     toggleError,
     message,
-    selectedGroups
+    selectedGroups,
   ];
 }

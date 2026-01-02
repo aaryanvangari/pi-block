@@ -859,20 +859,14 @@ class DomainsView extends StatelessWidget {
                     editDomainFormModal(context, item);
                   },
                   tooltip: "Edit",
-                  icon: Icon(
-                    Icons.edit,
-                    color: context.ui.editIconColor,
-                  ),
+                  icon: Icon(Icons.edit, color: context.ui.editIconColor),
                 ),
                 IconButton(
                   onPressed: () {
                     deleteDomainModal(context, item);
                   },
                   tooltip: "Delete",
-                  icon: Icon(
-                    Icons.delete,
-                    color: context.ui.deleteIconColor,
-                  ),
+                  icon: Icon(Icons.delete, color: context.ui.deleteIconColor),
                 ),
               ],
             ),
@@ -1009,8 +1003,12 @@ class DomainsView extends StatelessWidget {
                                             SliverGridDelegateWithMaxCrossAxisExtent(
                                               crossAxisSpacing: 8,
                                               mainAxisSpacing: 8,
-                                              mainAxisExtent: KGridCardSizes.domains["height"]!.toDouble(),
-                                              maxCrossAxisExtent: KGridCardSizes.domains["width"]!.toDouble(),
+                                              mainAxisExtent: KGridCardSizes
+                                                  .domains["height"]!
+                                                  .toDouble(),
+                                              maxCrossAxisExtent: KGridCardSizes
+                                                  .domains["width"]!
+                                                  .toDouble(),
                                             ),
                                         itemCount: domainModels.length,
                                         itemBuilder: (context, index) {

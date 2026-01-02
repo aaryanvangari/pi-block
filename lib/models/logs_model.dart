@@ -18,21 +18,11 @@ class LogsModel extends Equatable {
   });
 
   factory LogsModel.empty() {
-    return const LogsModel(
-      log: [],
-      nextID: 0,
-      pid: 0,
-      file: '',
-      took: 0.0,
-    );
+    return const LogsModel(log: [], nextID: 0, pid: 0, file: '', took: 0.0);
   }
 
   bool get isEmpty =>
-      log.isEmpty &&
-      nextID == 0 &&
-      pid == 0 &&
-      file.isEmpty &&
-      took == 0.0;
+      log.isEmpty && nextID == 0 && pid == 0 && file.isEmpty && took == 0.0;
 
   factory LogsModel.fromJson(Map<String, dynamic> json) {
     ModelLog.fromJson(LogsModel, json);

@@ -26,7 +26,8 @@ class LogsPage extends StatelessWidget {
         ),
         BlocProvider(
           create: (_) =>
-              DnsmasqBloc(context.read<PiholeRepository>())..add(LoadDnsmasq(0)),
+              DnsmasqBloc(context.read<PiholeRepository>())
+                ..add(LoadDnsmasq(0)),
         ),
       ],
       child: _LogsView(),
@@ -41,7 +42,6 @@ class _LogsView extends StatefulWidget {
 }
 
 class _LogsViewState extends State<_LogsView> {
-
   late DnsmasqBloc _dnsmasqBloc;
   late FtlBloc _ftlBloc;
   late WebserverBloc _webserverBloc;

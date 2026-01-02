@@ -35,13 +35,15 @@ class WebserverBloc extends Bloc<WebserverEvent, WebserverState> {
     emit(state.copyWith(status: WebserverStateStatus.loading));
 
     try {
-      LogsModel logsModel = await piholeRepository.getWebserverLogs(event.nextID);
+      LogsModel logsModel = await piholeRepository.getWebserverLogs(
+        event.nextID,
+      );
 
       emit(
         state.copyWith(
           status: WebserverStateStatus.success,
           logsModel: _reverseLogs(logsModel),
-          nextID: logsModel.nextID
+          nextID: logsModel.nextID,
         ),
       );
     } catch (e) {
@@ -62,14 +64,16 @@ class WebserverBloc extends Bloc<WebserverEvent, WebserverState> {
       // Capture existing logs first
       final existingLogs = state.logsModel.log;
 
-      LogsModel logsModel = await piholeRepository.getWebserverLogs(event.nextID);
+      LogsModel logsModel = await piholeRepository.getWebserverLogs(
+        event.nextID,
+      );
 
       // Normalize API logs to newest → oldest
       final newLogs = logsModel.log.reversed.toList();
 
       // new logs after nextID + old logs which are in state
       final merged = [...newLogs, ...existingLogs];
-      
+
       // Trimming to 100 because we dont want to deal with huge lists
       final trimmed = merged.take(100).toList();
 
@@ -87,7 +91,7 @@ class WebserverBloc extends Bloc<WebserverEvent, WebserverState> {
         state.copyWith(
           status: WebserverStateStatus.success,
           logsModel: updatedLogs,
-          nextID: logsModel.nextID
+          nextID: logsModel.nextID,
         ),
       );
     } catch (_) {
@@ -187,10 +191,17 @@ class WebserverState extends Equatable {
       error: error ?? this.error,
       message: message ?? this.message,
       autoRefreshOn: autoRefreshOn ?? this.autoRefreshOn,
-      nextID: nextID ?? this.nextID
+      nextID: nextID ?? this.nextID,
     );
   }
 
   @override
-  List<Object?> get props => [logsModel, status, error, message, autoRefreshOn, nextID];
+  List<Object?> get props => [
+    logsModel,
+    status,
+    error,
+    message,
+    autoRefreshOn,
+    nextID,
+  ];
 }

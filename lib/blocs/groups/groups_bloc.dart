@@ -67,11 +67,17 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
     );
   }
 
-  void _groupSelectionChanged(GroupsSelectionChanged event, Emitter<GroupsState> emit) {
+  void _groupSelectionChanged(
+    GroupsSelectionChanged event,
+    Emitter<GroupsState> emit,
+  ) {
     emit(state.copyWith(selectedGroups: event.groups));
   }
 
-  void _resetGroupsSelection(ResetGroupsSelection event, Emitter<GroupsState> emit) {
+  void _resetGroupsSelection(
+    ResetGroupsSelection event,
+    Emitter<GroupsState> emit,
+  ) {
     emit(state.copyWith(selectedGroups: []));
   }
 

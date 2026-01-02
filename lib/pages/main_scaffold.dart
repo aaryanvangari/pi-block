@@ -23,7 +23,6 @@ class MainScaffold extends StatelessWidget {
   static const double _drawerBreakpoint = 900;
   static const double _drawerWidth = 280;
 
-
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
@@ -32,11 +31,7 @@ class MainScaffold extends StatelessWidget {
     final drawer = BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.status == AuthStateStatus.failure) {
-          GlobalSnackbar.error(
-            context,
-            state.error,
-            state.errorDescription,
-          );
+          GlobalSnackbar.error(context, state.error, state.errorDescription);
         }
       },
       child: DrawerWidget(

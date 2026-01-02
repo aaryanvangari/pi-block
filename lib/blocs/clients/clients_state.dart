@@ -35,7 +35,7 @@ class ClientsState extends Equatable {
   }) {
     return ClientsState(
       clients: clients ?? this.clients,
-      suggestions: suggestions?? this.suggestions,
+      suggestions: suggestions ?? this.suggestions,
       status: status ?? this.status,
       suggestionStatus: suggestionStatus ?? this.suggestionStatus,
       itemStatus: itemStatus ?? this.itemStatus,

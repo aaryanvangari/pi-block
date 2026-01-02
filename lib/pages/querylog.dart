@@ -597,7 +597,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
       if (trimmedQuery.length < minSearchLength) {
         return;
       }
-      
+
       // valid case where seach happens
       context.read<QuerylogBloc>().add(
         SearchQuerylog(query, page, itemsPerPage),
@@ -743,7 +743,8 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                                       ),
                                                   decoration: InputDecoration(
                                                     labelText: "Search Domains",
-                                                    helperText: "Type at least 3 characters",
+                                                    helperText:
+                                                        "Type at least 3 characters",
                                                     suffixIcon: IconButton(
                                                       onPressed: () {
                                                         searchController

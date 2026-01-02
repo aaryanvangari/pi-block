@@ -71,10 +71,13 @@ class _MainAppState extends State<MainApp> {
               create: (context) => AuthBloc(context.read<PiholeRepository>()),
               lazy: false,
             ),
+
             /// setting up here since this bloc provides data for 4 different widgets
             /// and I can call the event only once here and all widgets have data
             BlocProvider<MetricsBloc>(
-              create: (context) => MetricsBloc(context.read<PiholeRepository>())..add(LoadMetrics()),
+              create: (context) =>
+                  MetricsBloc(context.read<PiholeRepository>())
+                    ..add(LoadMetrics()),
             ),
           ],
           child: AppView(),

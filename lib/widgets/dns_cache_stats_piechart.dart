@@ -66,7 +66,7 @@ class DnsCacheStatsPiechartView extends StatelessWidget {
     // Empty values should be added but realistically it was 200 odd against 10000
     // So the piechart does not makes sense when all other segments are less than 2%
     // I'm expecting user to understand what they want to see from the piechart without empty values
-    
+
     // Add empty values
     // PieData pieData = PieData(
     //   "Empty",
@@ -98,10 +98,7 @@ class DnsCacheStatsPiechartView extends StatelessWidget {
             return SquareCardPiechartWidget(
               title: _title,
               items: pieDataList,
-              labelStyle: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 13,
-              ),
+              labelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
             );
           default:
             return const SizedBox.shrink();

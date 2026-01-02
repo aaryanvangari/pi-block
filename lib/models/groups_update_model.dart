@@ -54,4 +54,3 @@ class GroupUpdateModel extends Equatable {
   @override
   List<Object?> get props => [groups, processed, took];
 }
-

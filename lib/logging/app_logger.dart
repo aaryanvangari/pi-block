@@ -8,7 +8,7 @@ class AppLogger {
     if (_initialized) return;
     _initialized = true;
 
-     /// prevent log propagation duplicates
+    /// prevent log propagation duplicates
     hierarchicalLoggingEnabled = true;
 
     /// print info and above in release mode and all in debug mode
@@ -17,7 +17,7 @@ class AppLogger {
     Logger.root.onRecord.listen((record) {
       if (kReleaseMode) {
         // sendToServer(record);
-      } else if (kDebugMode){
+      } else if (kDebugMode) {
         print(
           '${record.time.toIso8601String()} '
           '[${record.level.name}] '
@@ -30,7 +30,7 @@ class AppLogger {
 
   static Logger get(String name) => Logger(name);
 
-  /// Setup in class like 
+  /// Setup in class like
   /// final _log = AppLogger.get('PiholeDataProvider');
   /// in methods use like (login is method name and remaining is message)
   /// _log.fine(() => 'login: ${result.toString()}');

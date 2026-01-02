@@ -10,7 +10,7 @@ class SquareCardPiechartWidget extends StatelessWidget {
     super.key,
     required this.title,
     required this.items,
-    this.labelStyle
+    this.labelStyle,
   });
 
   @override

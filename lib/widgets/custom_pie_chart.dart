@@ -22,7 +22,7 @@ class CustomPieChart extends StatefulWidget {
     this.outerMargin = 40,
     this.startDegree = -90,
     this.space,
-    this.labelStyle
+    this.labelStyle,
   });
 
   @override
@@ -137,7 +137,9 @@ class _CustomPieChartState extends State<CustomPieChart> {
                               radialLen: widget.radialLine,
                               horizontalLen: widget.horizontalLine,
                               startDegreeDeg: widget.startDegree,
-                              labelColor: Theme.of(context).colorScheme.onSurface,
+                              labelColor: Theme.of(
+                                context,
+                              ).colorScheme.onSurface,
                             ),
                           ),
                         ),
@@ -167,11 +169,13 @@ class _CustomPieChartState extends State<CustomPieChart> {
                         const SizedBox(width: 10),
                         Text(
                           d.name,
-                          style: widget.labelStyle ?? TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15,
-                            // color: Theme.of(context).colorScheme.primary,
-                          ),
+                          style:
+                              widget.labelStyle ??
+                              TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 15,
+                                // color: Theme.of(context).colorScheme.primary,
+                              ),
                         ),
                       ],
                     );

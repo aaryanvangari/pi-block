@@ -11,11 +11,7 @@ class LogModel extends Equatable {
   /// Log line priority (if available)
   final String? prio;
 
-  const LogModel({
-    required this.timestamp,
-    required this.message,
-    this.prio,
-  });
+  const LogModel({required this.timestamp, required this.message, this.prio});
 
   /// Creates an empty LogModel
   factory LogModel.empty() {
@@ -28,9 +24,7 @@ class LogModel extends Equatable {
 
   /// Returns true if this instance is empty
   bool get isEmpty =>
-      timestamp.millisecondsSinceEpoch == 0 &&
-      message.isEmpty &&
-      prio == null;
+      timestamp.millisecondsSinceEpoch == 0 && message.isEmpty && prio == null;
 
   /// Creates a LogModel from JSON
   ///

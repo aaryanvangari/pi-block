@@ -143,7 +143,7 @@ class PiHttpClient {
           "sid": sid.toString(),
         },
       );
-      
+
       _log.info('delete: ${response.statusCode.toString()}');
 
       if (response.statusCode == 204) {

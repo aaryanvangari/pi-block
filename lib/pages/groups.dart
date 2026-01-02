@@ -375,14 +375,10 @@ class GroupsView extends StatelessWidget {
         confirmationText: 'Do you want to delete group?',
         confirmButtonText: 'Delete',
         onConfirm: () {
-          groupsBloc.add(
-            DeleteGroupsItem(groupModel: groupModel),
-          );
+          groupsBloc.add(DeleteGroupsItem(groupModel: groupModel));
         },
-        isSuccess: (state) =>
-            state.itemStatus == GroupsItemStateStatus.success,
-        isFailure: (state) =>
-            state.itemStatus == GroupsItemStateStatus.failure,
+        isSuccess: (state) => state.itemStatus == GroupsItemStateStatus.success,
+        isFailure: (state) => state.itemStatus == GroupsItemStateStatus.failure,
         onFailure: (context, state) {
           PiUtils.handleGeneralException(context, state.error);
         },
@@ -576,19 +572,43 @@ class GroupsView extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Group: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Comment: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Added: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Modified: ', style: KTextStyle.listExpandedTitle),
+                            const Text(
+                              'Group: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Comment: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Database ID: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Added: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Modified: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
                           ],
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(item.name, style: KTextStyle.listExpandedValue),
-                            Text(item.comment, style: KTextStyle.listExpandedValue),
-                            Text(item.id.toString(), style: KTextStyle.listExpandedValue),
+                            Text(
+                              item.name,
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              item.comment,
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              item.id.toString(),
+                              style: KTextStyle.listExpandedValue,
+                            ),
                             Text(
                               '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
                               style: KTextStyle.listExpandedValue,
@@ -615,20 +635,14 @@ class GroupsView extends StatelessWidget {
                     editGroupFormModal(context, item);
                   },
                   tooltip: "Edit",
-                  icon: Icon(
-                    Icons.edit,
-                    color: context.ui.editIconColor,
-                  ),
+                  icon: Icon(Icons.edit, color: context.ui.editIconColor),
                 ),
                 IconButton(
                   onPressed: () {
                     deleteGroupModal(context, item);
                   },
                   tooltip: "Delete",
-                  icon: Icon(
-                    Icons.delete,
-                    color: context.ui.deleteIconColor,
-                  ),
+                  icon: Icon(Icons.delete, color: context.ui.deleteIconColor),
                 ),
               ],
             ),
@@ -770,8 +784,12 @@ class GroupsView extends StatelessWidget {
                                             SliverGridDelegateWithMaxCrossAxisExtent(
                                               crossAxisSpacing: 8,
                                               mainAxisSpacing: 8,
-                                              mainAxisExtent: KGridCardSizes.groups["height"]!.toDouble(),
-                                              maxCrossAxisExtent: KGridCardSizes.groups["width"]!.toDouble(),
+                                              mainAxisExtent: KGridCardSizes
+                                                  .groups["height"]!
+                                                  .toDouble(),
+                                              maxCrossAxisExtent: KGridCardSizes
+                                                  .groups["width"]!
+                                                  .toDouble(),
                                             ),
                                         itemCount: groupModels.length,
                                         itemBuilder: (context, index) {

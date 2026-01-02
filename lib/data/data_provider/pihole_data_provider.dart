@@ -590,14 +590,17 @@ class PiholeDataProvider {
     }
   }
 
-  Future<Map<String, dynamic>> getQuerylogPage(String searchTerm, int start, int pageSize) async {
+  Future<Map<String, dynamic>> getQuerylogPage(
+    String searchTerm,
+    int start,
+    int pageSize,
+  ) async {
     try {
       final queryParameter = <String, dynamic>{
         'start': ((start - 1) * pageSize).toString(),
         'length': pageSize.toString(),
         // 'status': 'GRAVITY_CNAME',
-        if (searchTerm.trim().isNotEmpty)
-        'domain': '*${searchTerm.trim()}*',
+        if (searchTerm.trim().isNotEmpty) 'domain': '*${searchTerm.trim()}*',
       };
 
       var result = await piHttpClient.get(
@@ -629,11 +632,12 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getDnsmasqLogs(int nextID) async {
     try {
-      final queryParameter = <String, dynamic>{
-        'nextID': nextID.toString(),
-      };
+      final queryParameter = <String, dynamic>{'nextID': nextID.toString()};
 
-      var result = await piHttpClient.get(ApiUrls.dnsmasqLogs, queryParams: queryParameter);
+      var result = await piHttpClient.get(
+        ApiUrls.dnsmasqLogs,
+        queryParams: queryParameter,
+      );
       PiUtils.handleAPIException(result, false);
 
       _log.fine(() => 'getDnsmasqLogs: ${result.toString()}');
@@ -646,10 +650,11 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getFtlLogs(int nextID) async {
     try {
-      final queryParameter = <String, dynamic>{
-        'nextID': nextID.toString(),
-      };
-      var result = await piHttpClient.get(ApiUrls.ftlLogs, queryParams: queryParameter);
+      final queryParameter = <String, dynamic>{'nextID': nextID.toString()};
+      var result = await piHttpClient.get(
+        ApiUrls.ftlLogs,
+        queryParams: queryParameter,
+      );
       PiUtils.handleAPIException(result, false);
 
       _log.fine(() => 'getFtlLogs: ${result.toString()}');
@@ -662,10 +667,11 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> getWebserverLogs(int nextID) async {
     try {
-      final queryParameter = <String, dynamic>{
-        'nextID': nextID.toString(),
-      };
-      var result = await piHttpClient.get(ApiUrls.webserverLogs, queryParams: queryParameter);
+      final queryParameter = <String, dynamic>{'nextID': nextID.toString()};
+      var result = await piHttpClient.get(
+        ApiUrls.webserverLogs,
+        queryParams: queryParameter,
+      );
       PiUtils.handleAPIException(result, false);
 
       _log.fine(() => 'getWebserverLogs: ${result.toString()}');

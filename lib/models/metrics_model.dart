@@ -1,15 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:pi_block/logging/model_log.dart';
 
-
 class MetricsModel extends Equatable {
   final Metrics metrics;
   final double took;
 
-  const MetricsModel({
-    required this.metrics,
-    required this.took,
-  });
+  const MetricsModel({required this.metrics, required this.took});
 
   factory MetricsModel.empty() =>
       MetricsModel(metrics: Metrics.empty(), took: 0);
@@ -24,15 +20,9 @@ class MetricsModel extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'metrics': metrics.toJson(),
-        'took': took,
-      };
+  Map<String, dynamic> toJson() => {'metrics': metrics.toJson(), 'took': took};
 
-  MetricsModel copyWith({
-    Metrics? metrics,
-    double? took,
-  }) {
+  MetricsModel copyWith({Metrics? metrics, double? took}) {
     return MetricsModel(
       metrics: metrics ?? this.metrics,
       took: took ?? this.took,
@@ -50,10 +40,7 @@ class Metrics extends Equatable {
   final DnsMetrics dns;
   final DhcpMetrics dhcp;
 
-  const Metrics({
-    required this.dns,
-    required this.dhcp,
-  });
+  const Metrics({required this.dns, required this.dhcp});
 
   factory Metrics.empty() =>
       Metrics(dns: DnsMetrics.empty(), dhcp: DhcpMetrics.empty());
@@ -67,19 +54,10 @@ class Metrics extends Equatable {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-        'dns': dns.toJson(),
-        'dhcp': dhcp.toJson(),
-      };
+  Map<String, dynamic> toJson() => {'dns': dns.toJson(), 'dhcp': dhcp.toJson()};
 
-  Metrics copyWith({
-    DnsMetrics? dns,
-    DhcpMetrics? dhcp,
-  }) {
-    return Metrics(
-      dns: dns ?? this.dns,
-      dhcp: dhcp ?? this.dhcp,
-    );
+  Metrics copyWith({DnsMetrics? dns, DhcpMetrics? dhcp}) {
+    return Metrics(dns: dns ?? this.dns, dhcp: dhcp ?? this.dhcp);
   }
 
   @override
@@ -93,10 +71,7 @@ class DnsMetrics extends Equatable {
   final DnsCache cache;
   final DnsReplies replies;
 
-  const DnsMetrics({
-    required this.cache,
-    required this.replies,
-  });
+  const DnsMetrics({required this.cache, required this.replies});
 
   factory DnsMetrics.empty() =>
       DnsMetrics(cache: DnsCache.empty(), replies: DnsReplies.empty());
@@ -111,9 +86,9 @@ class DnsMetrics extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'cache': cache.toJson(),
-        'replies': replies.toJson(),
-      };
+    'cache': cache.toJson(),
+    'replies': replies.toJson(),
+  };
 
   @override
   List<Object?> get props => [cache, replies];
@@ -140,13 +115,13 @@ class DnsCache extends Equatable {
   });
 
   factory DnsCache.empty() => const DnsCache(
-        size: 0,
-        inserted: 0,
-        evicted: 0,
-        expired: 0,
-        immortal: 0,
-        content: [],
-      );
+    size: 0,
+    inserted: 0,
+    evicted: 0,
+    expired: 0,
+    immortal: 0,
+    content: [],
+  );
 
   bool get isEmpty =>
       size == 0 &&
@@ -170,17 +145,23 @@ class DnsCache extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'size': size,
-        'inserted': inserted,
-        'evicted': evicted,
-        'expired': expired,
-        'immortal': immortal,
-        'content': content.map((e) => e.toJson()).toList(),
-      };
+    'size': size,
+    'inserted': inserted,
+    'evicted': evicted,
+    'expired': expired,
+    'immortal': immortal,
+    'content': content.map((e) => e.toJson()).toList(),
+  };
 
   @override
-  List<Object?> get props =>
-      [size, inserted, evicted, expired, immortal, content];
+  List<Object?> get props => [
+    size,
+    inserted,
+    evicted,
+    expired,
+    immortal,
+    content,
+  ];
 }
 
 /// ===============================
@@ -211,10 +192,10 @@ class DnsCacheEntry extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'type': type,
-        'name': name,
-        'count': count.toJson(),
-      };
+    'type': type,
+    'name': name,
+    'count': count.toJson(),
+  };
 
   @override
   List<Object?> get props => [type, name, count];
@@ -227,26 +208,17 @@ class CacheCount extends Equatable {
   final int valid;
   final int stale;
 
-  const CacheCount({
-    required this.valid,
-    required this.stale,
-  });
+  const CacheCount({required this.valid, required this.stale});
 
   factory CacheCount.empty() => const CacheCount(valid: 0, stale: 0);
 
   bool get isEmpty => valid == 0 && stale == 0;
 
   factory CacheCount.fromJson(Map<String, dynamic> json) {
-    return CacheCount(
-      valid: json['valid'] ?? 0,
-      stale: json['stale'] ?? 0,
-    );
+    return CacheCount(valid: json['valid'] ?? 0, stale: json['stale'] ?? 0);
   }
 
-  Map<String, dynamic> toJson() => {
-        'valid': valid,
-        'stale': stale,
-      };
+  Map<String, dynamic> toJson() => {'valid': valid, 'stale': stale};
 
   @override
   List<Object?> get props => [valid, stale];
@@ -273,13 +245,13 @@ class DnsReplies extends Equatable {
   });
 
   factory DnsReplies.empty() => const DnsReplies(
-        forwarded: 0,
-        unanswered: 0,
-        local: 0,
-        optimized: 0,
-        auth: 0,
-        sum: 0,
-      );
+    forwarded: 0,
+    unanswered: 0,
+    local: 0,
+    optimized: 0,
+    auth: 0,
+    sum: 0,
+  );
 
   bool get isEmpty =>
       forwarded == 0 &&
@@ -301,17 +273,23 @@ class DnsReplies extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'forwarded': forwarded,
-        'unanswered': unanswered,
-        'local': local,
-        'optimized': optimized,
-        'auth': auth,
-        'sum': sum,
-      };
+    'forwarded': forwarded,
+    'unanswered': unanswered,
+    'local': local,
+    'optimized': optimized,
+    'auth': auth,
+    'sum': sum,
+  };
 
   @override
-  List<Object?> get props =>
-      [forwarded, unanswered, local, optimized, auth, sum];
+  List<Object?> get props => [
+    forwarded,
+    unanswered,
+    local,
+    optimized,
+    auth,
+    sum,
+  ];
 }
 
 /// ===============================
@@ -347,19 +325,19 @@ class DhcpMetrics extends Equatable {
   });
 
   factory DhcpMetrics.empty() => DhcpMetrics(
-        ack: 0,
-        nak: 0,
-        decline: 0,
-        offer: 0,
-        discover: 0,
-        inform: 0,
-        request: 0,
-        release: 0,
-        noanswer: 0,
-        bootp: 0,
-        pxe: 0,
-        leases: DhcpLeases.empty(),
-      );
+    ack: 0,
+    nak: 0,
+    decline: 0,
+    offer: 0,
+    discover: 0,
+    inform: 0,
+    request: 0,
+    release: 0,
+    noanswer: 0,
+    bootp: 0,
+    pxe: 0,
+    leases: DhcpLeases.empty(),
+  );
 
   bool get isEmpty =>
       ack == 0 &&
@@ -393,35 +371,35 @@ class DhcpMetrics extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'ack': ack,
-        'nak': nak,
-        'decline': decline,
-        'offer': offer,
-        'discover': discover,
-        'inform': inform,
-        'request': request,
-        'release': release,
-        'noanswer': noanswer,
-        'bootp': bootp,
-        'pxe': pxe,
-        'leases': leases.toJson(),
-      };
+    'ack': ack,
+    'nak': nak,
+    'decline': decline,
+    'offer': offer,
+    'discover': discover,
+    'inform': inform,
+    'request': request,
+    'release': release,
+    'noanswer': noanswer,
+    'bootp': bootp,
+    'pxe': pxe,
+    'leases': leases.toJson(),
+  };
 
   @override
   List<Object?> get props => [
-        ack,
-        nak,
-        decline,
-        offer,
-        discover,
-        inform,
-        request,
-        release,
-        noanswer,
-        bootp,
-        pxe,
-        leases,
-      ];
+    ack,
+    nak,
+    decline,
+    offer,
+    discover,
+    inform,
+    request,
+    release,
+    noanswer,
+    bootp,
+    pxe,
+    leases,
+  ];
 }
 
 /// ===============================
@@ -440,18 +418,11 @@ class DhcpLeases extends Equatable {
     required this.pruned6,
   });
 
-  factory DhcpLeases.empty() => const DhcpLeases(
-        allocated4: 0,
-        pruned4: 0,
-        allocated6: 0,
-        pruned6: 0,
-      );
+  factory DhcpLeases.empty() =>
+      const DhcpLeases(allocated4: 0, pruned4: 0, allocated6: 0, pruned6: 0);
 
   bool get isEmpty =>
-      allocated4 == 0 &&
-      pruned4 == 0 &&
-      allocated6 == 0 &&
-      pruned6 == 0;
+      allocated4 == 0 && pruned4 == 0 && allocated6 == 0 && pruned6 == 0;
 
   factory DhcpLeases.fromJson(Map<String, dynamic> json) {
     return DhcpLeases(
@@ -463,11 +434,11 @@ class DhcpLeases extends Equatable {
   }
 
   Map<String, dynamic> toJson() => {
-        'allocated_4': allocated4,
-        'pruned_4': pruned4,
-        'allocated_6': allocated6,
-        'pruned_6': pruned6,
-      };
+    'allocated_4': allocated4,
+    'pruned_4': pruned4,
+    'allocated_6': allocated6,
+    'pruned_6': pruned6,
+  };
 
   @override
   List<Object?> get props => [allocated4, pruned4, allocated6, pruned6];

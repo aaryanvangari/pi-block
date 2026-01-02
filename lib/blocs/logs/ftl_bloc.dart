@@ -54,7 +54,7 @@ class FtlBloc extends Bloc<FtlEvent, FtlState> {
 
       // new logs after nextID + old logs which are in state
       final merged = [...newLogs, ...existingLogs];
-      
+
       // Trimming to 100 because we dont want to deal with huge lists
       final trimmed = merged.take(100).toList();
 

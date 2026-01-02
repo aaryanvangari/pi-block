@@ -73,7 +73,9 @@ class PiholeRepository {
                 ),
               )
               .toList();
-      _log.fine(() => 'getDiagnosticMessages: ${diagnosticMessagesList.toString()}');
+      _log.fine(
+        () => 'getDiagnosticMessages: ${diagnosticMessagesList.toString()}',
+      );
 
       return diagnosticMessagesList;
     } catch (e) {
@@ -222,11 +224,18 @@ class PiholeRepository {
   Future<List<ClientSuggestionModel>> getClientsSuggestionsData() async {
     try {
       var result = await piholeDataProvider.getClientsSuggestionsData();
-      List<ClientSuggestionModel> clientSuggestionModels = (result['clients'] as List<dynamic>)
-          .map((json) => ClientSuggestionModel.fromJson(json as Map<String, dynamic>))
-          .toList();
+      List<ClientSuggestionModel> clientSuggestionModels =
+          (result['clients'] as List<dynamic>)
+              .map(
+                (json) => ClientSuggestionModel.fromJson(
+                  json as Map<String, dynamic>,
+                ),
+              )
+              .toList();
 
-      _log.fine(() => 'getClientsSuggestionsData: ${clientSuggestionModels.toString()}');
+      _log.fine(
+        () => 'getClientsSuggestionsData: ${clientSuggestionModels.toString()}',
+      );
 
       return clientSuggestionModels;
     } catch (e) {
@@ -310,7 +319,10 @@ class PiholeRepository {
     }
   }
 
-  Future<GroupUpdateModel> updateGroupItem(GroupModel item, String previousName) async {
+  Future<GroupUpdateModel> updateGroupItem(
+    GroupModel item,
+    String previousName,
+  ) async {
     try {
       var result = await piholeDataProvider.updateGroupItem(item, previousName);
       GroupUpdateModel groupUpdateModel = GroupUpdateModel.fromJson(result);
@@ -517,9 +529,17 @@ class PiholeRepository {
     }
   }
 
-  Future<QueryListModel> getQuerylogPage(String searchTerm, int start, int pageSize) async {
+  Future<QueryListModel> getQuerylogPage(
+    String searchTerm,
+    int start,
+    int pageSize,
+  ) async {
     try {
-      var result = await piholeDataProvider.getQuerylogPage(searchTerm, start, pageSize);
+      var result = await piholeDataProvider.getQuerylogPage(
+        searchTerm,
+        start,
+        pageSize,
+      );
       QueryListModel queryListModel = QueryListModel.fromJson(result);
 
       _log.fine(() => 'getQuerylogPage: ${queryListModel.toString()}');
@@ -535,7 +555,9 @@ class PiholeRepository {
       var result = await piholeDataProvider.getPiholeConfiguration();
       PiholeConfigModel piholeConfigModel = PiholeConfigModel.fromJson(result);
 
-      _log.fine(() => 'getPiholeConfiguration: ${piholeConfigModel.toString()}');
+      _log.fine(
+        () => 'getPiholeConfiguration: ${piholeConfigModel.toString()}',
+      );
 
       return piholeConfigModel;
     } catch (e) {

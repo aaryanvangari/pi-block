@@ -5,7 +5,6 @@ import 'package:pi_block/blocs/logs/webserver_bloc.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/models/log_model.dart';
 import 'package:pi_block/models/logs_model.dart';
-import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
@@ -17,7 +16,8 @@ class WebserverLogView extends StatefulWidget {
   State<WebserverLogView> createState() => _WebserverLogViewState();
 }
 
-class _WebserverLogViewState extends State<WebserverLogView> with AutomaticKeepAliveClientMixin {
+class _WebserverLogViewState extends State<WebserverLogView>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -30,7 +30,9 @@ class _WebserverLogViewState extends State<WebserverLogView> with AutomaticKeepA
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              (logModel.prio != null) ? const SizedBox(width: 8): const SizedBox.shrink(),
+              (logModel.prio != null)
+                  ? const SizedBox(width: 8)
+                  : const SizedBox.shrink(),
               Text(
                 DateFormat(
                   'yyyy-MM-dd HH:mm:ss.SSS',

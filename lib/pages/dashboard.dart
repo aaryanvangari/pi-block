@@ -3,7 +3,7 @@ import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/widgets/blocking_info_stats.dart';
 import 'package:pi_block/widgets/dhcp_server_stats.dart';
 import 'package:pi_block/widgets/dns_cache_stats.dart';
-import 'package:pi_block/widgets/dns_replies_stats%20.dart';
+import 'package:pi_block/widgets/dns_replies_stats.dart';
 import 'package:pi_block/widgets/host_info_stats.dart';
 import 'package:pi_block/widgets/session_info_stats.dart';
 import 'package:pi_block/widgets/summary_info_stats.dart';
@@ -41,7 +41,7 @@ class DashboardPage extends StatelessWidget {
       DnsRepliesStats(),
 
       // DHCP Server Metrics
-      DhcpServerStats()
+      DhcpServerStats(),
     ];
 
     return Scaffold(
@@ -52,9 +52,7 @@ class DashboardPage extends StatelessWidget {
             if (width < 500) {
               return Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: widgets,
-                ),
+                child: Column(children: widgets),
               );
             } else {
               return Padding(
@@ -63,8 +61,10 @@ class DashboardPage extends StatelessWidget {
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     crossAxisSpacing: 8.0, // Space between columns
                     mainAxisSpacing: 8.0, // Space between rows
-                    mainAxisExtent: KGridCardSizes.dashboard["height"]!.toDouble(),
-                    maxCrossAxisExtent: KGridCardSizes.dashboard["width"]!.toDouble(),
+                    mainAxisExtent: KGridCardSizes.dashboard["height"]!
+                        .toDouble(),
+                    maxCrossAxisExtent: KGridCardSizes.dashboard["width"]!
+                        .toDouble(),
                   ),
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),

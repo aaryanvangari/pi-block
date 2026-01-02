@@ -48,7 +48,7 @@ class StatsPage extends StatelessWidget {
       PermittedClientStats(),
 
       /// Top Clients (Blocked only)
-      BlockedClientStats()
+      BlockedClientStats(),
     ];
 
     return Scaffold(
@@ -60,9 +60,7 @@ class StatsPage extends StatelessWidget {
             if (width < 500) {
               return Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: widgets,
-                ),
+                child: Column(children: widgets),
               );
             } else {
               return Padding(
@@ -72,7 +70,8 @@ class StatsPage extends StatelessWidget {
                     crossAxisSpacing: 8.0, // Space between columns
                     mainAxisSpacing: 8.0, // Space between rows
                     mainAxisExtent: KGridCardSizes.stats["height"]!.toDouble(),
-                    maxCrossAxisExtent: KGridCardSizes.stats["width"]!.toDouble(),
+                    maxCrossAxisExtent: KGridCardSizes.stats["width"]!
+                        .toDouble(),
                   ),
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),

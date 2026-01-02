@@ -49,10 +49,7 @@ class ConfirmActionBottomSheet<B extends StateStreamableSource<S>, S>
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.headlineMedium,
             ),
-            child: BlocProvider.value(
-              value: sheet.bloc,
-              child: sheet,
-            ),
+            child: BlocProvider.value(value: sheet.bloc, child: sheet),
           ),
         ];
       },

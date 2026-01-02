@@ -19,7 +19,9 @@ class AppBlocObserver extends BlocObserver {
   @override
   void onTransition(Bloc bloc, Transition transition) {
     super.onTransition(bloc, transition);
-    _log.finer(() => 'onTransition: ${bloc.runtimeType} Transitioned - $transition');
+    _log.finer(
+      () => 'onTransition: ${bloc.runtimeType} Transitioned - $transition',
+    );
   }
 
   @override

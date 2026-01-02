@@ -3,7 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pi_block/blocs/groups/groups_bloc.dart' hide ResetItemToggleError;
+import 'package:pi_block/blocs/groups/groups_bloc.dart'
+    hide ResetItemToggleError;
 import 'package:pi_block/blocs/lists/lists_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
@@ -319,16 +320,34 @@ class ListsView extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Comment: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Address: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Groups: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
-                            const Text('Number of entries: ', style: KTextStyle.listExpandedTitle),
+                            const Text(
+                              'Comment: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Address: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Groups: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Database ID: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
+                            const Text(
+                              'Number of entries: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
                             const Text(
                               'Number of non-domains: ',
                               style: KTextStyle.listExpandedTitle,
                             ),
-                            const Text('Added to Pi-Hole: ', style: KTextStyle.listExpandedTitle),
+                            const Text(
+                              'Added to Pi-Hole: ',
+                              style: KTextStyle.listExpandedTitle,
+                            ),
                             const Text(
                               'Database last modified: ',
                               style: KTextStyle.listExpandedTitle,
@@ -342,13 +361,22 @@ class ListsView extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(item.comment, style: KTextStyle.listExpandedValue),
-                            Text(item.address, style: KTextStyle.listExpandedValue),
+                            Text(
+                              item.comment,
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              item.address,
+                              style: KTextStyle.listExpandedValue,
+                            ),
                             BlocBuilder<GroupsBloc, GroupsState>(
                               builder: (context, state) {
                                 if (state.status == GroupsStateStatus.success) {
                                   String groupsListString = state.groups
-                                      .where((group) => (item.groups.contains(group.id)))
+                                      .where(
+                                        (group) =>
+                                            (item.groups.contains(group.id)),
+                                      )
                                       .map((group) => group.name)
                                       .join(' • ');
                                   return Text(groupsListString);
@@ -356,9 +384,18 @@ class ListsView extends StatelessWidget {
                                 return const SizedBox.shrink();
                               },
                             ),
-                            Text(item.id.toString(), style: KTextStyle.listExpandedValue),
-                            Text('${item.number}', style: KTextStyle.listExpandedValue),
-                            Text('${item.invalid_domains}', style: KTextStyle.listExpandedValue),
+                            Text(
+                              item.id.toString(),
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              '${item.number}',
+                              style: KTextStyle.listExpandedValue,
+                            ),
+                            Text(
+                              '${item.invalid_domains}',
+                              style: KTextStyle.listExpandedValue,
+                            ),
                             Text(
                               '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
                               style: KTextStyle.listExpandedValue,
@@ -389,20 +426,14 @@ class ListsView extends StatelessWidget {
                     editListFormModal(context, item);
                   },
                   tooltip: "Edit",
-                  icon: Icon(
-                    Icons.edit,
-                    color: context.ui.editIconColor,
-                  ),
+                  icon: Icon(Icons.edit, color: context.ui.editIconColor),
                 ),
                 IconButton(
                   onPressed: () {
                     deleteListModal(context, item);
                   },
                   tooltip: "Delete",
-                  icon: Icon(
-                    Icons.delete,
-                    color: context.ui.deleteIconColor,
-                  ),
+                  icon: Icon(Icons.delete, color: context.ui.deleteIconColor),
                 ),
               ],
             ),
@@ -767,7 +798,7 @@ class ListsView extends StatelessWidget {
                                                 type: type,
                                                 comment: commentController.text,
                                                 address: addressController.text,
-                                                groups: selectedGroupIds
+                                                groups: selectedGroupIds,
                                               );
                                               context.read<ListsBloc>().add(
                                                 AddListsItem(
@@ -827,14 +858,10 @@ class ListsView extends StatelessWidget {
         confirmationText: 'Do you want to delete list?',
         confirmButtonText: 'Delete',
         onConfirm: () {
-          listsBloc.add(
-            DeleteListsItem(listsModel: listsModel),
-          );
+          listsBloc.add(DeleteListsItem(listsModel: listsModel));
         },
-        isSuccess: (state) =>
-            state.itemStatus == ListsItemStateStatus.success,
-        isFailure: (state) =>
-            state.itemStatus == ListsItemStateStatus.failure,
+        isSuccess: (state) => state.itemStatus == ListsItemStateStatus.success,
+        isFailure: (state) => state.itemStatus == ListsItemStateStatus.failure,
         onFailure: (context, state) {
           PiUtils.handleGeneralException(context, state.error);
         },
@@ -974,8 +1001,13 @@ class ListsView extends StatelessWidget {
                                                 SliverGridDelegateWithMaxCrossAxisExtent(
                                                   crossAxisSpacing: 8,
                                                   mainAxisSpacing: 8,
-                                                  mainAxisExtent: KGridCardSizes.lists["height"]!.toDouble(),
-                                                  maxCrossAxisExtent: KGridCardSizes.lists["width"]!.toDouble(),
+                                                  mainAxisExtent: KGridCardSizes
+                                                      .lists["height"]!
+                                                      .toDouble(),
+                                                  maxCrossAxisExtent:
+                                                      KGridCardSizes
+                                                          .lists["width"]!
+                                                          .toDouble(),
                                                 ),
                                             itemCount: listsModels.length,
                                             itemBuilder: (context, index) {

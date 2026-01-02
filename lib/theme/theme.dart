@@ -410,7 +410,7 @@ class MaterialTheme {
     ),
     tagBackground: cs.onSurfaceVariant.withAlpha(50),
     editIconColor: cs.onSurface.withAlpha(170),
-    deleteIconColor: cs.error.withAlpha(170)
+    deleteIconColor: cs.error.withAlpha(170),
   );
 
   AppUiTokens darkUiTokens(ColorScheme cs) => AppUiTokens(
@@ -430,7 +430,7 @@ class MaterialTheme {
     ),
     tagBackground: cs.onSurfaceVariant.withAlpha(50),
     editIconColor: cs.onSurface.withAlpha(170),
-    deleteIconColor: cs.error.withAlpha(170)
+    deleteIconColor: cs.error.withAlpha(170),
   );
 }
 
