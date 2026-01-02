@@ -141,3 +141,9 @@ class KQueryLogColors {
     },
   };
 }
+
+class KLogsColors {
+  static const Color info = Colors.green;
+  static const Color warning = Colors.orange;
+  static const Color error = Colors.red;
+}

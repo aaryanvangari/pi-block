@@ -16,6 +16,7 @@ import 'package:pi_block/models/history_model.dart';
 import 'package:pi_block/models/host_model.dart';
 import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/models/lists_update_model.dart';
+import 'package:pi_block/models/logs_model.dart';
 import 'package:pi_block/models/metrics_model.dart';
 import 'package:pi_block/models/pihole_config_model.dart';
 import 'package:pi_block/models/query_model.dart';
@@ -537,6 +538,45 @@ class PiholeRepository {
       _log.fine(() => 'getPiholeConfiguration: ${piholeConfigModel.toString()}');
 
       return piholeConfigModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<LogsModel> getDnsmasqLogs(int nextID) async {
+    try {
+      var result = await piholeDataProvider.getDnsmasqLogs(nextID);
+      LogsModel logsModel = LogsModel.fromJson(result);
+
+      _log.fine(() => 'getDnsmasqLogs: ${logsModel.toString()}');
+
+      return logsModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<LogsModel> getFtlLogs(int nextID) async {
+    try {
+      var result = await piholeDataProvider.getFtlLogs(nextID);
+      LogsModel logsModel = LogsModel.fromJson(result);
+
+      _log.fine(() => 'getFtlLogs: ${logsModel.toString()}');
+
+      return logsModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<LogsModel> getWebserverLogs(int nextID) async {
+    try {
+      var result = await piholeDataProvider.getWebserverLogs(nextID);
+      LogsModel logsModel = LogsModel.fromJson(result);
+
+      _log.fine(() => 'getWebserverLogs: ${logsModel.toString()}');
+
+      return logsModel;
     } catch (e) {
       rethrow;
     }

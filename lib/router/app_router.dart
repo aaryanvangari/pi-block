@@ -7,6 +7,7 @@ import 'package:pi_block/pages/groups.dart';
 import 'package:pi_block/pages/lists.dart';
 import 'package:pi_block/pages/local_dns.dart';
 import 'package:pi_block/pages/login.dart';
+import 'package:pi_block/pages/logs.dart';
 import 'package:pi_block/pages/main_scaffold.dart';
 import 'package:pi_block/pages/notifications.dart';
 import 'package:pi_block/pages/pi_hole_configuration.dart';
@@ -24,7 +25,7 @@ class AppRouter {
       initialLocation: AppRoutes.welcomePath,
       debugLogDiagnostics: true,
 
-      /// 🔁 Re-run redirect whenever auth state changes
+      /// Re-run redirect whenever auth state changes
       refreshListenable: GoRouterRefreshStream(authBloc.stream),
 
       redirect: (context, state) {
@@ -146,6 +147,11 @@ class AppRouter {
           name: AppRoutes.clients,
           path: AppRoutes.clientsPath,
           builder: (context, state) => const ClientsPage(),
+        ),
+        GoRoute(
+          name: AppRoutes.logs,
+          path: AppRoutes.logsPath,
+          builder: (context, state) => const LogsPage(),
         ),
         GoRoute(
           name: AppRoutes.piholeConfiguration,

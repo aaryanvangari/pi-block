@@ -11,6 +11,9 @@ class KTimers {
   static const system = 15;
   static const metrics = 15;
   static const session = 1;
+  static const dnsmasq = 5;
+  static const ftl = 25;
+  static const webserver = 15;
 }
 
 class KGridCardSizes {

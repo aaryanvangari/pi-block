@@ -26,4 +26,7 @@ class ApiUrls {
   static const String metrics = '$base/info/metrics';
   static const String history = '$base/history';
   static const String clientsHistory = '$base/history/clients';
+  static const String dnsmasqLogs = '$base/logs/dnsmasq';
+  static const String ftlLogs = '$base/logs/ftl';
+  static const String webserverLogs = '$base/logs/webserver';
 }

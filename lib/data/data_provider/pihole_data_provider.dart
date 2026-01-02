@@ -627,5 +627,54 @@ class PiholeDataProvider {
     }
   }
 
+  Future<Map<String, dynamic>> getDnsmasqLogs(int nextID) async {
+    try {
+      final queryParameter = <String, dynamic>{
+        'nextID': nextID.toString(),
+      };
+
+      var result = await piHttpClient.get(ApiUrls.dnsmasqLogs, queryParams: queryParameter);
+      PiUtils.handleAPIException(result, false);
+
+      _log.fine(() => 'getDnsmasqLogs: ${result.toString()}');
+
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> getFtlLogs(int nextID) async {
+    try {
+      final queryParameter = <String, dynamic>{
+        'nextID': nextID.toString(),
+      };
+      var result = await piHttpClient.get(ApiUrls.ftlLogs, queryParams: queryParameter);
+      PiUtils.handleAPIException(result, false);
+
+      _log.fine(() => 'getFtlLogs: ${result.toString()}');
+
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> getWebserverLogs(int nextID) async {
+    try {
+      final queryParameter = <String, dynamic>{
+        'nextID': nextID.toString(),
+      };
+      var result = await piHttpClient.get(ApiUrls.webserverLogs, queryParams: queryParameter);
+      PiUtils.handleAPIException(result, false);
+
+      _log.fine(() => 'getWebserverLogs: ${result.toString()}');
+
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   void close() => piHttpClient.close();
 }
