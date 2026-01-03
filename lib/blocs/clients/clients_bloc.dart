@@ -6,7 +6,6 @@ import 'package:pi_block/models/clients_suggestion_model.dart';
 import 'package:pi_block/models/clients_update_model.dart';
 import 'package:pi_block/models/client_model.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
-import 'package:rxdart/subjects.dart';
 
 part 'clients_event.dart';
 part 'clients_state.dart';
@@ -14,25 +13,13 @@ part 'clients_state.dart';
 class ClientsBloc extends Bloc<ClientsEvent, ClientsState> {
   final PiholeRepository piholeRepository;
 
-  late final _clientstreamController =
-      BehaviorSubject<List<ClientModel>>.seeded(const []);
-  late final _clientSuggestionsstreamController =
-      BehaviorSubject<List<ClientSuggestionModel>>.seeded(const []);
-
   ClientsBloc(this.piholeRepository) : super(ClientsState()) {
     on<LoadClients>(_loadClients);
     on<UpdateClientsItem>(_updateClientsItem);
     on<AddClientsItem>(_addClientsItem);
     on<DeleteClientsItem>(_deleteClientsItem);
     on<LoadClientsSuggestions>(_loadClientsSuggestions);
-    _clientstreamController.add(const []);
-    _clientSuggestionsstreamController.add(const []);
   }
-
-  Stream<List<ClientModel>> getClients() =>
-      _clientstreamController.asBroadcastStream();
-  Stream<List<ClientSuggestionModel>> getClientsSuggestions() =>
-      _clientSuggestionsstreamController.asBroadcastStream();
 
   void _loadClients(LoadClients event, Emitter<ClientsState> emit) async {
     emit(
@@ -43,14 +30,8 @@ class ClientsBloc extends Bloc<ClientsEvent, ClientsState> {
     );
     try {
       final clients = await piholeRepository.getClientsData();
-      _clientstreamController.add(clients);
-      await emit.forEach<List<ClientModel>>(
-        getClients(),
-        onData: (clients) => state.copyWith(
-          status: ClientsStateStatus.success,
-          clients: clients,
-        ),
-        onError: (_, _) => state.copyWith(status: ClientsStateStatus.failure),
+      emit(
+        state.copyWith(status: ClientsStateStatus.success, clients: clients),
       );
     } catch (e) {
       emit(
@@ -68,15 +49,10 @@ class ClientsBloc extends Bloc<ClientsEvent, ClientsState> {
     );
     try {
       final suggestions = await piholeRepository.getClientsSuggestionsData();
-      _clientSuggestionsstreamController.add(suggestions);
-      await emit.forEach<List<ClientSuggestionModel>>(
-        getClientsSuggestions(),
-        onData: (suggestions) => state.copyWith(
+      emit(
+        state.copyWith(
           suggestionStatus: ClientsSuggestionsStateStatus.success,
           suggestions: suggestions,
-        ),
-        onError: (_, _) => state.copyWith(
-          suggestionStatus: ClientsSuggestionsStateStatus.failure,
         ),
       );
     } catch (e) {
@@ -102,23 +78,20 @@ class ClientsBloc extends Bloc<ClientsEvent, ClientsState> {
 
       ClientsUpdateModel clientsUpdateModel = await piholeRepository
           .updateClientItem(newClient);
-      final clients = [..._clientstreamController.value];
-      final clientIndex = clients.indexWhere(
-        (t) => t.id == event.clientModel.id,
-      );
-      if (clientIndex >= 0) {
-        clients[clientIndex] = clientsUpdateModel.clients[0];
-      }
-      _clientstreamController.add(clients);
+
+      final updatedClient = clientsUpdateModel.clients.first;
+
+      final updatedClients = state.clients
+          .map((d) => d.id == updatedClient.id ? updatedClient : d)
+          .toList();
+
       emit(
         state.copyWith(
+          clients: updatedClients,
           itemStatus: ClientsItemStateStatus.success,
           message: "Successfully Updated",
         ),
       );
-
-      /// Notification shows second time if we did not reset it
-      emit(state.copyWith(itemStatus: ClientsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -137,18 +110,15 @@ class ClientsBloc extends Bloc<ClientsEvent, ClientsState> {
     try {
       ClientsUpdateModel clientsUpdateModel = await piholeRepository
           .addClientsItem(event.clientModel);
-      final clients = [..._clientstreamController.value];
-      clients.add(clientsUpdateModel.clients[0]);
-      _clientstreamController.add(clients);
+      final clients = [...state.clients, clientsUpdateModel.clients.first];
+
       emit(
         state.copyWith(
+          clients: clients,
           itemStatus: ClientsItemStateStatus.success,
           message: "Successfully Added",
         ),
       );
-
-      /// Notification shows second time if we did not reset it
-      emit(state.copyWith(itemStatus: ClientsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -168,25 +138,27 @@ class ClientsBloc extends Bloc<ClientsEvent, ClientsState> {
       bool isDeleted = await piholeRepository.deleteClientsItem(
         event.clientModel,
       );
-      if (isDeleted) {
-        final clients = [..._clientstreamController.value];
-        final clientIndex = clients.indexWhere(
-          (t) => t.id == event.clientModel.id,
-        );
-        if (clientIndex >= 0) {
-          clients.removeAt(clientIndex);
-        }
-        _clientstreamController.add(clients);
+      if (!isDeleted) {
         emit(
           state.copyWith(
-            itemStatus: ClientsItemStateStatus.success,
-            message: "Successfully Deleted",
+            itemStatus: ClientsItemStateStatus.failure,
+            error: "Failed to delete",
           ),
         );
+        return;
       }
 
-      /// Notification shows second time if we did not reset it
-      emit(state.copyWith(itemStatus: ClientsItemStateStatus.initial));
+      // ignoring the deleted item
+      final updatedClients = state.clients
+          .where((d) => d.id != event.clientModel.id)
+          .toList();
+      emit(
+        state.copyWith(
+          clients: updatedClients,
+          itemStatus: ClientsItemStateStatus.success,
+          message: "Successfully Deleted",
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
@@ -195,11 +167,5 @@ class ClientsBloc extends Bloc<ClientsEvent, ClientsState> {
         ),
       );
     }
-  }
-
-  @override
-  Future<void> close() {
-    _clientstreamController.close();
-    return super.close();
   }
 }

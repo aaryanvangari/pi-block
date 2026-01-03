@@ -34,7 +34,6 @@ dependencies:
   re_editor: ^0.8.0
   flutter_json: ^0.0.5
   re_highlight: ^0.0.3
-  rxdart: ^0.28.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   wolt_modal_sheet: ^0.11.0

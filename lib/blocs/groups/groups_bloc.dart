@@ -5,17 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/models/groups_update_model.dart';
-import 'package:rxdart/subjects.dart';
 
 part 'groups_event.dart';
 part 'groups_state.dart';
 
 class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
   final PiholeRepository piholeRepository;
-
-  late final _groupstreamController = BehaviorSubject<List<GroupModel>>.seeded(
-    const [],
-  );
 
   GroupsBloc(this.piholeRepository) : super(GroupsState()) {
     on<LoadGroups>(_loadGroups);
@@ -26,11 +21,7 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
     on<ResetItemToggleError>(_resetToggleError);
     on<GroupsSelectionChanged>(_groupSelectionChanged);
     on<ResetGroupsSelection>(_resetGroupsSelection);
-    _groupstreamController.add(const []);
   }
-
-  Stream<List<GroupModel>> getGroups() =>
-      _groupstreamController.asBroadcastStream();
 
   void _loadGroups(LoadGroups event, Emitter<GroupsState> emit) async {
     emit(
@@ -41,13 +32,7 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
     );
     try {
       final groups = await piholeRepository.getGroupsData();
-      _groupstreamController.add(groups);
-      await emit.forEach<List<GroupModel>>(
-        getGroups(),
-        onData: (groups) =>
-            state.copyWith(status: GroupsStateStatus.success, groups: groups),
-        onError: (_, _) => state.copyWith(status: GroupsStateStatus.failure),
-      );
+      emit(state.copyWith(status: GroupsStateStatus.success, groups: groups));
     } catch (e) {
       emit(
         state.copyWith(status: GroupsStateStatus.failure, error: e.toString()),
@@ -95,13 +80,19 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
         date_modified: (DateTime.now().millisecondsSinceEpoch / 1000).toInt(),
       );
       await piholeRepository.updateGroupItem(newGroup, event.groupModel.name);
-      final groups = [..._groupstreamController.value];
-      final domainIndex = groups.indexWhere((t) => t.id == event.groupModel.id);
-      if (domainIndex >= 0) {
-        // groupUpdateModel is not having group data so using constructed data
-        groups[domainIndex] = newGroup;
-      }
-      _groupstreamController.add(groups);
+
+      // groupUpdateModel is not having group data so using constructed data
+      final updatedGroups = state.groups
+          .map((d) => d.id == newGroup.id ? newGroup : d)
+          .toList();
+
+      emit(
+        state.copyWith(
+          groups: updatedGroups,
+          itemToggleStatus: GroupsItemToggleStateStatus.success,
+          message: "Successfully Updated",
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
@@ -129,22 +120,19 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
       );
 
       await piholeRepository.updateGroupItem(newGroup, event.groupModel.name);
-      final groups = [..._groupstreamController.value];
-      final groupIndex = groups.indexWhere((t) => t.id == event.groupModel.id);
-      if (groupIndex >= 0) {
-        // groupUpdateModel is not having group data so using constructed data
-        groups[groupIndex] = newGroup;
-      }
-      _groupstreamController.add(groups);
+
+      // groupUpdateModel is not having group data so using constructed data
+      final updatedGroups = state.groups
+          .map((d) => d.id == newGroup.id ? newGroup : d)
+          .toList();
+
       emit(
         state.copyWith(
+          groups: updatedGroups,
           itemStatus: GroupsItemStateStatus.success,
           message: "Successfully Updated",
         ),
       );
-
-      /// Notification shows second time if we did not reset it
-      emit(state.copyWith(itemStatus: GroupsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -164,18 +152,15 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
       GroupUpdateModel groupUpdateModel = await piholeRepository.addGroupsItem(
         event.groupModel,
       );
-      final groups = [..._groupstreamController.value];
-      groups.add(groupUpdateModel.groups[0]);
-      _groupstreamController.add(groups);
+      final groups = [...state.groups, groupUpdateModel.groups.first];
+
       emit(
         state.copyWith(
+          groups: groups,
           itemStatus: GroupsItemStateStatus.success,
           message: "Successfully Added",
         ),
       );
-
-      /// Notification shows second time if we did not reset it
-      emit(state.copyWith(itemStatus: GroupsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -195,25 +180,27 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
       bool isDeleted = await piholeRepository.deleteGroupsItem(
         event.groupModel,
       );
-      if (isDeleted) {
-        final groups = [..._groupstreamController.value];
-        final groupIndex = groups.indexWhere(
-          (t) => t.id == event.groupModel.id,
-        );
-        if (groupIndex >= 0) {
-          groups.removeAt(groupIndex);
-        }
-        _groupstreamController.add(groups);
+      if (!isDeleted) {
         emit(
           state.copyWith(
-            itemStatus: GroupsItemStateStatus.success,
-            message: "Successfully Deleted",
+            itemStatus: GroupsItemStateStatus.failure,
+            error: "Failed to delete",
           ),
         );
+        return;
       }
 
-      /// Notification shows second time if we did not reset it
-      emit(state.copyWith(itemStatus: GroupsItemStateStatus.initial));
+      // ignoring the deleted item
+      final updatedGroups = state.groups
+          .where((d) => d.id != event.groupModel.id)
+          .toList();
+      emit(
+        state.copyWith(
+          groups: updatedGroups,
+          itemStatus: GroupsItemStateStatus.success,
+          message: "Successfully Deleted",
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
@@ -222,11 +209,5 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
         ),
       );
     }
-  }
-
-  @override
-  Future<void> close() {
-    _groupstreamController.close();
-    return super.close();
   }
 }

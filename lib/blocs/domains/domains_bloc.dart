@@ -5,16 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/domain_update_model.dart';
-import 'package:rxdart/subjects.dart';
 
 part 'domains_event.dart';
 part 'domains_state.dart';
 
 class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
   final PiholeRepository piholeRepository;
-
-  late final _domainstreamController =
-      BehaviorSubject<List<DomainModel>>.seeded(const []);
 
   DomainsBloc(this.piholeRepository) : super(DomainsState()) {
     on<LoadDomains>(_loadDomains);
@@ -23,11 +19,7 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
     on<AddDomainsItem>(_addDomainsItem);
     on<DeleteDomainsItem>(_deleteDomainsItem);
     on<ResetItemToggleError>(_resetToggleError);
-    _domainstreamController.add(const []);
   }
-
-  Stream<List<DomainModel>> getDomains() =>
-      _domainstreamController.asBroadcastStream();
 
   void _loadDomains(LoadDomains event, Emitter<DomainsState> emit) async {
     emit(
@@ -38,14 +30,8 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
     );
     try {
       final domains = await piholeRepository.getDomainsData();
-      _domainstreamController.add(domains);
-      await emit.forEach<List<DomainModel>>(
-        getDomains(),
-        onData: (domains) => state.copyWith(
-          status: DomainsStateStatus.success,
-          domains: domains,
-        ),
-        onError: (_, _) => state.copyWith(status: DomainsStateStatus.failure),
+      emit(
+        state.copyWith(status: DomainsStateStatus.success, domains: domains),
       );
     } catch (e) {
       emit(
@@ -81,14 +67,20 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
             event.domainModel.type,
             event.domainModel.kind,
           );
-      final domains = [..._domainstreamController.value];
-      final domainIndex = domains.indexWhere(
-        (t) => t.id == event.domainModel.id,
+
+      final updatedDomain = domainUpdateModel.domains.first;
+
+      final updatedDomains = state.domains
+          .map((d) => d.id == updatedDomain.id ? updatedDomain : d)
+          .toList();
+
+      emit(
+        state.copyWith(
+          domains: updatedDomains,
+          itemToggleStatus: DomainsItemToggleStateStatus.success,
+          message: "Successfully Updated",
+        ),
       );
-      if (domainIndex >= 0) {
-        domains[domainIndex] = domainUpdateModel.domains[0];
-      }
-      _domainstreamController.add(domains);
     } catch (e) {
       emit(
         state.copyWith(
@@ -119,23 +111,20 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
             event.domainModel.type,
             event.domainModel.kind,
           );
-      final domains = [..._domainstreamController.value];
-      final domainIndex = domains.indexWhere(
-        (t) => t.id == event.domainModel.id,
-      );
-      if (domainIndex >= 0) {
-        domains[domainIndex] = domainUpdateModel.domains[0];
-      }
-      _domainstreamController.add(domains);
+
+      final updatedDomain = domainUpdateModel.domains.first;
+
+      final updatedDomains = state.domains
+          .map((d) => d.id == updatedDomain.id ? updatedDomain : d)
+          .toList();
+
       emit(
         state.copyWith(
+          domains: updatedDomains,
           itemStatus: DomainsItemStateStatus.success,
           message: "Successfully Updated",
         ),
       );
-
-      /// Notification shows second time if we did not reset it
-      emit(state.copyWith(itemStatus: DomainsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -154,18 +143,16 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
     try {
       DomainUpdateModel domainUpdateModel = await piholeRepository
           .addDomainsItem(event.domainModel);
-      final domains = [..._domainstreamController.value];
-      domains.add(domainUpdateModel.domains[0]);
-      _domainstreamController.add(domains);
+
+      final domains = [...state.domains, domainUpdateModel.domains.first];
+
       emit(
         state.copyWith(
+          domains: domains,
           itemStatus: DomainsItemStateStatus.success,
           message: "Successfully Added",
         ),
       );
-
-      /// Notification shows second time if we did not reset it
-      emit(state.copyWith(itemStatus: DomainsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -185,25 +172,27 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
       bool isDeleted = await piholeRepository.deleteDomainsItem(
         event.domainModel,
       );
-      if (isDeleted) {
-        final domains = [..._domainstreamController.value];
-        final domainIndex = domains.indexWhere(
-          (t) => t.id == event.domainModel.id,
-        );
-        if (domainIndex >= 0) {
-          domains.removeAt(domainIndex);
-        }
-        _domainstreamController.add(domains);
+      if (!isDeleted) {
         emit(
           state.copyWith(
-            itemStatus: DomainsItemStateStatus.success,
-            message: "Successfully Deleted",
+            itemStatus: DomainsItemStateStatus.failure,
+            error: "Failed to delete",
           ),
         );
+        return;
       }
 
-      /// Notification shows second time if we did not reset it
-      emit(state.copyWith(itemStatus: DomainsItemStateStatus.initial));
+      // ignoring the deleted item
+      final updatedDomains = state.domains
+          .where((d) => d.id != event.domainModel.id)
+          .toList();
+      emit(
+        state.copyWith(
+          domains: updatedDomains,
+          itemStatus: DomainsItemStateStatus.success,
+          message: "Successfully Deleted",
+        ),
+      );
     } catch (e) {
       emit(
         state.copyWith(
@@ -212,11 +201,5 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
         ),
       );
     }
-  }
-
-  @override
-  Future<void> close() {
-    _domainstreamController.close();
-    return super.close();
   }
 }
