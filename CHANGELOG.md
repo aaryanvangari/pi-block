@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.2.0](https://github.com/aaryanvangari/pi-block/compare/v5.1.0...v5.2.0) (2026-01-03)
+
+### 🐛 Bug Fixes
+
+* fix issues while searching in querylog page ([b00cb6d](https://github.com/aaryanvangari/pi-block/commit/b00cb6d87e01f4538c83fb507763d7c74a249f01)).
+
 ## [v5.1.0](https://github.com/aaryanvangari/pi-block/compare/v5.0.2...v5.1.0) (2026-01-02)
 
 ### ✨ Features
@@ -195,5 +201,3 @@
 ### Features
 
 * initial import ([ab433fd](https://github.com/aaryanvangari/pi-block/commit/ab433fd))
-
-
