@@ -589,18 +589,23 @@ class _QueryLogViewState extends State<_QueryLogView> {
     String trimmedQuery = query.trim();
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
-    _debounce = Timer(const Duration(milliseconds: 400), () {
-      // log('Searching for: $query');
+    // waits 400 milliseconds before processing user input
+    _debounce = Timer(const Duration(milliseconds: 400), () { 
+
+      // Case 1: Search cleared
       if (trimmedQuery.isEmpty) {
-        context.read<QuerylogBloc>().add(LoadQuerylog(page, itemsPerPage));
+        context.read<QuerylogBloc>().add(ClearQuerylogSearch());
+        return;
       }
+
+      // Case 2: Too short → do nothing
       if (trimmedQuery.length < minSearchLength) {
         return;
       }
 
-      // valid case where seach happens
+      // Case 3: Valid search (going to page 1 because its new search)
       context.read<QuerylogBloc>().add(
-        SearchQuerylog(query, page, itemsPerPage),
+        SearchQuerylog(trimmedQuery, 1, itemsPerPage),
       );
     });
   }
@@ -615,6 +620,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
   @override
   Widget build(BuildContext context) {
     context.ui; // updates AppUiTokens when theme changes
+    final FocusNode searchFocusNode = FocusNode();
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(10),
@@ -625,31 +631,36 @@ class _QueryLogViewState extends State<_QueryLogView> {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   // log('sizes: constraints: ${constraints.maxHeight}');
-                  final itemsPerPage = calculateItemsPerPage(
-                    availableHeight: constraints.maxHeight,
-                    reservedHeight: _reservedHeight,
-                    rowHeight: _rowHeight,
-                  );
-                  final pagesPerView = calculatePagesPerView(
-                    availableWidth: constraints.maxWidth,
-                    reservedWidth: _reservedWidth,
-                  );
-
-                  // Notify Bloc ONLY if sizes changes
-                  if (_lastItemsPerPage != itemsPerPage) {
-                    _lastItemsPerPage = itemsPerPage;
-
-                    context.read<QuerylogBloc>().add(
-                      UpdateItemsPerPage(itemsPerPage),
+                  final isEditingSearch = searchFocusNode.hasFocus;
+                  // During searching keyboard appears and layout changes
+                  // needs to disable that for smoother search
+                  if (!isEditingSearch) {
+                    final itemsPerPage = calculateItemsPerPage(
+                      availableHeight: constraints.maxHeight,
+                      reservedHeight: _reservedHeight,
+                      rowHeight: _rowHeight,
                     );
-                  }
-
-                  if (_lastPagesPerView != pagesPerView) {
-                    _lastPagesPerView = pagesPerView;
-
-                    context.read<QuerylogBloc>().add(
-                      UpdatePagesPerView(pagesPerView),
+                    final pagesPerView = calculatePagesPerView(
+                      availableWidth: constraints.maxWidth,
+                      reservedWidth: _reservedWidth,
                     );
+
+                    // Notify Bloc ONLY if sizes changes
+                    if (_lastItemsPerPage != itemsPerPage) {
+                      _lastItemsPerPage = itemsPerPage;
+
+                      context.read<QuerylogBloc>().add(
+                        UpdateItemsPerPage(itemsPerPage),
+                      );
+                    }
+
+                    if (_lastPagesPerView != pagesPerView) {
+                      _lastPagesPerView = pagesPerView;
+
+                      context.read<QuerylogBloc>().add(
+                        UpdatePagesPerView(pagesPerView),
+                      );
+                    }
                   }
 
                   return BlocConsumer<QuerylogBloc, QuerylogState>(
@@ -671,12 +682,14 @@ class _QueryLogViewState extends State<_QueryLogView> {
                         return const CustomErrorWidget(
                           message: "Error loading data",
                         );
-                      } else if (state.queries.isEmpty) {
+                      // Full-page empty ONLY if not searching
+                      } else if (state.queries.isEmpty && state.searchStatus == QuerylogSearchStatus.searching) {
                         return const Center(
                           child: EmptyWidget(message: "No data"),
                         );
                       } else if (state.status == QuerylogStateStatus.success) {
                         List<QueryModel> queryModels = state.queries;
+                        final totalPages = (state.recordsFiltered / state.itemsPerPage).ceil();
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -730,6 +743,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                                   top: 8,
                                                 ),
                                                 child: TextFormField(
+                                                  focusNode: searchFocusNode,
                                                   autovalidateMode:
                                                       AutovalidateMode
                                                           .onUserInteraction,
@@ -802,6 +816,10 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                 },
                               ),
                             ),
+                            // During search if no results come up then 
+                            // pagination should be hidden otherwise error
+                            // occurs with pager with 0 pages
+                            if (totalPages > 0)
                             Center(
                               child: Pager(
                                 currentItemsPerPage: state.itemsPerPage,

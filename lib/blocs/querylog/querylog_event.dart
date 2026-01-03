@@ -26,6 +26,8 @@ final class SearchQuerylog extends QuerylogEvent {
   List<Object> get props => [start, itemsPerPage];
 }
 
+class ClearQuerylogSearch extends QuerylogEvent {}
+
 final class AllowDenyQuerylogDomain extends QuerylogEvent {
   const AllowDenyQuerylogDomain({required this.queryModel, required this.type});
 

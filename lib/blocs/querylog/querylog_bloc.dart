@@ -17,6 +17,7 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
   QuerylogBloc(this.piholeRepository) : super(QuerylogState()) {
     on<LoadQuerylog>(_loadQuerylog);
     on<SearchQuerylog>(_searchQuerylog);
+    on<ClearQuerylogSearch>(_clearSearch);
     on<AllowDenyQuerylogDomain>(_allowdenyQuerylogDomain);
     on<UpdateItemsPerPage>(_updateItemsPerPage);
     on<UpdatePagesPerView>(_updatePagesPerView);
@@ -41,16 +42,44 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
       );
       final queries = queryListModel.queries;
       _querylogStreamController.add(queries);
-      await emit.forEach<List<QueryModel>>(
-        getQuerylog(),
-        onData: (queries) => state.copyWith(
+      final queriesFromStream = await getQuerylog().first;
+
+      emit(
+        state.copyWith(
           status: QuerylogStateStatus.success,
-          queries: queries,
+          queries: queriesFromStream,
           recordsFiltered: queryListModel.recordsFiltered,
           page: event.start,
+          baseQueries: queriesFromStream,
+          baseRecordsFiltered: queryListModel.recordsFiltered,
+          searchTerm: "",
         ),
-        onError: (_, _) => state.copyWith(status: QuerylogStateStatus.failure),
       );
+      // await emit.forEach<List<QueryModel>>(
+      //   getQuerylog(),
+      //   onData: (queries) {
+      //     if (state.isClearingSearch) {
+      //       return state.copyWith(isClearingSearch: false);
+      //     }
+      //     return state.copyWith(
+      //       status: QuerylogStateStatus.success,
+      //       queries: queries,
+      //       recordsFiltered: queryListModel.recordsFiltered,
+      //       page: event.start,
+      //       // If searching then keep the old results so that
+      //       // we can restore when search is cleared/completed
+      //       // if not searching then keep the results for the next time
+      //       // baseQueries: state.searchTerm.isEmpty ? queries : state.baseQueries,
+      //       baseQueries: queries,
+      //       // baseRecordsFiltered: state.searchTerm.isEmpty
+      //       //     ? queryListModel.recordsFiltered
+      //       //     : state.baseRecordsFiltered,
+      //       baseRecordsFiltered: queryListModel.recordsFiltered,
+      //       searchTerm: "",
+      //     );
+      //   },
+      //   onError: (_, _) => state.copyWith(status: QuerylogStateStatus.failure),
+      // );
     } catch (e) {
       emit(
         state.copyWith(
@@ -61,14 +90,30 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
     }
   }
 
+  void _clearSearch(ClearQuerylogSearch event, Emitter<QuerylogState> emit) {
+    // RESET STREAM FIRST
+    _querylogStreamController.add(state.baseQueries);
+    emit(
+      state.copyWith(
+        isClearingSearch: true,
+        queries: state.baseQueries,
+        recordsFiltered: state.baseRecordsFiltered,
+        searchTerm: "",
+        page: 1,
+        searchStatus: QuerylogSearchStatus.idle,
+        status: QuerylogStateStatus.success,
+      ),
+    );
+  }
+
   void _searchQuerylog(
     SearchQuerylog event,
     Emitter<QuerylogState> emit,
   ) async {
     emit(
       state.copyWith(
-        status: QuerylogStateStatus.loading,
-        itemStatus: QuerylogItemStateStatus.initial,
+        searchStatus: QuerylogSearchStatus.searching,
+        searchTerm: event.searchTerm,
       ),
     );
     try {
@@ -79,20 +124,37 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
       );
       final queries = queryListModel.queries;
       _querylogStreamController.add(queries);
-      await emit.forEach<List<QueryModel>>(
-        getQuerylog(),
-        onData: (queries) => state.copyWith(
-          status: QuerylogStateStatus.success,
-          queries: queries,
+      final queriesFromStream = await getQuerylog().first;
+
+      emit(
+        state.copyWith(
+          searchStatus: QuerylogSearchStatus.idle,
+          queries: queriesFromStream,
           recordsFiltered: queryListModel.recordsFiltered,
           page: event.start,
         ),
-        onError: (_, _) => state.copyWith(status: QuerylogStateStatus.failure),
       );
+      // await emit.forEach<List<QueryModel>>(
+      //   getQuerylog(),
+      //   onData: (queries) {
+      //     if (state.isClearingSearch) {
+      //       return state.copyWith(isClearingSearch: false);
+      //     }
+      //     return state.copyWith(
+      //       searchStatus: QuerylogSearchStatus.idle,
+      //       queries: queries,
+      //       recordsFiltered: queryListModel.recordsFiltered,
+      //       page: event.start,
+      //       searchTerm: "",
+      //     );
+      //   },
+      //   onError: (_, _) =>
+      //       state.copyWith(searchStatus: QuerylogSearchStatus.idle),
+      // );
     } catch (e) {
       emit(
         state.copyWith(
-          status: QuerylogStateStatus.failure,
+          searchStatus: QuerylogSearchStatus.idle,
           error: e.toString(),
         ),
       );
