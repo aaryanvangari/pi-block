@@ -590,8 +590,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     // waits 400 milliseconds before processing user input
-    _debounce = Timer(const Duration(milliseconds: 400), () { 
-
+    _debounce = Timer(const Duration(milliseconds: 400), () {
       // Case 1: Search cleared
       if (trimmedQuery.isEmpty) {
         context.read<QuerylogBloc>().add(ClearQuerylogSearch());
@@ -682,14 +681,17 @@ class _QueryLogViewState extends State<_QueryLogView> {
                         return const CustomErrorWidget(
                           message: "Error loading data",
                         );
-                      // Full-page empty ONLY if not searching
-                      } else if (state.queries.isEmpty && state.searchStatus == QuerylogSearchStatus.searching) {
+                        // Full-page empty ONLY if not searching
+                      } else if (state.queries.isEmpty &&
+                          state.searchStatus ==
+                              QuerylogSearchStatus.searching) {
                         return const Center(
                           child: EmptyWidget(message: "No data"),
                         );
                       } else if (state.status == QuerylogStateStatus.success) {
                         List<QueryModel> queryModels = state.queries;
-                        final totalPages = (state.recordsFiltered / state.itemsPerPage).ceil();
+                        final totalPages =
+                            (state.recordsFiltered / state.itemsPerPage).ceil();
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -816,41 +818,44 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                 },
                               ),
                             ),
-                            // During search if no results come up then 
+                            // During search if no results come up then
                             // pagination should be hidden otherwise error
                             // occurs with pager with 0 pages
                             if (totalPages > 0)
-                            Center(
-                              child: Pager(
-                                currentItemsPerPage: state.itemsPerPage,
-                                currentPage: state.page,
-                                totalPages:
-                                    (state.recordsFiltered / state.itemsPerPage)
-                                        .ceil(),
-                                onPageChanged: (page) {
-                                  if (searchController.text.trim().isNotEmpty) {
-                                    context.read<QuerylogBloc>().add(
-                                      SearchQuerylog(
-                                        searchController.text,
-                                        page,
-                                        state.itemsPerPage,
-                                      ),
-                                    );
-                                  } else {
-                                    context.read<QuerylogBloc>().add(
-                                      LoadQuerylog(page, state.itemsPerPage),
-                                    );
-                                  }
-                                },
-                                pagesView: state.pagesPerView,
-                                numberButtonSelectedColor: Theme.of(
-                                  context,
-                                ).colorScheme.primary,
-                                numberTextUnselectedColor: Theme.of(
-                                  context,
-                                ).colorScheme.secondary,
+                              Center(
+                                child: Pager(
+                                  currentItemsPerPage: state.itemsPerPage,
+                                  currentPage: state.page,
+                                  totalPages:
+                                      (state.recordsFiltered /
+                                              state.itemsPerPage)
+                                          .ceil(),
+                                  onPageChanged: (page) {
+                                    if (searchController.text
+                                        .trim()
+                                        .isNotEmpty) {
+                                      context.read<QuerylogBloc>().add(
+                                        SearchQuerylog(
+                                          searchController.text,
+                                          page,
+                                          state.itemsPerPage,
+                                        ),
+                                      );
+                                    } else {
+                                      context.read<QuerylogBloc>().add(
+                                        LoadQuerylog(page, state.itemsPerPage),
+                                      );
+                                    }
+                                  },
+                                  pagesView: state.pagesPerView,
+                                  numberButtonSelectedColor: Theme.of(
+                                    context,
+                                  ).colorScheme.primary,
+                                  numberTextUnselectedColor: Theme.of(
+                                    context,
+                                  ).colorScheme.secondary,
+                                ),
                               ),
-                            ),
                           ],
                         );
                       }

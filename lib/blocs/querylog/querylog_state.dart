@@ -68,7 +68,7 @@ class QuerylogState extends Equatable {
       pagesPerView: pagesPerView ?? this.pagesPerView,
       searchStatus: searchStatus ?? this.searchStatus,
       searchTerm: searchTerm ?? this.searchTerm,
-      isClearingSearch: isClearingSearch ?? this.isClearingSearch
+      isClearingSearch: isClearingSearch ?? this.isClearingSearch,
     );
   }
 
