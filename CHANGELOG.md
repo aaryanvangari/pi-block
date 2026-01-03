@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.3.0](https://github.com/aaryanvangari/pi-block/compare/v5.2.0...v5.3.0) (2026-01-03)
+
+### ✨ Features
+
+* architectural correctness regarding rxdart and streams ([9d9f2dd](https://github.com/aaryanvangari/pi-block/commit/9d9f2dd54cc8191be6f42a4e5f86f403ab977fde)).
+
 ## [v5.2.0](https://github.com/aaryanvangari/pi-block/compare/v5.1.0...v5.2.0) (2026-01-03)
 
 ### 🐛 Bug Fixes
