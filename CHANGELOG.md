@@ -1,5 +1,14 @@
 # Changelog
 
+## [v5.3.1](https://github.com/aaryanvangari/pi-block/compare/v5.3.0...v5.3.1) (2026-01-04)
+
+### 🐛 Bug Fixes
+
+* groups are not pre selected for the first time ([3900316](https://github.com/aaryanvangari/pi-block/commit/3900316bdd829f85897e626365e8161afc05964e)).
+* list content does not fit properly which is caused by iconbutton taking more space ([93ebedc](https://github.com/aaryanvangari/pi-block/commit/93ebedca8b7323b1fb216ea1fe762759c464509a)).
+* when 'about an hour ago' occurs content is overflowing so using 'Saved' instead of 'Downloaded' ([f431189](https://github.com/aaryanvangari/pi-block/commit/f431189bace2f813de4e628ecba97912c437bfec)).
+* fix welcome and login buttons to be similar ([7858619](https://github.com/aaryanvangari/pi-block/commit/785861919a03306349764a461728656f81448b29)).
+
 ## [v5.3.0](https://github.com/aaryanvangari/pi-block/compare/v5.2.0...v5.3.0) (2026-01-03)
 
 ### ✨ Features
