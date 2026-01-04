@@ -116,7 +116,9 @@ class ListsView extends StatelessWidget {
                               ? FontAwesomeIcons.download
                               : FontAwesomeIcons.clockRotateLeft,
                           color: KColors.download,
-                          title: (item.status == 1) ? "Downloaded" : "Upstream",
+                          // cannot use 'Downloaded' as the content overflows when
+                          // 'about an hour ago' is occured
+                          title: (item.status == 1) ? "Saved" : "Upstream",
                         ),
                         CustomTagWidget(
                           iconData: (item.type == "block")
