@@ -36,12 +36,15 @@ class WelcomePage extends StatelessWidget {
                       SizedBox(height: 30),
                       SizedBox(
                         width: double.infinity,
-                        height: 40,
                         child: FilledButton(
                           onPressed: () {
                             context.pushNamed(AppRoutes.login);
                           },
                           style: ElevatedButton.styleFrom(
+                            minimumSize: Size(
+                              double.infinity,
+                              50,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
