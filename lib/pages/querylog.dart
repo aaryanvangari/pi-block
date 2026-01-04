@@ -716,7 +716,10 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                         iconSize: 25,
                                         padding: EdgeInsets.zero,
                                         alignment: Alignment.center,
-                                        constraints: BoxConstraints(minHeight: 25, minWidth: 25),
+                                        constraints: BoxConstraints(
+                                          minHeight: 25,
+                                          minWidth: 25,
+                                        ),
                                         onPressed: () {
                                           isQuerylogSearchVisible.value =
                                               !isQuerylogSearchVisible.value;

@@ -456,7 +456,7 @@ class ListsView extends StatelessWidget {
     final listsBloc = ctx.read<ListsBloc>();
     final groupsBloc = ctx.read<GroupsBloc>();
     final formKey = GlobalKey<FormState>();
-    
+
     TextEditingController commentController = TextEditingController(
       text: comment,
     );

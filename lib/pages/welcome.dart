@@ -41,10 +41,7 @@ class WelcomePage extends StatelessWidget {
                             context.pushNamed(AppRoutes.login);
                           },
                           style: ElevatedButton.styleFrom(
-                            minimumSize: Size(
-                              double.infinity,
-                              50,
-                            ),
+                            minimumSize: Size(double.infinity, 50),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
