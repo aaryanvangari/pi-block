@@ -622,7 +622,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
     final FocusNode searchFocusNode = FocusNode();
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -713,6 +713,13 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                         ),
                                       ),
                                       IconButton(
+                                        iconSize: 25,
+                                        padding: EdgeInsets.zero,
+                                        alignment: Alignment.center,
+                                        constraints: BoxConstraints(
+                                          minHeight: 25,
+                                          minWidth: 25,
+                                        ),
                                         onPressed: () {
                                           isQuerylogSearchVisible.value =
                                               !isQuerylogSearchVisible.value;

@@ -116,7 +116,9 @@ class ListsView extends StatelessWidget {
                               ? FontAwesomeIcons.download
                               : FontAwesomeIcons.clockRotateLeft,
                           color: KColors.download,
-                          title: (item.status == 1) ? "Downloaded" : "Upstream",
+                          // cannot use 'Downloaded' as the content overflows when
+                          // 'about an hour ago' is occured
+                          title: (item.status == 1) ? "Saved" : "Upstream",
                         ),
                         CustomTagWidget(
                           iconData: (item.type == "block")
@@ -454,10 +456,6 @@ class ListsView extends StatelessWidget {
     final listsBloc = ctx.read<ListsBloc>();
     final groupsBloc = ctx.read<GroupsBloc>();
     final formKey = GlobalKey<FormState>();
-    final preSelectedGroupIds = groupsBloc.state.groups
-        .where((group) => groups.contains(group.id))
-        .toList();
-    groupsBloc.add(GroupsSelectionChanged(preSelectedGroupIds));
 
     TextEditingController commentController = TextEditingController(
       text: comment,
@@ -520,12 +518,20 @@ class ListsView extends StatelessWidget {
                                   builder: (context, state) {
                                     if (state.status ==
                                         GroupsStateStatus.success) {
+                                      final preSelectedGroupIds = groupsBloc
+                                          .state
+                                          .groups
+                                          .where(
+                                            (group) =>
+                                                groups.contains(group.id),
+                                          )
+                                          .toList();
                                       return CustomMultiSelectDropdown<
                                         GroupModel
                                       >(
                                         hintText: 'Select Groups',
                                         items: state.groups,
-                                        selectedItems: state.selectedGroups,
+                                        selectedItems: preSelectedGroupIds,
                                         labelBuilder: (g) => g.name,
                                         validator: (list) => list.isEmpty
                                             ? 'Select at least one group'
