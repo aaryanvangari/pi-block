@@ -28,6 +28,16 @@ final class SearchQuerylog extends QuerylogEvent {
 
 class ClearQuerylogSearch extends QuerylogEvent {}
 
+class UpdateCurrentPage extends QuerylogEvent {
+  final int page;
+
+  const UpdateCurrentPage(this.page);
+
+  @override
+  List<Object> get props => [page];
+}
+
+
 final class AllowDenyQuerylogDomain extends QuerylogEvent {
   const AllowDenyQuerylogDomain({required this.queryModel, required this.type});
 

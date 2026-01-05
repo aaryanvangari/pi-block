@@ -21,6 +21,7 @@ import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
+import 'dart:io' show Platform;
 
 class QueryLogPage extends StatelessWidget {
   const QueryLogPage({super.key});
@@ -49,14 +50,50 @@ class _QueryLogViewState extends State<_QueryLogView> {
   int _lastItemsPerPage = 0;
   int _lastPagesPerView = 0;
   final TextEditingController searchController = TextEditingController();
+  final FocusNode searchFocusNode = FocusNode();
   Timer? _debounce;
+  bool layoutLocked = false;
+
+  @override
+  void initState() {
+    // searchFocusNode.addListener(() {
+    //   layoutLocked = searchFocusNode.hasFocus;
+    // });
+    searchFocusNode.addListener(() {
+      if (layoutLocked != searchFocusNode.hasFocus) {
+        setState(() {
+          layoutLocked = searchFocusNode.hasFocus;
+        });
+      }
+    });
+
+    super.initState();
+  }
 
   int calculatePagesPerView({
     required double availableWidth,
     required double reservedWidth,
   }) {
-    const double pagerButtonWidth = 40;
-    const double pagerNumberButtonWidth = 56;
+    double pagerButtonWidth = 40;
+    switch (Platform.operatingSystem) {
+      case "ios":
+        pagerButtonWidth = 48;
+        break;
+      case "android":
+        pagerButtonWidth = 40;
+        break;
+      default:
+    }
+    double pagerNumberButtonWidth = 56;
+    switch (Platform.operatingSystem) {
+      case "ios":
+        pagerNumberButtonWidth = 64;
+        break;
+      case "android":
+        pagerNumberButtonWidth = 56;
+        break;
+      default:
+    }
     const int mandatoryButtonsCount = 4;
     const int maxPagesView = 5;
 
@@ -593,6 +630,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
     _debounce = Timer(const Duration(milliseconds: 400), () {
       // Case 1: Search cleared
       if (trimmedQuery.isEmpty) {
+        context.read<QuerylogBloc>().add(UpdateCurrentPage(1));
         context.read<QuerylogBloc>().add(ClearQuerylogSearch());
         return;
       }
@@ -602,6 +640,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
         return;
       }
 
+      context.read<QuerylogBloc>().add(UpdateCurrentPage(1));
       // Case 3: Valid search (going to page 1 because its new search)
       context.read<QuerylogBloc>().add(
         SearchQuerylog(trimmedQuery, 1, itemsPerPage),
@@ -611,6 +650,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
 
   @override
   void dispose() {
+    searchFocusNode.dispose();
     searchController.dispose();
     _debounce?.cancel();
     super.dispose();
@@ -619,7 +659,6 @@ class _QueryLogViewState extends State<_QueryLogView> {
   @override
   Widget build(BuildContext context) {
     context.ui; // updates AppUiTokens when theme changes
-    final FocusNode searchFocusNode = FocusNode();
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8),
@@ -630,10 +669,10 @@ class _QueryLogViewState extends State<_QueryLogView> {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   // log('sizes: constraints: ${constraints.maxHeight}');
-                  final isEditingSearch = searchFocusNode.hasFocus;
+                  final isSearching = searchController.text.trim().length >= 3;
                   // During searching keyboard appears and layout changes
                   // needs to disable that for smoother search
-                  if (!isEditingSearch) {
+                  if (!layoutLocked && !isSearching) {
                     final itemsPerPage = calculateItemsPerPage(
                       availableHeight: constraints.maxHeight,
                       reservedHeight: _reservedHeight,
@@ -661,213 +700,201 @@ class _QueryLogViewState extends State<_QueryLogView> {
                       );
                     }
                   }
-
-                  return BlocConsumer<QuerylogBloc, QuerylogState>(
-                    listener: (context, state) {
-                      if (state.status == QuerylogStateStatus.failure) {
-                        PiUtils.handleGeneralException(
-                          context,
-                          "An Error Occured",
-                        );
-                      } else if (state.itemStatus ==
-                          QuerylogItemStateStatus.success) {
-                        GlobalSnackbar.info(context, state.message, "");
-                      }
-                    },
-                    builder: (context, state) {
-                      if (state.status == QuerylogStateStatus.loading) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else if (state.status == QuerylogStateStatus.failure) {
-                        return const CustomErrorWidget(
-                          message: "Error loading data",
-                        );
-                        // Full-page empty ONLY if not searching
-                      } else if (state.queries.isEmpty &&
-                          state.searchStatus ==
-                              QuerylogSearchStatus.searching) {
-                        return const Center(
-                          child: EmptyWidget(message: "No data"),
-                        );
-                      } else if (state.status == QuerylogStateStatus.success) {
-                        List<QueryModel> queryModels = state.queries;
-                        final totalPages =
-                            (state.recordsFiltered / state.itemsPerPage).ceil();
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                        ),
+                        child: Column(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0,
-                              ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text(
-                                        "Query Log",
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        iconSize: 25,
-                                        padding: EdgeInsets.zero,
-                                        alignment: Alignment.center,
-                                        constraints: BoxConstraints(
-                                          minHeight: 25,
-                                          minWidth: 25,
-                                        ),
-                                        onPressed: () {
-                                          isQuerylogSearchVisible.value =
-                                              !isQuerylogSearchVisible.value;
-                                        },
-                                        icon: Icon(Icons.search),
-                                      ),
-                                    ],
+                            Row(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  "Query Log",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  ValueListenableBuilder(
-                                    valueListenable: isQuerylogSearchVisible,
-                                    builder: (context, searchVisible, child) {
-                                      return AnimatedSwitcher(
-                                        duration: const Duration(
-                                          milliseconds: 250,
-                                        ),
-                                        transitionBuilder: (child, animation) {
-                                          return SizeTransition(
-                                            sizeFactor: animation,
-                                            axisAlignment: -1,
-                                            child: FadeTransition(
-                                              opacity: animation,
-                                              child: child,
-                                            ),
+                                ),
+                                IconButton(
+                                  iconSize: 25,
+                                  padding: EdgeInsets.zero,
+                                  alignment: Alignment.center,
+                                  constraints: BoxConstraints(
+                                    minHeight: 25,
+                                    minWidth: 25,
+                                  ),
+                                  visualDensity: VisualDensity.compact,
+                                  onPressed: () {
+                                    isQuerylogSearchVisible.value =
+                                        !isQuerylogSearchVisible.value;
+                                  },
+                                  icon: Icon(Icons.search),
+                                ),
+                              ],
+                            ),
+                            ValueListenableBuilder(
+                              valueListenable: isQuerylogSearchVisible,
+                              builder: (context, searchVisible, child) {
+                                if (!searchVisible) {
+                                  return const SizedBox(
+                                    key: ValueKey('empty'),
+                                  );
+                                }
+                                return Padding(
+                                  key: const ValueKey('search'),
+                                  padding: const EdgeInsets.only(top: 8),
+                                  child: TextFormField(
+                                    focusNode: searchFocusNode,
+                                    autovalidateMode: AutovalidateMode
+                                        .onUserInteraction,
+                                    controller: searchController,
+                                    onChanged: (value) => onSearchChanged(
+                                      context,
+                                      value,
+                                      context.read<QuerylogBloc>().state.page,
+                                      context.read<QuerylogBloc>().state.itemsPerPage,
+                                    ),
+                                    decoration: InputDecoration(
+                                      labelText: "Search Domains",
+                                      // helperText:
+                                      //     "Type at least 3 characters",
+                                      isDense: true,
+                                      suffixIcon: IconButton(
+                                        onPressed: () {
+                                          searchController.clear();
+                                          onSearchChanged(
+                                            context,
+                                            '',
+                                            context.read<QuerylogBloc>().state.page,
+                                            context.read<QuerylogBloc>().state.itemsPerPage,
                                           );
                                         },
-                                        child: searchVisible
-                                            ? Padding(
-                                                key: const ValueKey('search'),
-                                                padding: const EdgeInsets.only(
-                                                  top: 8,
-                                                ),
-                                                child: TextFormField(
-                                                  focusNode: searchFocusNode,
-                                                  autovalidateMode:
-                                                      AutovalidateMode
-                                                          .onUserInteraction,
-                                                  controller: searchController,
-                                                  onChanged: (value) =>
-                                                      onSearchChanged(
-                                                        context,
-                                                        value,
-                                                        state.page,
-                                                        state.itemsPerPage,
-                                                      ),
-                                                  decoration: InputDecoration(
-                                                    labelText: "Search Domains",
-                                                    helperText:
-                                                        "Type at least 3 characters",
-                                                    suffixIcon: IconButton(
-                                                      onPressed: () {
-                                                        searchController
-                                                            .clear();
-                                                        onSearchChanged(
-                                                          context,
-                                                          '',
-                                                          state.page,
-                                                          state.itemsPerPage,
-                                                        );
-                                                      },
-                                                      icon: Icon(Icons.clear),
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
-                                            : const SizedBox(
-                                                key: ValueKey('empty'),
-                                              ),
-                                      );
-                                    },
+                                        icon: Icon(Icons.clear),
+                                      ),
+                                    ),
                                   ),
-                                ],
-                              ),
+                                );
+                              },
                             ),
-                            Expanded(
-                              child: LayoutBuilder(
-                                builder: (context, constraints) {
-                                  final width = constraints.maxWidth;
-
-                                  return width < 500
-                                      ? generateQueryLogData(queryModels)
-                                      : GridView.builder(
-                                          padding: const EdgeInsets.all(10),
-                                          gridDelegate:
-                                              SliverGridDelegateWithMaxCrossAxisExtent(
-                                                crossAxisSpacing: 8,
-                                                mainAxisSpacing: 8,
-                                                mainAxisExtent: KGridCardSizes
-                                                    .querylog["height"]!
-                                                    .toDouble(),
-                                                maxCrossAxisExtent:
-                                                    KGridCardSizes
-                                                        .querylog["width"]!
-                                                        .toDouble(),
-                                              ),
-                                          itemCount: queryModels.length,
-                                          itemBuilder: (context, index) {
-                                            return _querylogRowCard(
-                                              queryModels[index],
-                                              context,
-                                            );
-                                          },
-                                        );
-                                },
-                              ),
-                            ),
-                            // During search if no results come up then
-                            // pagination should be hidden otherwise error
-                            // occurs with pager with 0 pages
-                            if (totalPages > 0)
-                              Center(
-                                child: Pager(
-                                  currentItemsPerPage: state.itemsPerPage,
-                                  currentPage: state.page,
-                                  totalPages:
-                                      (state.recordsFiltered /
-                                              state.itemsPerPage)
-                                          .ceil(),
-                                  onPageChanged: (page) {
-                                    if (searchController.text
-                                        .trim()
-                                        .isNotEmpty) {
-                                      context.read<QuerylogBloc>().add(
-                                        SearchQuerylog(
-                                          searchController.text,
-                                          page,
-                                          state.itemsPerPage,
-                                        ),
-                                      );
-                                    } else {
-                                      context.read<QuerylogBloc>().add(
-                                        LoadQuerylog(page, state.itemsPerPage),
-                                      );
-                                    }
-                                  },
-                                  pagesView: state.pagesPerView,
-                                  numberButtonSelectedColor: Theme.of(
-                                    context,
-                                  ).colorScheme.primary,
-                                  numberTextUnselectedColor: Theme.of(
-                                    context,
-                                  ).colorScheme.secondary,
-                                ),
-                              ),
                           ],
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
+                        ),
+                      ),
+                      Expanded(
+                        child: BlocConsumer<QuerylogBloc, QuerylogState>(
+                          listener: (context, state) {
+                            if (state.status == QuerylogStateStatus.failure) {
+                              PiUtils.handleGeneralException(
+                                context,
+                                "An Error Occured",
+                              );
+                            } else if (state.itemStatus ==
+                                QuerylogItemStateStatus.success) {
+                              GlobalSnackbar.info(context, state.message, "");
+                            }
+                          },
+                          builder: (context, state) {
+                            if (state.status == QuerylogStateStatus.loading) {
+                              return const Center(child: CircularProgressIndicator());
+                            } else if (state.status == QuerylogStateStatus.failure) {
+                              return const CustomErrorWidget(
+                                message: "Error loading data",
+                              );
+                              // Full-page empty ONLY if not searching
+                            } else if (state.queries.isEmpty &&
+                                state.searchStatus ==
+                                    QuerylogSearchStatus.searching) {
+                              return const Center(
+                                child: EmptyWidget(message: "No data"),
+                              );
+                            } else if (state.status == QuerylogStateStatus.success) {
+                              List<QueryModel> queryModels = state.queries;
+                              final totalPages =
+                                  (state.recordsFiltered / state.itemsPerPage).ceil();
+                              return Column(
+                                children: [
+                                  Expanded(
+                                    child: LayoutBuilder(
+                                      builder: (context, constraints) {
+                                        final width = constraints.maxWidth;
+                        
+                                        return width < 500
+                                            ? generateQueryLogData(queryModels)
+                                            : GridView.builder(
+                                                padding: const EdgeInsets.all(10),
+                                                gridDelegate:
+                                                    SliverGridDelegateWithMaxCrossAxisExtent(
+                                                      crossAxisSpacing: 8,
+                                                      mainAxisSpacing: 8,
+                                                      mainAxisExtent: KGridCardSizes
+                                                          .querylog["height"]!
+                                                          .toDouble(),
+                                                      maxCrossAxisExtent:
+                                                          KGridCardSizes
+                                                              .querylog["width"]!
+                                                              .toDouble(),
+                                                    ),
+                                                itemCount: queryModels.length,
+                                                itemBuilder: (context, index) {
+                                                  return _querylogRowCard(
+                                                    queryModels[index],
+                                                    context,
+                                                  );
+                                                },
+                                              );
+                                      },
+                                    ),
+                                  ),
+                                  // During search if no results come up then
+                                  // pagination should be hidden otherwise error
+                                  // occurs with pager with 0 pages
+                                  if (totalPages > 0)
+                                    Center(
+                                      child: Pager(
+                                        currentItemsPerPage: state.itemsPerPage,
+                                        currentPage: state.page,
+                                        totalPages:
+                                            (state.recordsFiltered /
+                                                    state.itemsPerPage)
+                                                .ceil(),
+                                        onPageChanged: (page) {
+                                          if (searchController.text
+                                              .trim()
+                                              .isNotEmpty) {
+                                            context.read<QuerylogBloc>().add(
+                                              SearchQuerylog(
+                                                searchController.text,
+                                                page,
+                                                state.itemsPerPage,
+                                              ),
+                                            );
+                                          } else {
+                                            context.read<QuerylogBloc>().add(
+                                              LoadQuerylog(page, state.itemsPerPage),
+                                            );
+                                          }
+                                        },
+                                        pagesView: state.pagesPerView,
+                                        numberButtonSelectedColor: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                        numberTextUnselectedColor: Theme.of(
+                                          context,
+                                        ).colorScheme.secondary,
+                                      ),
+                                    ),
+                                ],
+                              );
+                            }
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                      ),
+                    ],
                   );
                 },
               ),

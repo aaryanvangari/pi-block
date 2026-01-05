@@ -18,6 +18,7 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
     on<AllowDenyQuerylogDomain>(_allowdenyQuerylogDomain);
     on<UpdateItemsPerPage>(_updateItemsPerPage);
     on<UpdatePagesPerView>(_updatePagesPerView);
+    on<UpdateCurrentPage>(_updateCurrentPage);
   }
 
   void _loadQuerylog(LoadQuerylog event, Emitter<QuerylogState> emit) async {
@@ -53,6 +54,15 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
     }
   }
 
+  void _updateCurrentPage(
+    UpdateCurrentPage event,
+    Emitter<QuerylogState> emit,
+  ) {
+    if (event.page != state.page) {
+      emit(state.copyWith(page: event.page));
+    }
+  }
+
   void _clearSearch(ClearQuerylogSearch event, Emitter<QuerylogState> emit) {
     emit(
       state.copyWith(
@@ -75,6 +85,9 @@ class QuerylogBloc extends Bloc<QuerylogEvent, QuerylogState> {
       state.copyWith(
         searchStatus: QuerylogSearchStatus.searching,
         searchTerm: event.searchTerm,
+        page: event.start,
+        // queries: [],
+        queries: state.queries,
       ),
     );
     try {
