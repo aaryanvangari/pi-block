@@ -4,19 +4,17 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:pi_block/blocs/groups/groups_bloc.dart';
 import 'package:pi_block/components/global_snackbar.dart';
-import 'package:pi_block/components/pi_validators.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/theme/app_ui_context.dart';
-import 'package:pi_block/widgets/cancel_button.dart';
-import 'package:pi_block/widgets/circular_loader_in_button.dart';
+import 'package:pi_block/widgets/add_group_modal_widget.dart';
 import 'package:pi_block/widgets/confirm_action_bottom_sheet.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
-import 'package:pi_block/widgets/custom_toggle_switch.dart';
+import 'package:pi_block/widgets/edit_group_modal_widget.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
@@ -39,12 +37,7 @@ class GroupsView extends StatelessWidget {
 
   void addGroupFormModal(BuildContext ctx) {
     final pageIndexNotifier = ValueNotifier<int>(0);
-    PiValidators piValidators = PiValidators();
-
-    TextEditingController commentController = TextEditingController();
-    TextEditingController groupController = TextEditingController();
     final groupsBloc = ctx.read<GroupsBloc>();
-    final formKey = GlobalKey<FormState>();
 
     WoltModalSheet.show(
       context: ctx,
@@ -61,152 +54,20 @@ class GroupsView extends StatelessWidget {
             ),
             child: BlocProvider.value(
               value: groupsBloc,
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Form(
-                        key: formKey,
-                        child: Builder(
-                          builder: (ctx) {
-                            return Column(
-                              children: [
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: groupController,
-                                  maxLines: 1,
-                                  validator: (value) =>
-                                      piValidators.groupValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Group",
-                                    suffixIcon: IconButton(
-                                      onPressed: () => groupController.clear(),
-                                      icon: Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: commentController,
-                                  maxLines: 2,
-                                  validator: (value) =>
-                                      piValidators.commentValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Comment",
-                                    suffixIcon: IconButton(
-                                      onPressed: () =>
-                                          commentController.clear(),
-                                      icon: Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    BlocConsumer<GroupsBloc, GroupsState>(
-                                      listener: (context, state) {
-                                        if (state.itemStatus ==
-                                            GroupsItemStateStatus.success) {
-                                          if (Navigator.canPop(ctx)) {
-                                            Navigator.pop(ctx);
-                                          }
-                                        } else if (state.itemStatus ==
-                                            GroupsItemStateStatus.failure) {
-                                          PiUtils.handleGeneralException(
-                                            context,
-                                            state.error,
-                                          );
-                                        }
-                                      },
-                                      builder: (context, state) {
-                                        final isLoading =
-                                            state.itemStatus ==
-                                            GroupsItemStateStatus.loading;
-                                        return FilledButton(
-                                          onPressed: () {
-                                            if (formKey.currentState!
-                                                .validate()) {
-                                              GroupModel
-                                              groupModel = GroupModel(
-                                                name: groupController.text,
-                                                comment: commentController.text,
-
-                                                /// New groups are always enabled
-                                                enabled: true,
-                                              );
-                                              context.read<GroupsBloc>().add(
-                                                AddGroupsItem(
-                                                  groupModel: groupModel,
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                          child: isLoading
-                                              ? CircularLoaderInButton()
-                                              : const Text("Save"),
-                                        );
-                                      },
-                                    ),
-                                    CancelButton(
-                                      onPressed: () {
-                                        Navigator.pop(ctx);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              child: AddGroupModal(),
             ),
           ),
         ];
       },
       modalTypeBuilder: (ctx) => PiUtils.getModalTypeBuilder(ctx),
     ).whenComplete(() {
-      commentController.dispose();
-      groupController.dispose();
       pageIndexNotifier.dispose();
     });
   }
 
   void editGroupFormModal(BuildContext ctx, GroupModel groupModel) {
     final pageIndexNotifier = ValueNotifier<int>(0);
-    bool enabled = groupModel.enabled;
-    String comment = groupModel.comment;
-    String name = groupModel.name;
-    PiValidators piValidators = PiValidators();
-
-    TextEditingController commentController = TextEditingController(
-      text: comment,
-    );
-    TextEditingController groupController = TextEditingController(text: name);
     final groupsBloc = ctx.read<GroupsBloc>();
-    final formKey = GlobalKey<FormState>();
 
     WoltModalSheet.show(
       context: ctx,
@@ -222,144 +83,13 @@ class GroupsView extends StatelessWidget {
             ),
             child: BlocProvider.value(
               value: groupsBloc,
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Form(
-                        key: formKey,
-                        child: Builder(
-                          builder: (ctx) {
-                            return Column(
-                              children: [
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: groupController,
-                                  maxLines: 1,
-                                  validator: (value) =>
-                                      piValidators.groupValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Group",
-                                    suffixIcon: IconButton(
-                                      onPressed: () => groupController.clear(),
-                                      icon: const Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: commentController,
-                                  maxLines: 3,
-                                  validator: (value) =>
-                                      piValidators.commentValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Comment",
-                                    suffixIcon: IconButton(
-                                      onPressed: () =>
-                                          commentController.clear(),
-                                      icon: const Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Wrap(
-                                  spacing: 16,
-                                  runSpacing: 10,
-                                  children: [
-                                    CustomToggleSwitch(
-                                      initialLabelIndex: enabled ? 0 : 1,
-                                      labels: ['Enabled', 'Disabled'],
-                                      onToggle: (index) =>
-                                          enabled = (index == 0) ? true : false,
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    BlocConsumer<GroupsBloc, GroupsState>(
-                                      listener: (context, state) {
-                                        if (state.itemStatus ==
-                                            GroupsItemStateStatus.success) {
-                                          if (Navigator.canPop(ctx)) {
-                                            Navigator.pop(ctx);
-                                          }
-                                        } else if (state.itemStatus ==
-                                            GroupsItemStateStatus.failure) {
-                                          PiUtils.handleGeneralException(
-                                            context,
-                                            state.error,
-                                          );
-                                        }
-                                      },
-                                      builder: (context, state) {
-                                        final isLoading =
-                                            state.itemStatus ==
-                                            GroupsItemStateStatus.loading;
-                                        return FilledButton(
-                                          onPressed: () {
-                                            if (formKey.currentState!
-                                                .validate()) {
-                                              context.read<GroupsBloc>().add(
-                                                UpdateGroupsItem(
-                                                  groupModel: groupModel,
-                                                  comment:
-                                                      commentController.text,
-                                                  enabled: enabled,
-                                                  name: groupController.text,
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                          child: isLoading
-                                              ? CircularLoaderInButton()
-                                              : const Text("Save"),
-                                        );
-                                      },
-                                    ),
-                                    CancelButton(
-                                      onPressed: () {
-                                        Navigator.pop(ctx);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              child: EditGroupModal(groupModel: groupModel),
             ),
           ),
         ];
       },
       modalTypeBuilder: (ctx) => PiUtils.getModalTypeBuilder(ctx),
     ).whenComplete(() {
-      commentController.dispose();
-      groupController.dispose();
       pageIndexNotifier.dispose();
     });
   }
@@ -700,14 +430,14 @@ class GroupsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.ui; // updates AppUiTokens when theme changes
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Groups"),
-          elevation: 0,
-          leading: BackButton(),
-        ),
-        body: Padding(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Groups"),
+        elevation: 0,
+        leading: BackButton(),
+      ),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
