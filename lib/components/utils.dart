@@ -45,11 +45,12 @@ class PiUtils {
 
   static handleGeneralException(BuildContext context, Object e) async {
     _log.severe('handleGeneralException: ${e.toString()}', e);
+    final maxTitleLength = 30;
     String errorClass = e.runtimeType.toString();
-    String errorTitle = e.toString().length > 15
-        ? e.toString().substring(0, 15)
+    String errorTitle = e.toString().length > maxTitleLength
+        ? e.toString().substring(0, maxTitleLength)
         : e.toString();
-    String errorDescription = e.toString().length > 15 ? e.toString() : "";
+    String errorDescription = e.toString().length > maxTitleLength ? e.toString() : "";
     if (errorClass == "APIException") {
       APIException apiException = e as APIException;
       errorTitle = apiException.message;
