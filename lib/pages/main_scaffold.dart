@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
-import 'package:pi_block/components/global_snackbar.dart';
+import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/models/app_settings_model.dart';
@@ -31,7 +31,7 @@ class MainScaffold extends StatelessWidget {
     final drawer = BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state.status == AuthStateStatus.failure) {
-          GlobalSnackbar.error(context, state.error, state.errorDescription);
+          GlobalBanner.error(context, state.error, state.errorDescription);
         }
       },
       child: DrawerWidget(

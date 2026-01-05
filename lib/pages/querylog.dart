@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pager/pager.dart';
 import 'package:pi_block/blocs/querylog/querylog_bloc.dart';
-import 'package:pi_block/components/global_snackbar.dart';
+import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/constants/features/querylog.dart';
 import 'package:pi_block/data/notifiers.dart';
@@ -794,7 +794,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
                               );
                             } else if (state.itemStatus ==
                                 QuerylogItemStateStatus.success) {
-                              GlobalSnackbar.info(context, state.message, "");
+                              GlobalBanner.info(context, state.message, "");
                             }
                           },
                           builder: (context, state) {

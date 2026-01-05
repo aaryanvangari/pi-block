@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_randomcolor/flutter_randomcolor.dart';
 import 'package:intl/intl.dart' show DateFormat;
 import 'package:logging/logging.dart';
+import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/error/exceptions/api_exception.dart';
-import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/error/exceptions/session_exception.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/logging/app_logger.dart';
@@ -60,7 +60,7 @@ class PiUtils {
       errorDescription = sessionException.description;
     }
 
-    GlobalSnackbar.error(context, errorTitle, errorDescription);
+    GlobalBanner.error(context, errorTitle, errorDescription);
   }
 
   static String getDateFormatter(double milliseconds) {

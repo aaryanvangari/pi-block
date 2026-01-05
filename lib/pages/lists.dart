@@ -6,7 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pi_block/blocs/groups/groups_bloc.dart'
     hide ResetItemToggleError;
 import 'package:pi_block/blocs/lists/lists_bloc.dart';
-import 'package:pi_block/components/global_snackbar.dart';
+import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/lists_model.dart';
@@ -605,7 +605,7 @@ class ListsView extends StatelessWidget {
                           );
                         } else if (state.itemStatus ==
                             ListsItemStateStatus.success) {
-                          GlobalSnackbar.info(context, state.message, "");
+                          GlobalBanner.info(context, state.message, "");
                         }
                       },
                       builder: (context, state) {

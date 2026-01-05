@@ -7,7 +7,7 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:pi_block/blocs/domains/domains_bloc.dart';
 import 'package:pi_block/blocs/groups/groups_bloc.dart'
     hide ResetItemToggleError;
-import 'package:pi_block/components/global_snackbar.dart';
+import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/domain_model.dart';
@@ -579,7 +579,7 @@ class DomainsView extends StatelessWidget {
                       );
                     } else if (state.itemStatus ==
                         DomainsItemStateStatus.success) {
-                      GlobalSnackbar.info(context, state.message, "");
+                      GlobalBanner.info(context, state.message, "");
                     }
                   },
                   builder: (context, state) {

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:pi_block/blocs/groups/groups_bloc.dart';
-import 'package:pi_block/components/global_snackbar.dart';
+import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/groups_model.dart';
@@ -458,7 +458,7 @@ class GroupsView extends StatelessWidget {
                       );
                     } else if (state.itemStatus ==
                         GroupsItemStateStatus.success) {
-                      GlobalSnackbar.info(context, state.message, "");
+                      GlobalBanner.info(context, state.message, "");
                     }
                   },
                   builder: (context, state) {

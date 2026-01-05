@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
-import 'package:pi_block/components/global_snackbar.dart';
+import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/theme/app_styles.dart';
@@ -150,9 +150,12 @@ class _NotificationsView extends StatelessWidget {
                   if (state is NotificationsFailure) {
                     PiUtils.handleGeneralException(context, state.error);
                   } else if (state is NotificationItemOperationSuccess) {
-                    GlobalSnackbar.info(context, state.message, "");
+                    GlobalBanner.info(context, state.message, "");
                   } else if (state is NotificationItemOperationFailure) {
-                    GlobalSnackbar.error(context, state.errorMessage, "");
+                    PiUtils.handleGeneralException(
+                      context,
+                      "An Error Occured",
+                    );
                   }
                 },
                 builder: (context, state) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
-import 'package:pi_block/components/global_snackbar.dart';
+import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/components/pi_validators.dart';
 import 'package:pi_block/config/app_config.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
@@ -152,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
                                       listener: (context, state) {
                                         if (state.status ==
                                             AuthStateStatus.failure) {
-                                          GlobalSnackbar.error(
+                                          GlobalBanner.error(
                                             context,
                                             state.error,
                                             state.errorDescription,
