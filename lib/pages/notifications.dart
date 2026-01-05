@@ -126,14 +126,14 @@ class _NotificationsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.ui; // updates AppUiTokens when theme changes
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Notifications"),
-          elevation: 0,
-          leading: BackButton(),
-        ),
-        body: Padding(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Notifications"),
+        elevation: 0,
+        leading: BackButton(),
+      ),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

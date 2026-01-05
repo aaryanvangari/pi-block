@@ -87,14 +87,14 @@ class _PiholeConfigurationViewState extends State<_PiholeConfigurationView> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Pi-Hole Configuration"),
-          elevation: 0,
-          leading: BackButton(),
-        ),
-        body: Padding(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Pi-Hole Configuration"),
+        elevation: 0,
+        leading: BackButton(),
+      ),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
