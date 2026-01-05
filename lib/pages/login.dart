@@ -5,6 +5,7 @@ import 'package:pi_block/components/global_snackbar.dart';
 import 'package:pi_block/components/pi_validators.dart';
 import 'package:pi_block/config/app_config.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
+import 'package:pi_block/widgets/info_icon_button.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -88,19 +89,13 @@ class _LoginPageState extends State<LoginPage> {
                                           padding: const EdgeInsets.only(
                                             left: 5.0,
                                           ),
-                                          child: Tooltip(
-                                            message:
-                                                "Pi-Hole server URL.\n\n"
-                                                "Examples:\n"
-                                                "https://pihole.example.com\n"
-                                                "http://pihole.local\n"
-                                                "http://192.168.1.2:8053",
-                                            padding: const EdgeInsets.all(10),
-                                            margin: const EdgeInsets.all(20),
-                                            preferBelow: false,
-                                            child: const Icon(
-                                              Icons.info_outline,
-                                            ),
+                                          child: InfoIconButton(
+                                            message: "Pi-Hole server URL.\n\n"
+                                            "Examples:\n"
+                                            "https://pihole.example.com\n"
+                                            "http://pihole.local\n"
+                                            "http://192.168.1.2:8053",
+                                            title: "Pi-Hole Server Url",
                                           ),
                                         ),
                                       ],
@@ -144,15 +139,9 @@ class _LoginPageState extends State<LoginPage> {
                                           padding: const EdgeInsets.only(
                                             left: 5.0,
                                           ),
-                                          child: Tooltip(
-                                            message:
-                                                "API Token which is used for FTLCONF_webserver_api_password in environment file",
-                                            padding: EdgeInsets.all(10.0),
-                                            margin: EdgeInsets.all(20),
-                                            preferBelow: false,
-                                            child: const Icon(
-                                              Icons.info_outline,
-                                            ),
+                                          child: InfoIconButton(
+                                            message: "API Token which is used for FTLCONF_webserver_api_password in environment file",
+                                            title: "API Token",
                                           ),
                                         ),
                                       ],
