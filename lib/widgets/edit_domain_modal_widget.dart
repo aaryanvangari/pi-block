@@ -38,16 +38,19 @@ class _EditDomainModalState extends State<EditDomainModal> {
     type = widget.domainModel.type;
     enabled = widget.domainModel.enabled;
     kind = widget.domainModel.kind;
-    context.read<GroupsBloc>().add(
-      GroupsSelectionChanged(
-        context
-            .read<GroupsBloc>()
-            .state
-            .groups
-            .where((g) => widget.domainModel.groups.contains(g.id))
-            .toList(),
-      ),
-    );
+    
+    final groupsBloc = context.read<GroupsBloc>();
+
+    // Reset previous modal’s selection
+    // this is very important otherwise previous iteration editing groups appear here
+    groupsBloc.add(ResetGroupsSelection());
+
+    // Initialize selection for current edit
+    final initialSelection = groupsBloc.state.groups
+        .where((g) => widget.domainModel.groups.contains(g.id))
+        .toList();
+
+    groupsBloc.add(GroupsSelectionChanged(initialSelection));
   }
 
   @override
@@ -97,6 +100,22 @@ class _EditDomainModalState extends State<EditDomainModal> {
                         ),
                         const SizedBox(height: 10),
                         BlocBuilder<GroupsBloc, GroupsState>(
+                          // listenWhen: (prev, curr) =>
+                          //     prev.status != GroupsStateStatus.success &&
+                          //     curr.status == GroupsStateStatus.success,
+                          // listener: (context, state) {
+                          //   log('listened:');
+                          //   final initialSelection = state.groups
+                          //       .where(
+                          //         (g) =>
+                          //             widget.domainModel.groups.contains(g.id),
+                          //       )
+                          //       .toList();
+                          //   log('listened: $initialSelection');
+                          //   context.read<GroupsBloc>().add(
+                          //     GroupsSelectionChanged(initialSelection),
+                          //   );
+                          // },
                           builder: (context, state) {
                             if (state.status == GroupsStateStatus.success) {
                               return CustomMultiSelectDropdown<GroupModel>(
@@ -176,11 +195,11 @@ class _EditDomainModalState extends State<EditDomainModal> {
                                           comment: commentController.text,
                                           enabled: enabled,
                                           groups: context
-                                            .read<GroupsBloc>()
-                                            .state
-                                            .selectedGroups
-                                            .map((g) => g.id)
-                                            .toList(),
+                                              .read<GroupsBloc>()
+                                              .state
+                                              .selectedGroups
+                                              .map((g) => g.id)
+                                              .toList(),
                                         ),
                                       );
                                     }

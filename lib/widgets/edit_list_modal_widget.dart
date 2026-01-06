@@ -36,16 +36,19 @@ class _EditListModalState extends State<EditListModal> {
     commentController = TextEditingController(text: widget.listsModel.comment);
     type = widget.listsModel.type;
     enabled = widget.listsModel.enabled;
-    context.read<GroupsBloc>().add(
-      GroupsSelectionChanged(
-        context
-            .read<GroupsBloc>()
-            .state
-            .groups
-            .where((g) => widget.listsModel.groups.contains(g.id))
-            .toList(),
-      ),
-    );
+    
+    final groupsBloc = context.read<GroupsBloc>();
+
+    // Reset previous modal’s selection
+    // this is very important otherwise previous iteration editing groups appear here
+    groupsBloc.add(ResetGroupsSelection());
+
+    // Initialize selection for current edit
+    final initialSelection = groupsBloc.state.groups
+        .where((g) => widget.listsModel.groups.contains(g.id))
+        .toList();
+
+    groupsBloc.add(GroupsSelectionChanged(initialSelection));
   }
 
   @override

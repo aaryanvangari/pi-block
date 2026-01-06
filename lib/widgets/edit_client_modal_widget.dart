@@ -31,16 +31,18 @@ class _EditClientModalState extends State<EditClientModal> {
   void initState() {
     super.initState();
     commentController = TextEditingController(text: widget.clientModel.comment);
-    context.read<GroupsBloc>().add(
-      GroupsSelectionChanged(
-        context
-            .read<GroupsBloc>()
-            .state
-            .groups
-            .where((g) => widget.clientModel.groups.contains(g.id))
-            .toList(),
-      ),
-    );
+    final groupsBloc = context.read<GroupsBloc>();
+
+    // Reset previous modal’s selection
+    // this is very important otherwise previous iteration editing groups appear here
+    groupsBloc.add(ResetGroupsSelection());
+
+    // Initialize selection for current edit
+    final initialSelection = groupsBloc.state.groups
+        .where((g) => widget.clientModel.groups.contains(g.id))
+        .toList();
+
+    groupsBloc.add(GroupsSelectionChanged(initialSelection));
   }
 
   @override
