@@ -641,6 +641,23 @@ class ListsView extends StatelessWidget {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
+                                    const Spacer(),
+                                    IconButton(
+                                      iconSize: 25,
+                                      padding: EdgeInsets.zero,
+                                      alignment: Alignment.center,
+                                      constraints: BoxConstraints(
+                                        minHeight: 25,
+                                        minWidth: 25,
+                                      ),
+                                      visualDensity: VisualDensity.compact,
+                                      tooltip: 'Refresh Lists',
+                                      onPressed: () {
+                                        context.read<ListsBloc>().add(LoadLists());
+                                      },
+                                      icon: Icon(Icons.refresh),
+                                    ),
+                                    const SizedBox(width: 5,),
                                     IconButton.filled(
                                       onPressed: () {
                                         addListFormModal(context);
@@ -657,7 +674,12 @@ class ListsView extends StatelessWidget {
                                     final width = constraints.maxWidth;
 
                                     return width < 500
-                                        ? getLists(listsModels)
+                                        ? RefreshIndicator(
+                                          onRefresh: () async {
+                                            context.read<ListsBloc>().add(LoadLists());
+                                          },
+                                            child: getLists(listsModels)
+                                          )
                                         : GridView.builder(
                                             padding: const EdgeInsets.all(10),
                                             gridDelegate:

@@ -708,14 +708,11 @@ class _QueryLogViewState extends State<_QueryLogView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Column(
                           children: [
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 const Text(
                                   "Query Log",
@@ -724,6 +721,36 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                                const Spacer(),
+                                IconButton(
+                                  iconSize: 25,
+                                  padding: EdgeInsets.zero,
+                                  alignment: Alignment.center,
+                                  constraints: BoxConstraints(
+                                    minHeight: 25,
+                                    minWidth: 25,
+                                  ),
+                                  visualDensity: VisualDensity.compact,
+                                  tooltip: 'Refresh Querylog',
+                                  onPressed: () {
+                                    if (searchController.text.isEmpty) {
+                                      context.read<QuerylogBloc>().add(
+                                        LoadQuerylog(
+                                          context
+                                              .read<QuerylogBloc>()
+                                              .state
+                                              .page,
+                                          context
+                                              .read<QuerylogBloc>()
+                                              .state
+                                              .itemsPerPage,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  icon: Icon(Icons.refresh),
+                                ),
+                                const SizedBox(width: 5),
                                 IconButton(
                                   iconSize: 25,
                                   padding: EdgeInsets.zero,
@@ -736,6 +763,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                   onPressed: () {
                                     isQuerylogSearchVisible.value =
                                         !isQuerylogSearchVisible.value;
+                                    searchFocusNode.requestFocus();
                                   },
                                   icon: Icon(Icons.search),
                                 ),
@@ -745,28 +773,29 @@ class _QueryLogViewState extends State<_QueryLogView> {
                               valueListenable: isQuerylogSearchVisible,
                               builder: (context, searchVisible, child) {
                                 if (!searchVisible) {
-                                  return const SizedBox(
-                                    key: ValueKey('empty'),
-                                  );
+                                  return const SizedBox(key: ValueKey('empty'));
                                 }
                                 return Padding(
                                   key: const ValueKey('search'),
                                   padding: const EdgeInsets.only(top: 8),
                                   child: TextFormField(
                                     focusNode: searchFocusNode,
-                                    autovalidateMode: AutovalidateMode
-                                        .onUserInteraction,
+                                    autovalidateMode:
+                                        AutovalidateMode.onUserInteraction,
                                     controller: searchController,
                                     onChanged: (value) => onSearchChanged(
                                       context,
                                       value,
                                       context.read<QuerylogBloc>().state.page,
-                                      context.read<QuerylogBloc>().state.itemsPerPage,
+                                      context
+                                          .read<QuerylogBloc>()
+                                          .state
+                                          .itemsPerPage,
                                     ),
                                     decoration: InputDecoration(
                                       labelText: "Search Domains",
-                                      // helperText:
-                                      //     "Type at least 3 characters",
+                                      helperText: "Type at least 3 characters",
+                                      helperStyle: TextStyle(fontSize: 9),
                                       isDense: true,
                                       suffixIcon: IconButton(
                                         onPressed: () {
@@ -774,8 +803,14 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                           onSearchChanged(
                                             context,
                                             '',
-                                            context.read<QuerylogBloc>().state.page,
-                                            context.read<QuerylogBloc>().state.itemsPerPage,
+                                            context
+                                                .read<QuerylogBloc>()
+                                                .state
+                                                .page,
+                                            context
+                                                .read<QuerylogBloc>()
+                                                .state
+                                                .itemsPerPage,
                                           );
                                         },
                                         icon: Icon(Icons.clear),
@@ -803,8 +838,11 @@ class _QueryLogViewState extends State<_QueryLogView> {
                           },
                           builder: (context, state) {
                             if (state.status == QuerylogStateStatus.loading) {
-                              return const Center(child: CircularProgressIndicator());
-                            } else if (state.status == QuerylogStateStatus.failure) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (state.status ==
+                                QuerylogStateStatus.failure) {
                               return const CustomErrorWidget(
                                 message: "Error loading data",
                               );
@@ -815,28 +853,51 @@ class _QueryLogViewState extends State<_QueryLogView> {
                               return const Center(
                                 child: EmptyWidget(message: "No data"),
                               );
-                            } else if (state.status == QuerylogStateStatus.success) {
+                            } else if (state.status ==
+                                QuerylogStateStatus.success) {
                               List<QueryModel> queryModels = state.queries;
                               final totalPages =
-                                  (state.recordsFiltered / state.itemsPerPage).ceil();
+                                  (state.recordsFiltered / state.itemsPerPage)
+                                      .ceil();
                               return Column(
                                 children: [
                                   Expanded(
                                     child: LayoutBuilder(
                                       builder: (context, constraints) {
                                         final width = constraints.maxWidth;
-                        
+
                                         return width < 500
-                                            ? generateQueryLogData(queryModels)
+                                            ? RefreshIndicator(
+                                                onRefresh: () async {
+                                                  if (state
+                                                      .searchTerm
+                                                      .isEmpty) {
+                                                    context
+                                                        .read<QuerylogBloc>()
+                                                        .add(
+                                                          LoadQuerylog(
+                                                            state.page,
+                                                            state.itemsPerPage,
+                                                          ),
+                                                        );
+                                                  }
+                                                },
+                                                child: generateQueryLogData(
+                                                  queryModels,
+                                                ),
+                                              )
                                             : GridView.builder(
-                                                padding: const EdgeInsets.all(10),
+                                                padding: const EdgeInsets.all(
+                                                  10,
+                                                ),
                                                 gridDelegate:
                                                     SliverGridDelegateWithMaxCrossAxisExtent(
                                                       crossAxisSpacing: 8,
                                                       mainAxisSpacing: 8,
-                                                      mainAxisExtent: KGridCardSizes
-                                                          .querylog["height"]!
-                                                          .toDouble(),
+                                                      mainAxisExtent:
+                                                          KGridCardSizes
+                                                              .querylog["height"]!
+                                                              .toDouble(),
                                                       maxCrossAxisExtent:
                                                           KGridCardSizes
                                                               .querylog["width"]!
@@ -878,7 +939,10 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                             );
                                           } else {
                                             context.read<QuerylogBloc>().add(
-                                              LoadQuerylog(page, state.itemsPerPage),
+                                              LoadQuerylog(
+                                                page,
+                                                state.itemsPerPage,
+                                              ),
                                             );
                                           }
                                         },

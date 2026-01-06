@@ -625,6 +625,23 @@ class _DomainsViewState extends State<DomainsView> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                                const Spacer(),
+                                IconButton(
+                                  iconSize: 25,
+                                  padding: EdgeInsets.zero,
+                                  alignment: Alignment.center,
+                                  constraints: BoxConstraints(
+                                    minHeight: 25,
+                                    minWidth: 25,
+                                  ),
+                                  visualDensity: VisualDensity.compact,
+                                  tooltip: 'Refresh Domains',
+                                  onPressed: () {
+                                    context.read<DomainsBloc>().add(LoadDomains());
+                                  },
+                                  icon: Icon(Icons.refresh),
+                                ),
+                                const SizedBox(width: 5,),
                                 IconButton.filled(
                                   onPressed: () {
                                     addDomainFormModal(context);
@@ -641,7 +658,12 @@ class _DomainsViewState extends State<DomainsView> {
                                 final width = constraints.maxWidth;
 
                                 return width < 500
-                                    ? getDomains(domainModels)
+                                    ? RefreshIndicator(
+                                      onRefresh: () async {
+                                        context.read<DomainsBloc>().add(LoadDomains());
+                                      },
+                                      child: getDomains(domainModels)
+                                    )
                                     : GridView.builder(
                                         padding: const EdgeInsets.all(10),
                                         gridDelegate:
