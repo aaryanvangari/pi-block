@@ -33,10 +33,6 @@ class DomainsPage extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (_) =>
-              DomainsBloc(context.read<PiholeRepository>())..add(LoadDomains()),
-        ),
-        BlocProvider(
-          create: (_) =>
               GroupsBloc(context.read<PiholeRepository>())..add(LoadGroups()),
         ),
       ],
@@ -45,8 +41,25 @@ class DomainsPage extends StatelessWidget {
   }
 }
 
-class DomainsView extends StatelessWidget {
+class DomainsView extends StatefulWidget {
   const DomainsView({super.key});
+
+  @override
+  State<DomainsView> createState() => _DomainsViewState();
+}
+
+class _DomainsViewState extends State<DomainsView> {
+
+  @override
+  void initState() {
+    super.initState();
+    // getting bloc from appView context as domains data is being shared by querylog and domains
+    // querylog is using it for allow/deny action and it needs to update domains
+    // if the bloc is page scoped then both data will be different and does not update 
+    // unless a reload of bloc which happens only when logout and login
+    // Loading domains 
+    context.read<DomainsBloc>().add(LoadDomains());
+  }
 
   void addDomainFormModal(BuildContext ctx) {
     final pageIndexNotifier = ValueNotifier<int>(0);

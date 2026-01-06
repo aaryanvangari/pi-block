@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pager/pager.dart';
+import 'package:pi_block/blocs/domains/domains_bloc.dart';
 import 'package:pi_block/blocs/querylog/querylog_bloc.dart';
 import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/constants/constants.dart';
@@ -541,6 +542,9 @@ class _QueryLogViewState extends State<_QueryLogView> {
               child: BlocListener<QuerylogBloc, QuerylogState>(
                 listener: (context, state) {
                   if (state.itemStatus == QuerylogItemStateStatus.success) {
+                    // automatically updating domains whenever allow/deny happens
+                    // this gets reflected in domains page without page reload
+                    context.read<DomainsBloc>().add(LoadDomains());
                     if (Navigator.canPop(context)) {
                       Navigator.pop(context);
                     }
