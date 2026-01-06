@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/domains_stats/domains_blocked_bloc.dart';
+import 'package:pi_block/blocs/stats/stats_bloc.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/domains_model.dart';
@@ -20,7 +21,15 @@ class BlockedDomainStats extends StatelessWidget {
       create: (_) =>
           DomainsBlockedBloc(context.read<PiholeRepository>())
             ..add(LoadBlockedDomains({"blocked": "true"})),
-      child: const BlockedDomainsListView(),
+      child: BlocListener<StatsBloc, StatsState>(
+        listenWhen: (prev, curr) => prev.version != curr.version,
+        listener: (context, state) {
+          context.read<DomainsBlockedBloc>().add(
+            LoadBlockedDomains({"blocked": "true"}),
+          );
+        },
+        child: BlockedDomainsListView(),
+      ),
     );
   }
 }

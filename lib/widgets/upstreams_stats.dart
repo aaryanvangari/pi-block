@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/charts/upstreams_piechart_bloc.dart';
+import 'package:pi_block/blocs/stats/stats_bloc.dart';
 import 'package:pi_block/components/color_manager.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
@@ -19,7 +20,15 @@ class UpstreamsStats extends StatelessWidget {
       create: (_) =>
           UpstreamsPiechartBloc(context.read<PiholeRepository>())
             ..add(LoadUpstreamsPiechart()),
-      child: const UpstreamsPiechartView(),
+      child: BlocListener<StatsBloc, StatsState>(
+        listenWhen: (prev, curr) => prev.version != curr.version,
+        listener: (context, state) {
+          context.read<UpstreamsPiechartBloc>().add(
+            LoadUpstreamsPiechart(),
+          );
+        },
+        child: UpstreamsPiechartView(),
+      ),
     );
   }
 }

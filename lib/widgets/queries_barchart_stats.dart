@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/charts/query_history_barchart_bloc.dart';
+import 'package:pi_block/blocs/stats/stats_bloc.dart';
 import 'package:pi_block/components/chart_manager.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
@@ -21,7 +22,15 @@ class QueriesBarchartStats extends StatelessWidget {
       create: (_) =>
           QueryHistoryBarchartBloc(context.read<PiholeRepository>())
             ..add(LoadQueryHistoryBarchart()),
-      child: QueriesBarchartView(),
+      child: BlocListener<StatsBloc, StatsState>(
+        listenWhen: (prev, curr) => prev.version != curr.version,
+        listener: (context, state) {
+          context.read<QueryHistoryBarchartBloc>().add(
+            LoadQueryHistoryBarchart(),
+          );
+        },
+        child: QueriesBarchartView(),
+      ),
     );
   }
 }
