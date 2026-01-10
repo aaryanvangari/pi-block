@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/blocs/dashboard/metrics_bloc.dart';
+import 'package:pi_block/blocs/dashboard/summary_bloc.dart';
+import 'package:pi_block/blocs/dashboard/system_info_bloc.dart';
 import 'package:pi_block/blocs/domains/domains_bloc.dart';
 import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
 import 'package:pi_block/blocs/polling_coordinator.dart';
@@ -111,6 +113,14 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
             create: (context) =>
                 NotificationsBloc(context.read<PiholeRepository>())
                   ..add(LoadNotifications()),
+          ),
+          BlocProvider(
+            create: (_) =>
+                SummaryBloc(context.read<PiholeRepository>())..add(LoadSummary()),
+          ),
+          BlocProvider(
+            create: (_) =>
+                SystemInfoBloc(context.read<PiholeRepository>())..add(LoadSystemInfo()),
           ),
         ],
         child: ValueListenableBuilder<ThemeMode>(
