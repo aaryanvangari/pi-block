@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/constants/constants.dart';
+import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
+import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/metrics_model.dart';
 
 class MetricsBloc extends Bloc<MetricsEvent, MetricsState> {
   final PiholeRepository piholeRepository;
   Timer? _timer;
+  final _log = AppLogger.get('MetricsBloc');
 
   MetricsBloc(this.piholeRepository)
     : super(
@@ -19,7 +22,23 @@ class MetricsBloc extends Bloc<MetricsEvent, MetricsState> {
         ),
       ) {
     on<LoadMetrics>(_onLoadMetrics);
-    on<SystemTick>(_onSystemTick);
+    on<MetricsTick>(_onMetricsTick);
+    on<StartPolling>(_startPolling);
+    on<StopPolling>(_stopPolling);
+    pollingState.addListener(() => _onPollingState(pollingState.value));
+    _log.fine(
+      'PollAgent: MetricsBloc hash=${identityHashCode(this)}',
+    );
+  }
+
+  void _onPollingState(bool shouldPoll) {
+    if (shouldPoll) {
+      _log.fine('PollAgent: _onPollingState shouldPoll $shouldPoll');
+      add(StartPolling());
+    } else {
+      _log.fine('PollAgent: _onPollingState shouldPoll $shouldPoll');
+      add(StopPolling());
+    }
   }
 
   Future<void> _onLoadMetrics(
@@ -48,9 +67,9 @@ class MetricsBloc extends Bloc<MetricsEvent, MetricsState> {
           dhcp: metricsModel.metrics.dhcp.isEmpty
               ? const SectionState.empty()
               : SectionState.success(metricsModel.metrics.dhcp),
+          version: state.version + 1,
         ),
       );
-      _startPolling();
     } catch (e) {
       emit(
         state.copyWith(
@@ -63,11 +82,12 @@ class MetricsBloc extends Bloc<MetricsEvent, MetricsState> {
   }
 
   /// Runs every 15 seconds
-  Future<void> _onSystemTick(
-    SystemTick event,
+  Future<void> _onMetricsTick(
+    MetricsTick event,
     Emitter<MetricsState> emit,
   ) async {
     try {
+      _log.fine('PollAgent: _onMetricsTick');
       MetricsModel metricsModel = await piholeRepository.getMetrics();
       emit(
         state.copyWith(
@@ -80,23 +100,41 @@ class MetricsBloc extends Bloc<MetricsEvent, MetricsState> {
           dhcp: metricsModel.metrics.dhcp.isEmpty
               ? const SectionState.empty()
               : SectionState.success(metricsModel.metrics.dhcp),
+          version: state.version + 1,
         ),
+      );
+      _log.fine(
+        'PollAgent: _onMetricsTick insertions: ${metricsModel.metrics.dns.cache.inserted} status: ${state.cache.status} version: ${state.version}',
       );
     } catch (_) {
       // Optional: keep last success instead of failing UI
     }
   }
 
-  void _startPolling() {
-    _timer?.cancel();
+  void _startPolling(StartPolling event, Emitter<MetricsState> emit) {
+    _log.fine('PollAgent: _startPolling');
+    // Prevent duplicate timers
+    if (_timer != null) return;
+
+    // Immediate refresh when polling starts
+    add(MetricsTick());
+
+    // Next set of refresh based on timer
     _timer = Timer.periodic(
       const Duration(seconds: KTimers.metrics),
-      (_) => add(SystemTick()),
+      (_) => add(MetricsTick()),
     );
+  }
+
+  void _stopPolling(StopPolling event, Emitter<MetricsState> emit) {
+    _log.fine('PollAgent: _stopPolling');
+    _timer?.cancel();
+    _timer = null;
   }
 
   @override
   Future<void> close() {
+    _log.fine('PollAgent: dispose');
     _timer?.cancel();
     return super.close();
   }
@@ -113,9 +151,14 @@ final class LoadMetrics extends MetricsEvent {
   const LoadMetrics();
 }
 
-final class SystemTick extends MetricsEvent {
-  const SystemTick();
+final class MetricsTick extends MetricsEvent {
+  const MetricsTick();
 }
+
+final class StartPolling extends MetricsEvent {}
+
+final class StopPolling extends MetricsEvent {}
+
 
 enum VersionStateStatus { initial, loading, success, failure, empty }
 
@@ -123,26 +166,30 @@ class MetricsState extends Equatable {
   final SectionState<DnsCache> cache;
   final SectionState<DnsReplies> replies;
   final SectionState<DhcpMetrics> dhcp;
+  final int version;
   const MetricsState({
     this.cache = const SectionState(),
     this.replies = const SectionState(),
     this.dhcp = const SectionState(),
+    this.version = 0
   });
 
   MetricsState copyWith({
     SectionState<DnsCache>? cache,
     SectionState<DnsReplies>? replies,
     SectionState<DhcpMetrics>? dhcp,
+    int? version,
   }) {
     return MetricsState(
       cache: cache ?? this.cache,
       replies: replies ?? this.replies,
       dhcp: dhcp ?? this.dhcp,
+      version: version ?? this.version
     );
   }
 
   @override
-  List<Object?> get props => [cache, replies, dhcp];
+  List<Object?> get props => [cache, replies, dhcp, version];
 }
 
 enum SectionStatus { initial, loading, success, empty, failure }

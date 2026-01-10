@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
+import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/pages/clients.dart';
 import 'package:pi_block/pages/dashboard.dart';
 import 'package:pi_block/pages/domains.dart';
@@ -16,18 +17,36 @@ import 'package:pi_block/pages/settings.dart';
 import 'package:pi_block/pages/stats.dart';
 import 'package:pi_block/pages/welcome.dart';
 import 'package:pi_block/router/gorouter_refresh_stream.dart';
+import 'package:pi_block/router/route_location_notifier.dart';
+import 'package:pi_block/router/gorouter_pop_observer.dart';
+import 'package:pi_block/router/route_signal_queue.dart';
+import 'package:pi_block/router/router_refresh_notifier.dart';
 
 import 'app_routes.dart';
 
 class AppRouter {
-  static GoRouter create(AuthBloc authBloc) {
-    return GoRouter(
+  late final GoRouter router;
+  late final RouteSignalQueue routeSignalQueue;
+  final _log = AppLogger.get('AppRouter');
+  GoRouter create(
+    AuthBloc authBloc,
+    RouteLocationNotifier routeLocationNotifier,
+  ) {
+    final routerRefresh = RouterRefreshNotifier([
+      /// Re-run redirect whenever auth state changes
+      GoRouterRefreshStream(authBloc.stream),
+      // Listen to regular route changes which has path
+      routeLocationNotifier,
+    ]);
+    routeSignalQueue = RouteSignalQueue(routeLocationNotifier);
+    router = GoRouter(
       initialLocation: AppRoutes.welcomePath,
       debugLogDiagnostics: true,
-
-      /// Re-run redirect whenever auth state changes
-      refreshListenable: GoRouterRefreshStream(authBloc.stream),
-
+      refreshListenable: routerRefresh,
+      observers: [
+        // observe only pop events
+        GoRouterPopObserver(_emitCurrentRoute),
+      ],
       redirect: (context, state) {
         final authState = authBloc.state;
 
@@ -160,5 +179,13 @@ class AppRouter {
         ),
       ],
     );
+    return router;
+  }
+
+  void _emitCurrentRoute() {
+    final uri = router.routeInformationProvider.value.uri.toString();
+    _log.fine('PollAgent: _emitCurrentRoute: uri $uri');
+    // this will eventually update RouteLocationNotifier
+    routeSignalQueue.enqueue(uri);
   }
 }

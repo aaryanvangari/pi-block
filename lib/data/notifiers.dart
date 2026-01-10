@@ -11,3 +11,4 @@ ValueNotifier<ThemeModeOption> themeModeOptionNotifier = ValueNotifier(
   ThemeModeOption.system,
 );
 final ValueNotifier<bool> isQuerylogSearchVisible = ValueNotifier(false);
+final ValueNotifier<bool> pollingState = ValueNotifier(false);
