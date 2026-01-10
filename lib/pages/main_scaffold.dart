@@ -71,6 +71,7 @@ class MainScaffold extends StatelessWidget {
           ),
           NotificationsWidget(),
         ],
+        titleSpacing: 0,
         title: Row(
           children: [
             Padding(
