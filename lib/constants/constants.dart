@@ -5,12 +5,17 @@ class KConstants {
 }
 
 class KTimers {
+  // GlobalBanner
   static const snackbarError = 6;
   static const snackbarInfo = 3;
+  
+  // Dashboard
   static const summary = 15;
   static const system = 15;
   static const metrics = 15;
   static const session = 1;
+  
+  // Logs
   static const dnsmasq = 5;
   static const ftl = 25;
   static const webserver = 15;
