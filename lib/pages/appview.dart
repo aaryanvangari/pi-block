@@ -101,8 +101,8 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
                 MetricsBloc(context.read<PiholeRepository>())
                   ..add(LoadMetrics()),
           ),
-          // domains data is being shared by querylog and domains, so initiaing here
-          // in querylog we do allow/deny domain and those changes should be reflected
+          // domains data is being shared by querylog and domains, so initiaing here.
+          // In querylog we do allow/deny domain and those changes should be reflected
           // Im not doing loadDomains here as its not necessary, I will load them in page
           BlocProvider<DomainsBloc>(
             create: (context) => DomainsBloc(context.read<PiholeRepository>()),
@@ -114,6 +114,17 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
                 NotificationsBloc(context.read<PiholeRepository>())
                   ..add(LoadNotifications()),
           ),
+          // Need to provide dashboard blocs here because they need to be above router
+          // and layout changes, otherwise if layout changes from mobile to desktop
+          // then blocs will be disposed and then when next events get added 
+          // from PollingCoordinator it will crash.
+          // This will probably not needed in mobile or tablet layouts but if any case
+          // layout changes in any device especially web then crash happens.
+          // When we know that a crash happens definitely then its better to fix it.
+          // Which ever blocs are being subscribed to PollingCoordinator they must be
+          // placed here to run smothly. Anyways PollingCoordinator is specifically
+          // designed for Dashboard kind of pages. For other pages we probably dont
+          // need real time refresh or need to find out other strategies
           BlocProvider(
             create: (_) =>
                 SummaryBloc(context.read<PiholeRepository>())..add(LoadSummary()),
