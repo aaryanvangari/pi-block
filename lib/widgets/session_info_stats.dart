@@ -1,17 +1,65 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
-import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/theme/app_styles.dart';
 
-class SessionInfoStats extends StatelessWidget {
+class SessionInfoStats extends StatefulWidget {
   const SessionInfoStats({super.key});
 
-  Stream<DateTime> getTimeStream() {
-    return Stream.periodic(
-      Duration(seconds: KTimers.session),
-      (_) => DateTime.now(),
-    );
+  @override
+  State<SessionInfoStats> createState() => _SessionInfoStatsState();
+}
+
+class _SessionInfoStatsState extends State<SessionInfoStats>
+    with TickerProviderStateMixin {
+  late final Ticker _ticker;
+  late final StreamSubscription _authSubscription;
+  int _remainingTime = 0;
+  late final int sessionValidUntil;
+  Duration _elapsed = Duration.zero;
+  // Having -1 allows to track zeroth second
+  int _lastRenderedSecond = -1;
+
+  @override
+  void initState() {
+    super.initState();
+
+    sessionValidUntil = context.read<AuthBloc>().state.sessionValidUntil;
+
+    // Setting remaining time for the first time
+    _remainingTime = sessionValidUntil;
+
+    // Create a ticker to update the remaining time
+    _ticker = createTicker((Duration elapsed) {
+      _elapsed = elapsed;
+      final currentSecond = elapsed.inSeconds;
+      if (currentSecond != _lastRenderedSecond) {
+        _lastRenderedSecond = currentSecond;
+        setState(() {
+          _remainingTime = sessionValidUntil - _elapsed.inSeconds;
+        });
+      }
+    });
+
+    _ticker.start();
+
+    // Listen to authentication changes
+    _authSubscription = context.read<AuthBloc>().stream.listen((
+      AuthState state,
+    ) {
+      if (state.status == AuthStateStatus.loggedOut) {
+        _ticker.stop();
+      } else if (state.status == AuthStateStatus.loggedIn) {
+        // restart ticker if needed
+        if (_remainingTime > 0) {
+          _ticker.start();
+        }
+      }
+    });
   }
 
   String getSessionExpiresIn(int sessionValidUntil) {
@@ -26,6 +74,15 @@ class SessionInfoStats extends StatelessWidget {
     } else {
       return "${difference.inMinutes} Mins ${difference.inSeconds % 60} Secs";
     }
+  }
+
+  @override
+  void dispose() {
+    log("PollAgent: SessionInfoStats: dispose");
+    _authSubscription.cancel();
+    _ticker.stop();
+    _ticker.dispose();
+    super.dispose();
   }
 
   @override
@@ -62,16 +119,9 @@ class SessionInfoStats extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text("Expires In"),
-                          StreamBuilder(
-                            stream: getTimeStream(),
-                            builder: (context, asyncSnapshot) {
-                              return Text(
-                                getSessionExpiresIn(state.sessionValidUntil),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              );
-                            },
+                          Text(
+                            getSessionExpiresIn(_remainingTime),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
