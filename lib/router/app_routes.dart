@@ -13,6 +13,7 @@ abstract class AppRoutes {
   static const String groups = 'groups';
   static const String clients = 'clients';
   static const String logs = 'logs';
+  static const String actions = 'actions';
   static const String piholeConfiguration = 'piholeConfiguration';
 
   // Route paths
@@ -29,6 +30,7 @@ abstract class AppRoutes {
   static const String groupsPath = '/groups';
   static const String clientsPath = '/clients';
   static const String logsPath = '/logs';
+  static const String actionsPath = '/actions';
   static const String piholeConfigurationPath = '/pihole-configuration';
 
   const AppRoutes._(); // Prevent instantiation

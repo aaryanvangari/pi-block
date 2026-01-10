@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/widgets/adaptive_snackbar_card.dart';
 
@@ -45,8 +46,12 @@ class GlobalBanner {
     required String message,
     required String description,
     required Duration duration,
-  }) {
+  }) async {
     final overlay = Overlay.of(context);
+
+     // wait for frame to fully finish
+    await SchedulerBinding.instance.endOfFrame;
+
     late OverlayEntry entry;
 
     entry = OverlayEntry(

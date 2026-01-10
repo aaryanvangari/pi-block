@@ -91,6 +91,16 @@ class DrawerWidget extends StatelessWidget {
                 },
               ),
               ListTile(
+                title: Text("Actions", style: KTextStyle.drawerEntryItemTitle),
+                leading: Icon(Icons.pending_actions),
+                onTap: () {
+                  if (Navigator.canPop(context)) {
+                    Navigator.of(context).pop(); // closes drawer
+                  }
+                  context.pushNamed(AppRoutes.actions);
+                },
+              ),
+              ListTile(
                 title: Text("Settings", style: KTextStyle.drawerEntryItemTitle),
                 leading: Icon(Icons.settings),
                 onTap: () {

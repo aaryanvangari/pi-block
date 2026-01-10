@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' hide log;
 
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:pi_block/error/exceptions/session_exception.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/app_settings_model.dart';
+import 'package:pi_block/models/gravity_log_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
@@ -158,5 +160,52 @@ class PiUtils {
     } else {
       return WoltModalType.sideSheet();
     }
+  }
+
+  static GravityLog parseGravityLog(String line) {
+    _log.fine('parseGravityLog: $line');
+
+    // Handle error which comes as JSON
+    // Usually we can parse json body from response but since this is stream
+    // even error comes in stream as pure text, we need to parse it
+    if (line.contains('{"error"')) {
+      try {
+        final decoded = jsonDecode(line);
+        _log.severe('parseGravityLog: $decoded', decoded);
+
+        if (decoded is Map && decoded['error'] != null) {
+          final error = decoded['error'];
+
+          return GravityLog(
+            type: GravityLogType.streamError,
+            message: error['message']?.toString() ?? 'Unknown error',
+            error: error['key']?.toString(),
+          );
+        }
+      } catch (_) {
+        // Not valid JSON, continue parsing as normal text
+      }
+    }
+
+    // regular stream text
+    if (line.contains('[✓]')) {
+      return GravityLog(
+        type: GravityLogType.success,
+        message: line.replaceAll('[✓]', ''),
+      );
+    }
+    if (line.contains('[i]')) {
+      return GravityLog(
+        type: GravityLogType.info,
+        message: line.replaceAll('[i]', ''),
+      );
+    }
+    if (line.contains('[✗]')) {
+      return GravityLog(
+        type: GravityLogType.error,
+        message: line.replaceAll('[✗]', ''),
+      );
+    }
+    return GravityLog(type: GravityLogType.none, message: line);
   }
 }

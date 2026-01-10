@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/logging/app_logger.dart';
+import 'package:pi_block/pages/actions.dart';
 import 'package:pi_block/pages/clients.dart';
 import 'package:pi_block/pages/dashboard.dart';
 import 'package:pi_block/pages/domains.dart';
@@ -171,6 +172,11 @@ class AppRouter {
           name: AppRoutes.logs,
           path: AppRoutes.logsPath,
           builder: (context, state) => const LogsPage(),
+        ),
+        GoRoute(
+          name: AppRoutes.actions,
+          path: AppRoutes.actionsPath,
+          builder: (context, state) => const ActionsPage(),
         ),
         GoRoute(
           name: AppRoutes.piholeConfiguration,

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/logging/app_logger.dart';
+import 'package:pi_block/models/gravity_log_model.dart';
 import 'package:pi_block/services/user_session_service.dart';
 import 'package:pi_block/models/user_session_model.dart';
 
@@ -210,6 +212,71 @@ class PiHttpClient {
       return result;
     } catch (e) {
       _log.severe('put: ${e.toString()}', e);
+      rethrow;
+    }
+  }
+
+  Stream<GravityLog> postStream(
+    String urlEndpoint,
+    dynamic queryParams,
+    dynamic body, [
+    String? scheme,
+    String? server,
+    int? port,
+    String? password,
+  ]) async* {
+    String sid = "";
+    Map<String, String> headers = {};
+    try {
+      if (server == null) {
+        UserSessionModel? userSessionModel = UserSessionService().getSession();
+        scheme = userSessionModel!.serverUri.scheme;
+        server = userSessionModel.serverUri.host;
+        port = userSessionModel.serverUri.port;
+        sid = userSessionModel.session.sid;
+        headers = <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          "sid": sid.toString(),
+        };
+      } else {
+        body = jsonEncode(<String, String>{'password': password!});
+      }
+
+      Uri url;
+      if ((queryParams != null) && (queryParams.keys.length > 0)) {
+        url = Uri(
+          scheme: scheme,
+          host: server,
+          port: port,
+          path: urlEndpoint,
+          queryParameters: queryParams,
+        );
+      } else {
+        url = Uri(scheme: scheme, host: server, port: port, path: urlEndpoint);
+      }
+
+      _log.info('postStream: ${url.toString()}');
+
+      final request = http.Request('POST', url);
+      request.headers.addAll({...headers});
+      if (body != null) {
+        request.body = body;
+      }
+
+      http.StreamedResponse response = await _httpClient.send(request);
+
+      _log.info('postStream: ${response.statusCode.toString()}');
+
+      final ansiRegex = RegExp(r'\x1B\[[0-9;]*[A-Za-z]');
+
+      // send streamed response
+      yield* response.stream
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())
+          .map((line) => line.replaceAll(ansiRegex, ''))
+          .map((line) => PiUtils.parseGravityLog(line));
+    } catch (e) {
+      _log.severe('postStream: ${e.toString()}', e);
       rethrow;
     }
   }

@@ -29,4 +29,5 @@ class ApiUrls {
   static const String dnsmasqLogs = '$base/logs/dnsmasq';
   static const String ftlLogs = '$base/logs/ftl';
   static const String webserverLogs = '$base/logs/webserver';
+  static const String gravityLogs = '$base/action/gravity';
 }
