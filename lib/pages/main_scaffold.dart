@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,7 +13,7 @@ import 'package:pi_block/widgets/drawer_widget.dart';
 import 'package:pi_block/widgets/navbar_widget.dart';
 import 'package:pi_block/widgets/notifications_widget.dart';
 
-class MainScaffold extends StatelessWidget {
+class MainScaffold extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
 
   /// This is main layout of our app after authentication.
@@ -24,9 +25,38 @@ class MainScaffold extends StatelessWidget {
   static const double _drawerWidth = 280;
 
   @override
+  State<MainScaffold> createState() => _MainScaffoldState();
+}
+
+class _MainScaffoldState extends State<MainScaffold> with WidgetsBindingObserver {
+  bool _isLocked = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final mediaQuery = MediaQuery.of(context);
+    final shortestSize = mediaQuery.size.shortestSide;
+    final isPhone = shortestSize < 600;
+
+    if (isPhone && !_isLocked) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      _isLocked = true;
+    }
+    if (!isPhone && _isLocked) {
+      SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+      _isLocked = false;
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+  }
+  @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final isDesktop = width >= _drawerBreakpoint;
+    final isDesktop = width >= MainScaffold._drawerBreakpoint;
 
     final drawer = BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
@@ -98,16 +128,16 @@ class MainScaffold extends StatelessWidget {
       body: isDesktop
           ? Row(
               children: [
-                SizedBox(width: _drawerWidth, child: drawer),
+                SizedBox(width: MainScaffold._drawerWidth, child: drawer),
                 const VerticalDivider(width: 1),
-                Expanded(child: navigationShell),
+                Expanded(child: widget.navigationShell),
               ],
             )
-          : navigationShell,
+          : widget.navigationShell,
 
       // drawer closed only on mobile
       drawer: isDesktop ? null : drawer,
-      bottomNavigationBar: NavbarWidget(navigationShell: navigationShell),
+      bottomNavigationBar: NavbarWidget(navigationShell: widget.navigationShell),
     );
   }
 }
