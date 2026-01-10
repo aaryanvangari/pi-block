@@ -1,33 +1,48 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pi_block/models/diagnostic_message_model.dart';
-import 'package:pi_block/data/repository/pihole_repository.dart';
+import 'dart:async';
 
-part 'notifications_event.dart';
-part 'notifications_state.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pi_block/data/repository/pihole_repository.dart';
+import 'package:pi_block/models/diagnostic_message_model.dart';
 
 class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
   final PiholeRepository piholeRepository;
-  NotificationsBloc(this.piholeRepository) : super(NotificationsInitial()) {
-    on<NotificationsFetched>(_getNotifications);
+
+  NotificationsBloc(this.piholeRepository)
+    : super(
+        NotificationsState(
+          status: NotificationsStateStatus.initial,
+          messages: [],
+        ),
+      ) {
+    on<LoadNotifications>(_onLoadNotifications);
     on<DeleteNotification>(_deleteNotification);
   }
 
-  void _getNotifications(
-    NotificationsFetched event,
+  /// Initial load
+  Future<void> _onLoadNotifications(
+    LoadNotifications event,
     Emitter<NotificationsState> emit,
   ) async {
-    emit(NotificationsLoading());
+    emit(state.copyWith(status: NotificationsStateStatus.loading));
+
     try {
-      final notifications = await piholeRepository.getDiagnosticMessages();
-      if (notifications.isEmpty) {
-        emit(NotificationsEmpty(diagnosticMessagesList: []));
-      } else {
-        emit(NotificationsSuccess(diagnosticMessagesList: notifications));
-      }
+      List<DiagnosticMessageModel> messages = await piholeRepository
+          .getDiagnosticMessages();
+
+      emit(
+        state.copyWith(
+          status: NotificationsStateStatus.success,
+          messages: messages,
+        ),
+      );
     } catch (e) {
-      addError(e);
-      emit(NotificationsFailure(e.toString()));
+      emit(
+        state.copyWith(
+          status: NotificationsStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
     }
   }
 
@@ -35,15 +50,86 @@ class NotificationsBloc extends Bloc<NotificationsEvent, NotificationsState> {
     DeleteNotification event,
     Emitter<NotificationsState> emit,
   ) async {
-    emit(NotificationItemOperationLoading());
+    emit(state.copyWith(itemStatus: NotificationsItemStateStatus.loading));
     try {
       await piholeRepository.deleteDiagnosticMessages(
         event.diagnosticMessageModel.id,
       );
-      emit(NotificationItemOperationSuccess("Successfully Deleted"));
+      // ignoring the deleted item
+      final updatedMessages = state.messages
+          .where((d) => d.id != event.diagnosticMessageModel.id)
+          .toList();
+      emit(
+        state.copyWith(
+          messages: updatedMessages,
+          itemStatus: NotificationsItemStateStatus.success,
+          message: "Successfully Deleted",
+        ),
+      );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: NotificationsItemStateStatus.initial));
     } catch (e) {
-      addError(e);
-      emit(NotificationItemOperationFailure(e.toString()));
+      emit(
+        state.copyWith(
+          itemStatus: NotificationsItemStateStatus.failure,
+          error: e.toString(),
+        ),
+      );
     }
   }
+}
+
+sealed class NotificationsEvent extends Equatable {
+  const NotificationsEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
+final class LoadNotifications extends NotificationsEvent {
+  const LoadNotifications();
+}
+
+final class DeleteNotification extends NotificationsEvent {
+  final DiagnosticMessageModel diagnosticMessageModel;
+  const DeleteNotification(this.diagnosticMessageModel);
+}
+
+enum NotificationsStateStatus { initial, loading, success, failure, empty }
+
+enum NotificationsItemStateStatus { initial, loading, success, failure }
+
+class NotificationsState extends Equatable {
+  final List<DiagnosticMessageModel> messages;
+  final NotificationsStateStatus status;
+  final NotificationsItemStateStatus itemStatus;
+  final String error;
+  final String message;
+  const NotificationsState({
+    required this.messages,
+    this.status = NotificationsStateStatus.initial,
+    this.itemStatus = NotificationsItemStateStatus.initial,
+    this.error = "",
+    this.message = "",
+  });
+
+  NotificationsState copyWith({
+    List<DiagnosticMessageModel>? messages,
+    NotificationsStateStatus? status,
+    NotificationsItemStateStatus? itemStatus,
+    String? error,
+    String? message,
+  }) {
+    return NotificationsState(
+      messages: messages ?? this.messages,
+      status: status ?? this.status,
+      itemStatus: itemStatus ?? this.itemStatus,
+      error: error ?? this.error,
+      message: message ?? this.message,
+    );
+  }
+
+  @override
+  List<Object?> get props => [messages, status, itemStatus, error, message];
 }

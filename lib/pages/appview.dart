@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/blocs/dashboard/metrics_bloc.dart';
 import 'package:pi_block/blocs/domains/domains_bloc.dart';
+import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
 import 'package:pi_block/blocs/polling_coordinator.dart';
 import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
@@ -103,6 +104,13 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
           // Im not doing loadDomains here as its not necessary, I will load them in page
           BlocProvider<DomainsBloc>(
             create: (context) => DomainsBloc(context.read<PiholeRepository>()),
+          ),
+          // Notifications bloc is used in two places and anyways notifications is 
+          // app level bloc and not scoped to page level
+          BlocProvider<NotificationsBloc>(
+            create: (context) =>
+                NotificationsBloc(context.read<PiholeRepository>())
+                  ..add(LoadNotifications()),
           ),
         ],
         child: ValueListenableBuilder<ThemeMode>(
