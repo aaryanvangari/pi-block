@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/clients_stats/clients_permitted_bloc.dart';
+import 'package:pi_block/blocs/stats/stats_bloc.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/clients_stats_model.dart';
@@ -20,7 +21,13 @@ class PermittedClientStats extends StatelessWidget {
       create: (_) =>
           ClientsPermittedBloc(context.read<PiholeRepository>())
             ..add(LoadPermittedClients({})),
-      child: const PermittedClientsListView(),
+      child: BlocListener<StatsBloc, StatsState>(
+        listenWhen: (prev, curr) => prev.version != curr.version,
+        listener: (context, state) {
+          context.read<ClientsPermittedBloc>().add(LoadPermittedClients({}));
+        },
+        child: PermittedClientsListView(),
+      ),
     );
   }
 }

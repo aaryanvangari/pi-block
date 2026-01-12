@@ -10,6 +10,7 @@ import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/domain_update_model.dart';
 import 'package:pi_block/models/domains_model.dart';
+import 'package:pi_block/models/gravity_log_model.dart';
 import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/models/groups_update_model.dart';
 import 'package:pi_block/models/history_model.dart';
@@ -599,6 +600,18 @@ class PiholeRepository {
       _log.fine(() => 'getWebserverLogs: ${logsModel.toString()}');
 
       return logsModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Stream<GravityLog> getGravityLogs() {
+    try {
+      var result = piholeDataProvider.getGravityLogs().map((log) {
+        _log.fine(() => 'getGravityLogs: ${log.message}');
+        return log;
+      });
+      return result;
     } catch (e) {
       rethrow;
     }

@@ -1,25 +1,20 @@
-import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:pi_block/blocs/clients/clients_bloc.dart';
 import 'package:pi_block/blocs/groups/groups_bloc.dart'
     hide ResetItemToggleError;
-import 'package:pi_block/components/global_snackbar.dart';
-import 'package:pi_block/components/pi_validators.dart';
+import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/client_model.dart';
-import 'package:pi_block/models/clients_suggestion_model.dart';
-import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/theme/app_ui_context.dart';
-import 'package:pi_block/widgets/cancel_button.dart';
-import 'package:pi_block/widgets/circular_loader_in_button.dart';
+import 'package:pi_block/widgets/add_client_modal_widget.dart';
 import 'package:pi_block/widgets/confirm_action_bottom_sheet.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
-import 'package:pi_block/widgets/custom_multi_select_dropdown.dart';
+import 'package:pi_block/widgets/edit_client_modal_widget.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
@@ -50,19 +45,10 @@ class ClientsView extends StatelessWidget {
 
   void addClientFormModal(BuildContext ctx) {
     final pageIndexNotifier = ValueNotifier<int>(0);
-    PiValidators piValidators = PiValidators();
-
-    TextEditingController commentController = TextEditingController();
-    TextEditingController clientController = TextEditingController();
-    List<int> selectedGroupIds = [0];
     final clientsBloc = ctx.read<ClientsBloc>();
     final groupsBloc = ctx.read<GroupsBloc>();
-    final formKey = GlobalKey<FormState>();
     groupsBloc.add(ResetGroupsSelection());
     clientsBloc.add(LoadClientsSuggestions());
-
-    final theme = Theme.of(ctx);
-    final colorScheme = theme.colorScheme;
 
     WoltModalSheet.show(
       context: ctx,
@@ -82,245 +68,21 @@ class ClientsView extends StatelessWidget {
                 BlocProvider<ClientsBloc>.value(value: clientsBloc),
                 BlocProvider<GroupsBloc>.value(value: groupsBloc),
               ],
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Form(
-                        key: formKey,
-                        child: Builder(
-                          builder: (ctx) {
-                            return Column(
-                              children: [
-                                BlocBuilder<ClientsBloc, ClientsState>(
-                                  builder: (context, state) {
-                                    if (state.suggestionStatus ==
-                                        ClientsSuggestionsStateStatus.success) {
-                                      return CustomDropdown<
-                                        ClientSuggestionModel
-                                      >.search(
-                                        items: state.suggestions,
-                                        hintText: 'Suggested Clients',
-                                        overlayHeight: 400,
-                                        decoration: CustomDropdownDecoration(
-                                          searchFieldDecoration:
-                                              SearchFieldDecoration(
-                                                fillColor: colorScheme.surface,
-                                              ),
-                                          expandedFillColor:
-                                              colorScheme.surface,
-                                          closedFillColor: Colors.transparent,
-                                          closedBorder: BoxBorder.all(
-                                            color: Colors.transparent,
-                                          ),
-                                          closedErrorBorder: BoxBorder.all(
-                                            color: Colors.transparent,
-                                          ),
-                                          errorStyle: TextStyle(
-                                            color: colorScheme.error,
-                                          ),
-                                          listItemDecoration:
-                                              ListItemDecoration(
-                                                selectedColor: colorScheme
-                                                    .secondaryContainer,
-                                                highlightColor: colorScheme
-                                                    .onSecondaryContainer,
-                                              ),
-                                          hintStyle: theme.textTheme.bodyLarge,
-                                        ),
-
-                                        onChanged: (client) {
-                                          if (client == null) return;
-
-                                          // parse data of format 'hostname (ip)' or 'macaddress'
-                                          final text = client.toString();
-                                          clientController.text =
-                                              RegExp(
-                                                r'\(([^)]+)\)',
-                                              ).firstMatch(text)?.group(1) ??
-                                              text;
-
-                                          // Move cursor to end
-                                          clientController.selection =
-                                              TextSelection.fromPosition(
-                                                TextPosition(
-                                                  offset: clientController
-                                                      .text
-                                                      .length,
-                                                ),
-                                              );
-                                        },
-                                      );
-                                    }
-                                    return const SizedBox.shrink();
-                                  },
-                                ),
-
-                                const SizedBox(height: 10),
-
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: clientController,
-                                  maxLines: 1,
-                                  validator: (value) =>
-                                      piValidators.clientValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Client",
-                                    suffixIcon: IconButton(
-                                      onPressed: () => clientController.clear(),
-                                      icon: Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: commentController,
-                                  maxLines: 2,
-                                  validator: (value) =>
-                                      piValidators.commentValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Comment",
-                                    suffixIcon: IconButton(
-                                      onPressed: () =>
-                                          commentController.clear(),
-                                      icon: Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                BlocBuilder<GroupsBloc, GroupsState>(
-                                  builder: (context, state) {
-                                    if (state.status ==
-                                        GroupsStateStatus.success) {
-                                      return CustomMultiSelectDropdown<
-                                        GroupModel
-                                      >(
-                                        hintText: 'Select Groups',
-                                        items: state.groups,
-                                        selectedItems: state.selectedGroups,
-                                        labelBuilder: (g) => g.name,
-                                        validator: (list) => list.isEmpty
-                                            ? 'Select at least one group'
-                                            : null,
-                                        onChanged: (groups) {
-                                          context.read<GroupsBloc>().add(
-                                            GroupsSelectionChanged(groups),
-                                          );
-                                          // Updating list of groupIds to set it up for
-                                          // sending data to backend
-                                          selectedGroupIds = state
-                                              .selectedGroups
-                                              .map((g) => g.id)
-                                              .toList();
-                                        },
-                                      );
-                                    }
-                                    return const SizedBox.shrink();
-                                  },
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    BlocConsumer<ClientsBloc, ClientsState>(
-                                      listener: (context, state) {
-                                        if (state.itemStatus ==
-                                            ClientsItemStateStatus.success) {
-                                          if (Navigator.canPop(ctx)) {
-                                            Navigator.pop(ctx);
-                                          }
-                                        } else if (state.itemStatus ==
-                                            ClientsItemStateStatus.failure) {
-                                          PiUtils.handleGeneralException(
-                                            context,
-                                            state.error,
-                                          );
-                                        }
-                                      },
-                                      builder: (context, state) {
-                                        final isLoading =
-                                            state.itemStatus ==
-                                            ClientsItemStateStatus.loading;
-                                        return FilledButton(
-                                          onPressed: () {
-                                            if (formKey.currentState!
-                                                .validate()) {
-                                              ClientModel
-                                              clientModel = ClientModel(
-                                                client: clientController.text,
-                                                comment: commentController.text,
-                                                groups: selectedGroupIds,
-                                              );
-                                              context.read<ClientsBloc>().add(
-                                                AddClientsItem(
-                                                  clientModel: clientModel,
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                          child: isLoading
-                                              ? CircularLoaderInButton()
-                                              : const Text("Save"),
-                                        );
-                                      },
-                                    ),
-                                    CancelButton(
-                                      onPressed: () {
-                                        Navigator.pop(ctx);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              child: AddClientModal(),
             ),
           ),
         ];
       },
       modalTypeBuilder: (ctx) => PiUtils.getModalTypeBuilder(ctx),
     ).whenComplete(() {
-      commentController.dispose();
-      clientController.dispose();
       pageIndexNotifier.dispose();
     });
   }
 
   void editClientFormModal(BuildContext ctx, ClientModel clientModel) {
     final pageIndexNotifier = ValueNotifier<int>(0);
-    List<int> groups = clientModel.groups;
-    String comment = clientModel.comment;
-    PiValidators piValidators = PiValidators();
-    List<int> selectedGroupIds = groups;
     final clientsBloc = ctx.read<ClientsBloc>();
     final groupsBloc = ctx.read<GroupsBloc>();
-    final formKey = GlobalKey<FormState>();
-    TextEditingController commentController = TextEditingController(
-      text: comment,
-    );
 
     WoltModalSheet.show(
       context: ctx,
@@ -340,152 +102,13 @@ class ClientsView extends StatelessWidget {
                 BlocProvider<ClientsBloc>.value(value: clientsBloc),
                 BlocProvider<GroupsBloc>.value(value: groupsBloc),
               ],
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Form(
-                        key: formKey,
-                        child: Builder(
-                          builder: (ctx) {
-                            return Column(
-                              children: [
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: commentController,
-                                  maxLines: 3,
-                                  validator: (value) =>
-                                      piValidators.commentValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Comment",
-                                    suffixIcon: IconButton(
-                                      onPressed: () =>
-                                          commentController.clear(),
-                                      icon: const Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                BlocBuilder<GroupsBloc, GroupsState>(
-                                  builder: (context, state) {
-                                    if (state.status ==
-                                        GroupsStateStatus.success) {
-                                      final preSelectedGroupIds = groupsBloc
-                                          .state
-                                          .groups
-                                          .where(
-                                            (group) =>
-                                                groups.contains(group.id),
-                                          )
-                                          .toList();
-                                      return CustomMultiSelectDropdown<
-                                        GroupModel
-                                      >(
-                                        hintText: 'Select Groups',
-                                        items: state.groups,
-                                        selectedItems: preSelectedGroupIds,
-                                        labelBuilder: (g) => g.name,
-                                        validator: (list) => list.isEmpty
-                                            ? 'Select at least one group'
-                                            : null,
-                                        onChanged: (groups) {
-                                          context.read<GroupsBloc>().add(
-                                            GroupsSelectionChanged(groups),
-                                          );
-                                          // Updating list of groupIds to set it up for
-                                          // sending data to backend
-                                          selectedGroupIds = state
-                                              .selectedGroups
-                                              .map((g) => g.id)
-                                              .toList();
-                                        },
-                                      );
-                                    }
-                                    return const SizedBox.shrink();
-                                  },
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    BlocConsumer<ClientsBloc, ClientsState>(
-                                      listener: (context, state) {
-                                        if (state.itemStatus ==
-                                            ClientsItemStateStatus.success) {
-                                          if (Navigator.canPop(ctx)) {
-                                            Navigator.pop(ctx);
-                                          }
-                                        } else if (state.itemStatus ==
-                                            ClientsItemStateStatus.failure) {
-                                          PiUtils.handleGeneralException(
-                                            context,
-                                            state.error,
-                                          );
-                                        }
-                                      },
-                                      builder: (context, state) {
-                                        final isLoading =
-                                            state.itemStatus ==
-                                            ClientsItemStateStatus.loading;
-                                        return FilledButton(
-                                          onPressed: () {
-                                            if (formKey.currentState!
-                                                .validate()) {
-                                              context.read<ClientsBloc>().add(
-                                                UpdateClientsItem(
-                                                  clientModel: clientModel,
-                                                  comment:
-                                                      commentController.text,
-                                                  groups: selectedGroupIds,
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                          child: isLoading
-                                              ? CircularLoaderInButton()
-                                              : const Text("Save"),
-                                        );
-                                      },
-                                    ),
-                                    CancelButton(
-                                      onPressed: () {
-                                        Navigator.pop(ctx);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              child: EditClientModal(clientModel: clientModel),
             ),
           ),
         ];
       },
       modalTypeBuilder: (ctx) => PiUtils.getModalTypeBuilder(ctx),
     ).whenComplete(() {
-      commentController.dispose();
       pageIndexNotifier.dispose();
     });
   }
@@ -831,109 +454,95 @@ class ClientsView extends StatelessWidget {
   Widget build(BuildContext context) {
     context.ui; // updates AppUiTokens when theme changes
     return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Clients"),
-          elevation: 0,
-          leading: BackButton(),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: BlocConsumer<ClientsBloc, ClientsState>(
-                  listener: (context, state) {
-                    if (state.status == ClientsStateStatus.failure) {
-                      PiUtils.handleGeneralException(
-                        context,
-                        "An Error Occured",
-                      );
-                    } else if (state.itemStatus ==
-                        ClientsItemStateStatus.success) {
-                      GlobalSnackbar.info(context, state.message, "");
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state.status == ClientsStateStatus.loading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state.status == ClientsStateStatus.failure) {
-                      return const CustomErrorWidget(
-                        message: "Error loading data",
-                      );
-                    } else if (state.clients.isEmpty) {
-                      return const Center(
-                        child: EmptyWidget(message: "No data"),
-                      );
-                    } else if (state.status == ClientsStateStatus.success) {
-                      List<ClientModel> clientModels = state.clients;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  "Clients",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: BlocConsumer<ClientsBloc, ClientsState>(
+                listener: (context, state) {
+                  if (state.status == ClientsStateStatus.failure) {
+                    PiUtils.handleGeneralException(context, "An Error Occured");
+                  } else if (state.itemStatus ==
+                      ClientsItemStateStatus.success) {
+                    GlobalBanner.info(context, state.message, "");
+                  }
+                },
+                builder: (context, state) {
+                  if (state.status == ClientsStateStatus.loading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state.status == ClientsStateStatus.failure) {
+                    return const CustomErrorWidget(
+                      message: "Error loading data",
+                    );
+                  } else if (state.clients.isEmpty) {
+                    return const Center(child: EmptyWidget(message: "No data"));
+                  } else if (state.status == ClientsStateStatus.success) {
+                    List<ClientModel> clientModels = state.clients;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Clients",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                IconButton.filled(
-                                  onPressed: () {
-                                    addClientFormModal(context);
-                                  },
-                                  icon: Icon(Icons.add, size: 15),
-                                  visualDensity: VisualDensity.compact,
-                                ),
-                              ],
-                            ),
+                              ),
+                              IconButton.filled(
+                                onPressed: () {
+                                  addClientFormModal(context);
+                                },
+                                icon: Icon(Icons.add, size: 15),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                            ],
                           ),
-                          Expanded(
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                final width = constraints.maxWidth;
+                        ),
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final width = constraints.maxWidth;
 
-                                return width < 500
-                                    ? getClients(clientModels)
-                                    : GridView.builder(
-                                        padding: const EdgeInsets.all(10),
-                                        gridDelegate:
-                                            SliverGridDelegateWithMaxCrossAxisExtent(
-                                              crossAxisSpacing: 8,
-                                              mainAxisSpacing: 8,
-                                              mainAxisExtent: KGridCardSizes
-                                                  .clients["height"]!
-                                                  .toDouble(),
-                                              maxCrossAxisExtent: KGridCardSizes
-                                                  .clients["width"]!
-                                                  .toDouble(),
-                                            ),
-                                        itemCount: clientModels.length,
-                                        itemBuilder: (context, index) {
-                                          return _clientRowCard(
-                                            clientModels[index],
-                                            context,
-                                          );
-                                        },
-                                      );
-                              },
-                            ),
+                              return width < 500
+                                  ? getClients(clientModels)
+                                  : GridView.builder(
+                                      padding: const EdgeInsets.all(10),
+                                      gridDelegate:
+                                          SliverGridDelegateWithMaxCrossAxisExtent(
+                                            crossAxisSpacing: 8,
+                                            mainAxisSpacing: 8,
+                                            mainAxisExtent: KGridCardSizes
+                                                .clients["height"]!
+                                                .toDouble(),
+                                            maxCrossAxisExtent: KGridCardSizes
+                                                .clients["width"]!
+                                                .toDouble(),
+                                          ),
+                                      itemCount: clientModels.length,
+                                      itemBuilder: (context, index) {
+                                        return _clientRowCard(
+                                          clientModels[index],
+                                          context,
+                                        );
+                                      },
+                                    );
+                            },
                           ),
-                        ],
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -12,7 +12,7 @@
                 "--dart-define=ENV=dev",
                 "--dart-define=SERVER_URL=${env:PIHOLE_SERVER_URL}",
                 "--dart-define=API_TOKEN=${env:PIHOLE_API_TOKEN}"
-            ]
+            ],
         },
         {
             "name": "pi_block (profile mode)",
@@ -25,6 +25,50 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
-        }
+        },
+        {
+            "name": "pi_block (iOS)",
+            "request": "launch",
+            "type": "dart",
+            "args": [
+                "--dart-define=ENV=dev",
+                "--dart-define=SERVER_URL=${env:PIHOLE_SERVER_URL}",
+                "--dart-define=API_TOKEN=${env:PIHOLE_API_TOKEN}",
+            ],
+            "env": {
+                "KEYCHAIN_PATH": "${env:IOS_BUILD_KEYCHAIN_PATH}"
+            },
+            "preLaunchTask": "unlock-keychain"
+        },
+        {
+            "name": "pi_block (iOS profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile",
+            "args": [
+                "--dart-define=ENV=dev",
+                "--dart-define=SERVER_URL=${env:PIHOLE_SERVER_URL}",
+                "--dart-define=API_TOKEN=${env:PIHOLE_API_TOKEN}",
+            ],
+            "env": {
+                "KEYCHAIN_PATH": "${env:IOS_BUILD_KEYCHAIN_PATH}"
+            },
+            "preLaunchTask": "unlock-keychain"
+        },
+        {
+            "name": "pi_block (iOS release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release",
+            "args": [
+                "--dart-define=ENV=dev",
+                "--dart-define=SERVER_URL=${env:PIHOLE_SERVER_URL}",
+                "--dart-define=API_TOKEN=${env:PIHOLE_API_TOKEN}",
+            ],
+            "env": {
+                "KEYCHAIN_PATH": "${env:IOS_BUILD_KEYCHAIN_PATH}"
+            },
+            "preLaunchTask": "unlock-keychain"
+        },
     ]
 }

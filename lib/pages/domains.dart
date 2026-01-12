@@ -7,23 +7,19 @@ import 'package:material_symbols_icons/symbols.dart';
 import 'package:pi_block/blocs/domains/domains_bloc.dart';
 import 'package:pi_block/blocs/groups/groups_bloc.dart'
     hide ResetItemToggleError;
-import 'package:pi_block/components/global_snackbar.dart';
-import 'package:pi_block/components/pi_validators.dart';
+import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/domain_model.dart';
-import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/theme/app_ui_context.dart';
-import 'package:pi_block/widgets/cancel_button.dart';
-import 'package:pi_block/widgets/circular_loader_in_button.dart';
+import 'package:pi_block/widgets/add_domain_modal_widget.dart';
 import 'package:pi_block/widgets/confirm_action_bottom_sheet.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
-import 'package:pi_block/widgets/custom_multi_select_dropdown.dart';
 import 'package:pi_block/widgets/custom_tag.dart';
-import 'package:pi_block/widgets/custom_toggle_switch.dart';
+import 'package:pi_block/widgets/edit_domain_modal_widget.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
@@ -37,10 +33,6 @@ class DomainsPage extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (_) =>
-              DomainsBloc(context.read<PiholeRepository>())..add(LoadDomains()),
-        ),
-        BlocProvider(
-          create: (_) =>
               GroupsBloc(context.read<PiholeRepository>())..add(LoadGroups()),
         ),
       ],
@@ -49,21 +41,30 @@ class DomainsPage extends StatelessWidget {
   }
 }
 
-class DomainsView extends StatelessWidget {
+class DomainsView extends StatefulWidget {
   const DomainsView({super.key});
+
+  @override
+  State<DomainsView> createState() => _DomainsViewState();
+}
+
+class _DomainsViewState extends State<DomainsView> {
+  @override
+  void initState() {
+    super.initState();
+    // getting bloc from appView context as domains data is being shared by querylog and domains
+    // querylog is using it for allow/deny action and it needs to update domains
+    // if the bloc is page scoped then both data will be different and does not update
+    // unless a reload of bloc which happens only when logout and login
+    // Loading domains
+    context.read<DomainsBloc>().add(LoadDomains());
+  }
 
   void addDomainFormModal(BuildContext ctx) {
     final pageIndexNotifier = ValueNotifier<int>(0);
-    String type = "allow";
-    String kind = "exact";
-    PiValidators piValidators = PiValidators();
 
-    TextEditingController commentController = TextEditingController();
-    TextEditingController domainController = TextEditingController();
-    List<int> selectedGroupIds = [0];
     final domainsBloc = ctx.read<DomainsBloc>();
     final groupsBloc = ctx.read<GroupsBloc>();
-    final formKey = GlobalKey<FormState>();
     groupsBloc.add(ResetGroupsSelection());
 
     WoltModalSheet.show(
@@ -84,209 +85,21 @@ class DomainsView extends StatelessWidget {
                 BlocProvider<DomainsBloc>.value(value: domainsBloc),
                 BlocProvider<GroupsBloc>.value(value: groupsBloc),
               ],
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Form(
-                        key: formKey,
-                        child: Builder(
-                          builder: (ctx) {
-                            return Column(
-                              children: [
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: domainController,
-                                  maxLines: 1,
-                                  validator: (value) =>
-                                      piValidators.domainValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Domain",
-                                    suffixIcon: IconButton(
-                                      onPressed: () => domainController.clear(),
-                                      icon: Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: commentController,
-                                  maxLines: 2,
-                                  validator: (value) =>
-                                      piValidators.commentValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Comment",
-                                    suffixIcon: IconButton(
-                                      onPressed: () =>
-                                          commentController.clear(),
-                                      icon: Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                BlocBuilder<GroupsBloc, GroupsState>(
-                                  builder: (context, state) {
-                                    if (state.status ==
-                                        GroupsStateStatus.success) {
-                                      return CustomMultiSelectDropdown<
-                                        GroupModel
-                                      >(
-                                        hintText: 'Select Groups',
-                                        items: state.groups,
-                                        selectedItems: state.selectedGroups,
-                                        labelBuilder: (g) => g.name,
-                                        validator: (list) => list.isEmpty
-                                            ? 'Select at least one group'
-                                            : null,
-                                        onChanged: (groups) {
-                                          context.read<GroupsBloc>().add(
-                                            GroupsSelectionChanged(groups),
-                                          );
-                                          // Updating list of groupIds to set it up for
-                                          // sending data to backend
-                                          selectedGroupIds = state
-                                              .selectedGroups
-                                              .map((g) => g.id)
-                                              .toList();
-                                        },
-                                      );
-                                    }
-                                    return const SizedBox.shrink();
-                                  },
-                                ),
-                                const SizedBox(height: 10),
-                                Wrap(
-                                  spacing: 16,
-                                  runSpacing: 10,
-                                  children: [
-                                    CustomToggleSwitch(
-                                      initialLabelIndex: kind == "regex"
-                                          ? 0
-                                          : 1,
-                                      labels: ['Regex', 'Exact'],
-                                      onToggle: (index) => kind = (index == 0)
-                                          ? "regex"
-                                          : "exact",
-                                    ),
-                                    CustomToggleSwitch(
-                                      initialLabelIndex: type == "allow"
-                                          ? 0
-                                          : 1,
-                                      labels: ['Allow', 'Deny'],
-                                      onToggle: (index) => type = (index == 0)
-                                          ? "allow"
-                                          : "deny",
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    BlocConsumer<DomainsBloc, DomainsState>(
-                                      listener: (context, state) {
-                                        if (state.itemStatus ==
-                                            DomainsItemStateStatus.success) {
-                                          if (Navigator.canPop(ctx)) {
-                                            Navigator.pop(ctx);
-                                          }
-                                        } else if (state.itemStatus ==
-                                            DomainsItemStateStatus.failure) {
-                                          PiUtils.handleGeneralException(
-                                            context,
-                                            state.error,
-                                          );
-                                        }
-                                      },
-                                      builder: (context, state) {
-                                        final isLoading =
-                                            state.itemStatus ==
-                                            DomainsItemStateStatus.loading;
-                                        return FilledButton(
-                                          onPressed: () {
-                                            if (formKey.currentState!
-                                                .validate()) {
-                                              DomainModel
-                                              domainModel = DomainModel(
-                                                domain: domainController.text,
-                                                comment: commentController.text,
-                                                type: type,
-                                                kind: kind,
-                                                groups: selectedGroupIds,
-                                              );
-                                              context.read<DomainsBloc>().add(
-                                                AddDomainsItem(
-                                                  domainModel: domainModel,
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                          child: isLoading
-                                              ? CircularLoaderInButton()
-                                              : const Text("Save"),
-                                        );
-                                      },
-                                    ),
-                                    CancelButton(
-                                      onPressed: () {
-                                        Navigator.pop(ctx);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              child: AddDomainModal(),
             ),
           ),
         ];
       },
       modalTypeBuilder: (ctx) => PiUtils.getModalTypeBuilder(ctx),
     ).whenComplete(() {
-      commentController.dispose();
-      domainController.dispose();
       pageIndexNotifier.dispose();
     });
   }
 
   void editDomainFormModal(BuildContext ctx, DomainModel domainModel) {
     final pageIndexNotifier = ValueNotifier<int>(0);
-    String type = domainModel.type;
-    bool enabled = domainModel.enabled;
-    List<int> groups = domainModel.groups;
-    String comment = domainModel.comment;
-    String kind = domainModel.kind;
-    PiValidators piValidators = PiValidators();
-    List<int> selectedGroupIds = groups;
     final domainsBloc = ctx.read<DomainsBloc>();
     final groupsBloc = ctx.read<GroupsBloc>();
-    final formKey = GlobalKey<FormState>();
-    TextEditingController commentController = TextEditingController(
-      text: comment,
-    );
 
     WoltModalSheet.show(
       context: ctx,
@@ -306,186 +119,13 @@ class DomainsView extends StatelessWidget {
                 BlocProvider<DomainsBloc>.value(value: domainsBloc),
                 BlocProvider<GroupsBloc>.value(value: groupsBloc),
               ],
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Form(
-                        key: formKey,
-                        child: Builder(
-                          builder: (ctx) {
-                            return Column(
-                              children: [
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: commentController,
-                                  maxLines: 3,
-                                  validator: (value) =>
-                                      piValidators.commentValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Comment",
-                                    suffixIcon: IconButton(
-                                      onPressed: () =>
-                                          commentController.clear(),
-                                      icon: const Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                BlocBuilder<GroupsBloc, GroupsState>(
-                                  builder: (context, state) {
-                                    if (state.status ==
-                                        GroupsStateStatus.success) {
-                                      final preSelectedGroupIds = groupsBloc
-                                          .state
-                                          .groups
-                                          .where(
-                                            (group) =>
-                                                groups.contains(group.id),
-                                          )
-                                          .toList();
-                                      return CustomMultiSelectDropdown<
-                                        GroupModel
-                                      >(
-                                        hintText: 'Select Groups',
-                                        items: state.groups,
-                                        selectedItems: preSelectedGroupIds,
-                                        labelBuilder: (g) => g.name,
-                                        validator: (list) => list.isEmpty
-                                            ? 'Select at least one group'
-                                            : null,
-                                        onChanged: (groups) {
-                                          context.read<GroupsBloc>().add(
-                                            GroupsSelectionChanged(groups),
-                                          );
-                                          // Updating list of groupIds to set it up for
-                                          // sending data to backend
-                                          selectedGroupIds = state
-                                              .selectedGroups
-                                              .map((g) => g.id)
-                                              .toList();
-                                        },
-                                      );
-                                    }
-                                    return const SizedBox.shrink();
-                                  },
-                                ),
-                                const SizedBox(height: 10),
-                                Wrap(
-                                  spacing: 16,
-                                  runSpacing: 10,
-                                  children: [
-                                    CustomToggleSwitch(
-                                      initialLabelIndex: enabled ? 0 : 1,
-                                      labels: ['Enabled', 'Disabled'],
-                                      onToggle: (index) =>
-                                          enabled = (index == 0) ? true : false,
-                                    ),
-                                    CustomToggleSwitch(
-                                      initialLabelIndex: kind == "regex"
-                                          ? 0
-                                          : 1,
-                                      labels: ['Regex', 'Exact'],
-                                      onToggle: (index) => kind = (index == 0)
-                                          ? "regex"
-                                          : "exact",
-                                    ),
-                                    CustomToggleSwitch(
-                                      initialLabelIndex: type == "allow"
-                                          ? 0
-                                          : 1,
-                                      labels: ['Allow', 'Deny'],
-                                      onToggle: (index) => type = (index == 0)
-                                          ? "allow"
-                                          : "deny",
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    BlocConsumer<DomainsBloc, DomainsState>(
-                                      listener: (context, state) {
-                                        if (state.itemStatus ==
-                                            DomainsItemStateStatus.success) {
-                                          if (Navigator.canPop(ctx)) {
-                                            Navigator.pop(ctx);
-                                          }
-                                        } else if (state.itemStatus ==
-                                            DomainsItemStateStatus.failure) {
-                                          PiUtils.handleGeneralException(
-                                            context,
-                                            state.error,
-                                          );
-                                        }
-                                      },
-                                      builder: (context, state) {
-                                        final isLoading =
-                                            state.itemStatus ==
-                                            DomainsItemStateStatus.loading;
-                                        return FilledButton(
-                                          onPressed: () {
-                                            if (formKey.currentState!
-                                                .validate()) {
-                                              context.read<DomainsBloc>().add(
-                                                UpdateDomainsItem(
-                                                  domainModel: domainModel,
-                                                  type: type,
-                                                  kind: kind,
-                                                  comment:
-                                                      commentController.text,
-                                                  enabled: enabled,
-                                                  groups: selectedGroupIds,
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                          child: isLoading
-                                              ? CircularLoaderInButton()
-                                              : const Text("Save"),
-                                        );
-                                      },
-                                    ),
-                                    CancelButton(
-                                      onPressed: () {
-                                        Navigator.pop(ctx);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              child: EditDomainModal(domainModel: domainModel),
             ),
           ),
         ];
       },
       modalTypeBuilder: (ctx) => PiUtils.getModalTypeBuilder(ctx),
     ).whenComplete(() {
-      commentController.dispose();
       pageIndexNotifier.dispose();
     });
   }
@@ -951,7 +591,7 @@ class DomainsView extends StatelessWidget {
                       );
                     } else if (state.itemStatus ==
                         DomainsItemStateStatus.success) {
-                      GlobalSnackbar.info(context, state.message, "");
+                      GlobalBanner.info(context, state.message, "");
                     }
                   },
                   builder: (context, state) {
@@ -984,6 +624,25 @@ class DomainsView extends StatelessWidget {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
+                                const Spacer(),
+                                IconButton(
+                                  iconSize: 25,
+                                  padding: EdgeInsets.zero,
+                                  alignment: Alignment.center,
+                                  constraints: BoxConstraints(
+                                    minHeight: 25,
+                                    minWidth: 25,
+                                  ),
+                                  visualDensity: VisualDensity.compact,
+                                  tooltip: 'Refresh Domains',
+                                  onPressed: () {
+                                    context.read<DomainsBloc>().add(
+                                      LoadDomains(),
+                                    );
+                                  },
+                                  icon: Icon(Icons.refresh),
+                                ),
+                                const SizedBox(width: 5),
                                 IconButton.filled(
                                   onPressed: () {
                                     addDomainFormModal(context);
@@ -1000,7 +659,14 @@ class DomainsView extends StatelessWidget {
                                 final width = constraints.maxWidth;
 
                                 return width < 500
-                                    ? getDomains(domainModels)
+                                    ? RefreshIndicator(
+                                        onRefresh: () async {
+                                          context.read<DomainsBloc>().add(
+                                            LoadDomains(),
+                                          );
+                                        },
+                                        child: getDomains(domainModels),
+                                      )
                                     : GridView.builder(
                                         padding: const EdgeInsets.all(10),
                                         gridDelegate:

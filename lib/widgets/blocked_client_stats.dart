@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/stats/clients_stats/clients_blocked_bloc.dart';
+import 'package:pi_block/blocs/stats/stats_bloc.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/clients_stats_model.dart';
@@ -20,7 +21,15 @@ class BlockedClientStats extends StatelessWidget {
       create: (_) =>
           ClientsBlockedBloc(context.read<PiholeRepository>())
             ..add(LoadBlockedClients({"blocked": "true"})),
-      child: const BlockedClientsListView(),
+      child: BlocListener<StatsBloc, StatsState>(
+        listenWhen: (prev, curr) => prev.version != curr.version,
+        listener: (context, state) {
+          context.read<ClientsBlockedBloc>().add(
+            LoadBlockedClients({"blocked": "true"}),
+          );
+        },
+        child: BlockedClientsListView(),
+      ),
     );
   }
 }

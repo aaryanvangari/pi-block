@@ -133,6 +133,9 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
           message: "Successfully Updated",
         ),
       );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: GroupsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -161,6 +164,9 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
           message: "Successfully Added",
         ),
       );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: GroupsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -201,6 +207,9 @@ class GroupsBloc extends Bloc<GroupsEvent, GroupsState> {
           message: "Successfully Deleted",
         ),
       );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: GroupsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(

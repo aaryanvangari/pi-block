@@ -88,102 +88,93 @@ class _PiholeConfigurationViewState extends State<_PiholeConfigurationView> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Pi-Hole Configuration"),
-          elevation: 0,
-          leading: BackButton(),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: BlocConsumer<PiholeConfigBloc, PiholeConfigState>(
-                  listener: (context, state) {
-                    if (state is PiholeConfigFailure) {
-                      PiUtils.handleGeneralException(context, state.error);
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state is PiholeConfigFailure) {
-                      return const CustomErrorWidget(
-                        message: "Error loading data",
-                      );
-                    }
-                    if (state is PiholeConfigLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: BlocConsumer<PiholeConfigBloc, PiholeConfigState>(
+                listener: (context, state) {
+                  if (state is PiholeConfigFailure) {
+                    PiUtils.handleGeneralException(context, state.error);
+                  }
+                },
+                builder: (context, state) {
+                  if (state is PiholeConfigFailure) {
+                    return const CustomErrorWidget(
+                      message: "Error loading data",
+                    );
+                  }
+                  if (state is PiholeConfigLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                    if (state is PiholeConfigSuccess) {
-                      PiholeConfigModel piholeConfigModel =
-                          state.piholeConfigModel;
-                      final jsonMap = piholeConfigModel.config.toJson();
-                      codeEditorController ??=
-                          CodeLineEditingController.fromText(
-                            const JsonEncoder.withIndent(
-                              '  ',
-                            ).convert(piholeConfigModel),
-                          );
+                  if (state is PiholeConfigSuccess) {
+                    PiholeConfigModel piholeConfigModel =
+                        state.piholeConfigModel;
+                    final jsonMap = piholeConfigModel.config.toJson();
+                    codeEditorController ??= CodeLineEditingController.fromText(
+                      const JsonEncoder.withIndent(
+                        '  ',
+                      ).convert(piholeConfigModel),
+                    );
 
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SegmentedButton<int>(
-                                segments: const [
-                                  ButtonSegment(
-                                    value: 0,
-                                    label: Text('JSON Tree'),
-                                    icon: Icon(Icons.data_object),
-                                  ),
-                                  ButtonSegment(
-                                    value: 1,
-                                    label: Text('Raw JSON'),
-                                    icon: Icon(Icons.code),
-                                  ),
-                                ],
-                                selected: {_selectedIndex},
-                                onSelectionChanged: (value) {
-                                  setState(() {
-                                    _selectedIndex = value.first;
-                                  });
-                                },
-                              ),
-                              if (_selectedIndex == 0) ...[
-                                IconButton(
-                                  onPressed: () => controller.expandAllNodes(),
-                                  icon: const Icon(Icons.expand_rounded),
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SegmentedButton<int>(
+                              segments: const [
+                                ButtonSegment(
+                                  value: 0,
+                                  label: Text('JSON Tree'),
+                                  icon: Icon(Icons.data_object),
                                 ),
-                                IconButton(
-                                  onPressed: () =>
-                                      controller.collapseAllNodes(),
-                                  icon: const Icon(Icons.compress),
+                                ButtonSegment(
+                                  value: 1,
+                                  label: Text('Raw JSON'),
+                                  icon: Icon(Icons.code),
                                 ),
                               ],
+                              selected: {_selectedIndex},
+                              onSelectionChanged: (value) {
+                                setState(() {
+                                  _selectedIndex = value.first;
+                                });
+                              },
+                            ),
+                            if (_selectedIndex == 0) ...[
+                              IconButton(
+                                onPressed: () => controller.expandAllNodes(),
+                                icon: const Icon(Icons.expand_rounded),
+                              ),
+                              IconButton(
+                                onPressed: () => controller.collapseAllNodes(),
+                                icon: const Icon(Icons.compress),
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Expanded(
+                          child: IndexedStack(
+                            index: _selectedIndex,
+                            children: [
+                              jsonViewWidget(jsonMap),
+                              codeEditorViewWidget(),
                             ],
                           ),
-                          const SizedBox(height: 10),
-                          Expanded(
-                            child: IndexedStack(
-                              index: _selectedIndex,
-                              children: [
-                                jsonViewWidget(jsonMap),
-                                codeEditorViewWidget(),
-                              ],
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

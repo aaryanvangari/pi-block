@@ -147,3 +147,8 @@ class KLogsColors {
   static const Color warning = Colors.orange;
   static const Color error = Colors.red;
 }
+
+class KGravityLogsColors {
+  static const Color success = Colors.green;
+  static const Color error = Colors.red;
+}

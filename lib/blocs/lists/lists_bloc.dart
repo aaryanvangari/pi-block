@@ -111,12 +111,9 @@ class ListsBloc extends Bloc<ListsEvent, ListsState> {
           message: "Successfully Updated",
         ),
       );
-      emit(
-        state.copyWith(
-          itemStatus: ListsItemStateStatus.success,
-          message: "Successfully Updated",
-        ),
-      );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: ListsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -145,6 +142,9 @@ class ListsBloc extends Bloc<ListsEvent, ListsState> {
           message: "Successfully Added",
         ),
       );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: ListsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -183,6 +183,9 @@ class ListsBloc extends Bloc<ListsEvent, ListsState> {
           message: "Successfully Deleted",
         ),
       );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: ListsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(

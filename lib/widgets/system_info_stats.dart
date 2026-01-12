@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pi_block/blocs/dashboard/system_info_bloc.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/system_model.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
@@ -15,12 +14,7 @@ class SystemInfoStats extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          SystemInfoBloc(context.read<PiholeRepository>())
-            ..add(LoadSystemInfo()),
-      child: const SystemInfoStatsView(),
-    );
+    return const SystemInfoStatsView();
   }
 }
 

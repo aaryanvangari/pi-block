@@ -58,21 +58,22 @@ class _LogsViewState extends State<_LogsView> {
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Logs'),
-          bottom: const TabBar(
+      child: Column(
+        children: [
+          const TabBar(
             tabs: [
               Tab(text: 'Dnsmasq'),
               Tab(text: 'FTL'),
               Tab(text: 'Webserver'),
             ],
           ),
-        ),
-        body: const TabBarView(
-          physics: NeverScrollableScrollPhysics(),
-          children: [DnsmasqLogView(), FtlLogView(), WebserverLogView()],
-        ),
+          const Expanded(
+            child: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
+              children: [DnsmasqLogView(), FtlLogView(), WebserverLogView()],
+            ),
+          ),
+        ],
       ),
     );
   }

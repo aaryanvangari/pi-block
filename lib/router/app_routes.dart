@@ -13,6 +13,7 @@ abstract class AppRoutes {
   static const String groups = 'groups';
   static const String clients = 'clients';
   static const String logs = 'logs';
+  static const String actions = 'actions';
   static const String piholeConfiguration = 'piholeConfiguration';
 
   // Route paths
@@ -29,7 +30,68 @@ abstract class AppRoutes {
   static const String groupsPath = '/groups';
   static const String clientsPath = '/clients';
   static const String logsPath = '/logs';
+  static const String actionsPath = '/actions';
   static const String piholeConfigurationPath = '/pihole-configuration';
 
   const AppRoutes._(); // Prevent instantiation
+
+  static const Map<String, String> routeTitles = {
+    '/groups': 'Groups',
+    '/clients': 'Clients',
+    '/logs': 'Logs',
+    '/pihole-configuration': 'Pi-Hole Configuration',
+    '/actions': 'Actions',
+    '/settings': 'Settings',
+    '/notifications': 'Notifications',
+    '/local-dns': 'Local DNS',
+  };
+}
+
+enum AppDestination {
+  dashboard,
+  stats,
+  querylog,
+  domains,
+  lists,
+  groups,
+  clients,
+  logs,
+  actions,
+  notifications,
+  piholeConfiguration,
+  settings,
+  localDns,
+}
+
+extension AppDestinationExtension on AppDestination {
+  int get branchIndex {
+    switch (this) {
+      case AppDestination.dashboard:
+        return 0;
+      case AppDestination.stats:
+        return 1;
+      case AppDestination.querylog:
+        return 2;
+      case AppDestination.domains:
+        return 3;
+      case AppDestination.lists:
+        return 4;
+      case AppDestination.settings:
+        return 5;
+      case AppDestination.notifications:
+        return 6;
+      case AppDestination.localDns:
+        return 7;
+      case AppDestination.groups:
+        return 8;
+      case AppDestination.clients:
+        return 9;
+      case AppDestination.logs:
+        return 10;
+      case AppDestination.actions:
+        return 11;
+      case AppDestination.piholeConfiguration:
+        return 12;
+    }
+  }
 }

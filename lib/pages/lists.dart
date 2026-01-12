@@ -6,24 +6,20 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pi_block/blocs/groups/groups_bloc.dart'
     hide ResetItemToggleError;
 import 'package:pi_block/blocs/lists/lists_bloc.dart';
-import 'package:pi_block/components/global_snackbar.dart';
-import 'package:pi_block/components/pi_validators.dart';
+import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
-import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/theme/app_ui_context.dart';
-import 'package:pi_block/widgets/cancel_button.dart';
-import 'package:pi_block/widgets/circular_loader_in_button.dart';
+import 'package:pi_block/widgets/add_list_modal_widget.dart';
 import 'package:pi_block/widgets/confirm_action_bottom_sheet.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
 import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
-import 'package:pi_block/widgets/custom_multi_select_dropdown.dart';
 import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/components/utils.dart';
-import 'package:pi_block/widgets/custom_toggle_switch.dart';
+import 'package:pi_block/widgets/edit_list_modal_widget.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
@@ -447,19 +443,8 @@ class ListsView extends StatelessWidget {
 
   void editListFormModal(BuildContext ctx, ListsModel listsModel) {
     final pageIndexNotifier = ValueNotifier<int>(0);
-    String type = listsModel.type;
-    bool enabled = listsModel.enabled;
-    List<int> groups = listsModel.groups;
-    String comment = listsModel.comment;
-    PiValidators piValidators = PiValidators();
-    List<int> selectedGroupIds = groups;
     final listsBloc = ctx.read<ListsBloc>();
     final groupsBloc = ctx.read<GroupsBloc>();
-    final formKey = GlobalKey<FormState>();
-
-    TextEditingController commentController = TextEditingController(
-      text: comment,
-    );
 
     WoltModalSheet.show(
       context: ctx,
@@ -479,180 +464,20 @@ class ListsView extends StatelessWidget {
                 BlocProvider<ListsBloc>.value(value: listsBloc),
                 BlocProvider<GroupsBloc>.value(value: groupsBloc),
               ],
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Form(
-                        key: formKey,
-                        child: Builder(
-                          builder: (ctx) {
-                            return Column(
-                              children: [
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: commentController,
-                                  maxLines: 3,
-                                  validator: (value) =>
-                                      piValidators.commentValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Comment",
-                                    suffixIcon: IconButton(
-                                      onPressed: () =>
-                                          commentController.clear(),
-                                      icon: Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                BlocBuilder<GroupsBloc, GroupsState>(
-                                  builder: (context, state) {
-                                    if (state.status ==
-                                        GroupsStateStatus.success) {
-                                      final preSelectedGroupIds = groupsBloc
-                                          .state
-                                          .groups
-                                          .where(
-                                            (group) =>
-                                                groups.contains(group.id),
-                                          )
-                                          .toList();
-                                      return CustomMultiSelectDropdown<
-                                        GroupModel
-                                      >(
-                                        hintText: 'Select Groups',
-                                        items: state.groups,
-                                        selectedItems: preSelectedGroupIds,
-                                        labelBuilder: (g) => g.name,
-                                        validator: (list) => list.isEmpty
-                                            ? 'Select at least one group'
-                                            : null,
-                                        onChanged: (groups) {
-                                          context.read<GroupsBloc>().add(
-                                            GroupsSelectionChanged(groups),
-                                          );
-                                          // Updating list of groupIds to set it up for
-                                          // sending data to backend
-                                          selectedGroupIds = state
-                                              .selectedGroups
-                                              .map((g) => g.id)
-                                              .toList();
-                                        },
-                                      );
-                                    }
-                                    return const SizedBox.shrink();
-                                  },
-                                ),
-                                const SizedBox(height: 10),
-                                Wrap(
-                                  spacing: 16,
-                                  runSpacing: 10,
-                                  children: [
-                                    CustomToggleSwitch(
-                                      initialLabelIndex: enabled ? 0 : 1,
-                                      labels: ['Enabled', 'Disabled'],
-                                      onToggle: (index) => enabled = index == 0,
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 15),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    BlocConsumer<ListsBloc, ListsState>(
-                                      listener: (context, state) {
-                                        if (state.itemStatus ==
-                                            ListsItemStateStatus.success) {
-                                          if (Navigator.canPop(ctx)) {
-                                            Navigator.pop(ctx);
-                                          }
-                                        } else if (state.itemStatus ==
-                                            ListsItemStateStatus.failure) {
-                                          PiUtils.handleGeneralException(
-                                            context,
-                                            state.error,
-                                          );
-                                        }
-                                      },
-                                      builder: (context, state) {
-                                        final isLoading =
-                                            state.itemStatus ==
-                                            ListsItemStateStatus.loading;
-                                        return FilledButton(
-                                          onPressed: () {
-                                            if (formKey.currentState!
-                                                .validate()) {
-                                              listsBloc.add(
-                                                UpdateListsItem(
-                                                  listsModel: listsModel,
-                                                  type: type,
-                                                  comment:
-                                                      commentController.text,
-                                                  enabled: enabled,
-                                                  groups: selectedGroupIds,
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                          child: isLoading
-                                              ? CircularLoaderInButton()
-                                              : Text("Save"),
-                                        );
-                                      },
-                                    ),
-                                    CancelButton(
-                                      onPressed: () {
-                                        Navigator.pop(ctx);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              child: EditListModal(listsModel: listsModel),
             ),
           ),
         ];
       },
       modalTypeBuilder: (ctx) => PiUtils.getModalTypeBuilder(ctx),
     ).whenComplete(() {
-      commentController.dispose();
       pageIndexNotifier.dispose();
     });
   }
 
   void addListFormModal(BuildContext ctx) {
     final pageIndexNotifier = ValueNotifier<int>(0);
-    String type = "allow";
-    PiValidators piValidators = PiValidators();
-
-    TextEditingController commentController = TextEditingController();
-    TextEditingController addressController = TextEditingController();
-    List<int> selectedGroupIds = [0];
     final listsBloc = ctx.read<ListsBloc>();
-    final formKey = GlobalKey<FormState>();
     final groupsBloc = ctx.read<GroupsBloc>();
     groupsBloc.add(ResetGroupsSelection());
 
@@ -674,181 +499,13 @@ class ListsView extends StatelessWidget {
                 BlocProvider<ListsBloc>.value(value: listsBloc),
                 BlocProvider<GroupsBloc>.value(value: groupsBloc),
               ],
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: 15,
-                    left: 15,
-                    right: 15,
-                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 15,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Form(
-                        key: formKey,
-                        child: Builder(
-                          builder: (ctx) {
-                            return Column(
-                              children: [
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: addressController,
-                                  maxLines: 1,
-                                  validator: (value) =>
-                                      piValidators.addressValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Address",
-                                    suffixIcon: IconButton(
-                                      onPressed: () =>
-                                          addressController.clear(),
-                                      icon: Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                TextFormField(
-                                  autovalidateMode:
-                                      AutovalidateMode.onUserInteraction,
-                                  controller: commentController,
-                                  maxLines: 2,
-                                  validator: (value) =>
-                                      piValidators.commentValidator(value),
-                                  decoration: InputDecoration(
-                                    labelText: "Comment",
-                                    suffixIcon: IconButton(
-                                      onPressed: () =>
-                                          commentController.clear(),
-                                      icon: Icon(Icons.clear),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                BlocBuilder<GroupsBloc, GroupsState>(
-                                  builder: (context, state) {
-                                    if (state.status ==
-                                        GroupsStateStatus.success) {
-                                      return CustomMultiSelectDropdown<
-                                        GroupModel
-                                      >(
-                                        hintText: 'Select Groups',
-                                        items: state.groups,
-                                        selectedItems: state.selectedGroups,
-                                        labelBuilder: (g) => g.name,
-                                        validator: (list) => list.isEmpty
-                                            ? 'Select at least one group'
-                                            : null,
-                                        onChanged: (groups) {
-                                          context.read<GroupsBloc>().add(
-                                            GroupsSelectionChanged(groups),
-                                          );
-                                          // Updating list of groupIds to set it up for
-                                          // sending data to backend
-                                          selectedGroupIds = state
-                                              .selectedGroups
-                                              .map((g) => g.id)
-                                              .toList();
-                                        },
-                                      );
-                                    }
-                                    return const SizedBox.shrink();
-                                  },
-                                ),
-                                const SizedBox(height: 10),
-                                Wrap(
-                                  spacing: 16,
-                                  runSpacing: 10,
-                                  children: [
-                                    CustomToggleSwitch(
-                                      initialLabelIndex: type == "allow"
-                                          ? 0
-                                          : 1,
-                                      labels: ['Allow', 'BLock'],
-                                      onToggle: (index) =>
-                                          type = index == 0 ? "allow" : "block",
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    BlocConsumer<ListsBloc, ListsState>(
-                                      listener: (context, state) {
-                                        if (state.itemStatus ==
-                                            ListsItemStateStatus.success) {
-                                          if (Navigator.canPop(ctx)) {
-                                            Navigator.pop(ctx);
-                                          }
-                                        } else if (state.itemStatus ==
-                                            ListsItemStateStatus.failure) {
-                                          PiUtils.handleGeneralException(
-                                            context,
-                                            state.error,
-                                          );
-                                        }
-                                      },
-                                      builder: (context, state) {
-                                        final isLoading =
-                                            state.itemStatus ==
-                                            ListsItemStateStatus.loading;
-                                        return FilledButton(
-                                          onPressed: () {
-                                            if (formKey.currentState!
-                                                .validate()) {
-                                              ListsModel
-                                              listsModel = ListsModel(
-                                                type: type,
-                                                comment: commentController.text,
-                                                address: addressController.text,
-                                                groups: selectedGroupIds,
-                                              );
-                                              context.read<ListsBloc>().add(
-                                                AddListsItem(
-                                                  listsModel: listsModel,
-                                                ),
-                                              );
-                                            }
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                          ),
-                                          child: isLoading
-                                              ? CircularLoaderInButton()
-                                              : const Text("Save"),
-                                        );
-                                      },
-                                    ),
-                                    CancelButton(
-                                      onPressed: () {
-                                        Navigator.pop(ctx);
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              child: AddListModal(),
             ),
           ),
         ];
       },
       modalTypeBuilder: (ctx) => PiUtils.getModalTypeBuilder(ctx),
     ).whenComplete(() {
-      commentController.dispose();
-      addressController.dispose();
       pageIndexNotifier.dispose();
     });
   }
@@ -948,7 +605,7 @@ class ListsView extends StatelessWidget {
                           );
                         } else if (state.itemStatus ==
                             ListsItemStateStatus.success) {
-                          GlobalSnackbar.info(context, state.message, "");
+                          GlobalBanner.info(context, state.message, "");
                         }
                       },
                       builder: (context, state) {
@@ -984,6 +641,25 @@ class ListsView extends StatelessWidget {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
+                                    const Spacer(),
+                                    IconButton(
+                                      iconSize: 25,
+                                      padding: EdgeInsets.zero,
+                                      alignment: Alignment.center,
+                                      constraints: BoxConstraints(
+                                        minHeight: 25,
+                                        minWidth: 25,
+                                      ),
+                                      visualDensity: VisualDensity.compact,
+                                      tooltip: 'Refresh Lists',
+                                      onPressed: () {
+                                        context.read<ListsBloc>().add(
+                                          LoadLists(),
+                                        );
+                                      },
+                                      icon: Icon(Icons.refresh),
+                                    ),
+                                    const SizedBox(width: 5),
                                     IconButton.filled(
                                       onPressed: () {
                                         addListFormModal(context);
@@ -1000,7 +676,14 @@ class ListsView extends StatelessWidget {
                                     final width = constraints.maxWidth;
 
                                     return width < 500
-                                        ? getLists(listsModels)
+                                        ? RefreshIndicator(
+                                            onRefresh: () async {
+                                              context.read<ListsBloc>().add(
+                                                LoadLists(),
+                                              );
+                                            },
+                                            child: getLists(listsModels),
+                                          )
                                         : GridView.builder(
                                             padding: const EdgeInsets.all(10),
                                             gridDelegate:

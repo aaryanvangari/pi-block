@@ -6,6 +6,7 @@ import 'package:pi_block/constants/api_urls.dart';
 import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/client_model.dart';
 import 'package:pi_block/models/domain_model.dart';
+import 'package:pi_block/models/gravity_log_model.dart';
 import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/models/lists_model.dart';
 
@@ -676,6 +677,15 @@ class PiholeDataProvider {
 
       _log.fine(() => 'getWebserverLogs: ${result.toString()}');
 
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Stream<GravityLog> getGravityLogs() {
+    try {
+      var result = piHttpClient.postStream(ApiUrls.gravityLogs, null, null);
       return result;
     } catch (e) {
       rethrow;

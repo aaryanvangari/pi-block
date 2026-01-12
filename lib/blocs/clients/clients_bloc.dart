@@ -92,6 +92,9 @@ class ClientsBloc extends Bloc<ClientsEvent, ClientsState> {
           message: "Successfully Updated",
         ),
       );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: ClientsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -119,6 +122,9 @@ class ClientsBloc extends Bloc<ClientsEvent, ClientsState> {
           message: "Successfully Added",
         ),
       );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: ClientsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -159,6 +165,9 @@ class ClientsBloc extends Bloc<ClientsEvent, ClientsState> {
           message: "Successfully Deleted",
         ),
       );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: ClientsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(

@@ -125,6 +125,9 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
           message: "Successfully Updated",
         ),
       );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: DomainsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -153,6 +156,9 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
           message: "Successfully Added",
         ),
       );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: DomainsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(
@@ -193,6 +199,9 @@ class DomainsBloc extends Bloc<DomainsEvent, DomainsState> {
           message: "Successfully Deleted",
         ),
       );
+
+      /// Notification shows second time if we did not reset it
+      emit(state.copyWith(itemStatus: DomainsItemStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(

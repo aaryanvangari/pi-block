@@ -15,7 +15,7 @@ class CustomToggleSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ToggleSwitch(
-      minWidth: 70.0,
+      minWidth: 80.0,
       minHeight: 30.0,
       fontSize: 12.0,
       cornerRadius: 20,

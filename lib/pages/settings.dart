@@ -48,101 +48,94 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Settings"),
-        elevation: 0,
-        leading: BackButton(),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                    vertical: 8,
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        "Application Settings",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10.0,
+                  vertical: 8,
                 ),
-                const SizedBox(height: 10),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Theme", style: TextStyle(fontSize: 16)),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<ThemeModeOption>(
-                            borderRadius: BorderRadius.circular(10),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            value: _currentMode,
-                            items: [
-                              DropdownMenuItem(
-                                value: ThemeModeOption.system,
-                                child: Text("System"),
-                              ),
-                              DropdownMenuItem(
-                                value: ThemeModeOption.light,
-                                child: Text("Light"),
-                              ),
-                              DropdownMenuItem(
-                                value: ThemeModeOption.dark,
-                                child: Text("Dark"),
-                              ),
-                            ],
-                            onChanged: _onThemeModeChanged,
-                          ),
-                        ),
+                child: Column(
+                  children: [
+                    Text(
+                      "Application Settings",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                    ],
-                  ),
-                ),
-                KDivider.sectionDivider,
-              ],
-            ),
-            FutureBuilder(
-              future: PackageInfo.fromPlatform().then((info) => info),
-              builder: (context, AsyncSnapshot snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasData) {
-                  var packageInfo = snapshot.data;
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text('Version: ${packageInfo.version.toString()}'),
-                        Text('Build: ${packageInfo.buildNumber.toString()}'),
-                      ],
                     ),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-          ],
-        ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0,
+                  vertical: 8,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Theme", style: TextStyle(fontSize: 16)),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<ThemeModeOption>(
+                          borderRadius: BorderRadius.circular(10),
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          value: _currentMode,
+                          items: [
+                            DropdownMenuItem(
+                              value: ThemeModeOption.system,
+                              child: Text("System"),
+                            ),
+                            DropdownMenuItem(
+                              value: ThemeModeOption.light,
+                              child: Text("Light"),
+                            ),
+                            DropdownMenuItem(
+                              value: ThemeModeOption.dark,
+                              child: Text("Dark"),
+                            ),
+                          ],
+                          onChanged: _onThemeModeChanged,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              KDivider.sectionDivider,
+            ],
+          ),
+          FutureBuilder(
+            future: PackageInfo.fromPlatform().then((info) => info),
+            builder: (context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasData) {
+                var packageInfo = snapshot.data;
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Text('Version: ${packageInfo.version.toString()}'),
+                      Text('Build: ${packageInfo.buildNumber.toString()}'),
+                    ],
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ],
       ),
     );
   }

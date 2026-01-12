@@ -6,15 +6,8 @@ class LocalDnsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("Local DNS"),
-          elevation: 0,
-          leading: BackButton(),
-        ),
-        body: SingleChildScrollView(
-          child: Column(children: [Text("Local DNS")]),
-        ),
+      child: SingleChildScrollView(
+        child: Column(children: [Text("Local DNS")]),
       ),
     );
   }
