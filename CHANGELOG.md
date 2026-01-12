@@ -1,5 +1,50 @@
 # Changelog
 
+## [v5.4.0](https://github.com/aaryanvangari/pi-block/compare/v5.3.1...v5.4.0) (2026-01-12)
+
+### ✨ Features
+
+* add launch configurations for ios ([ac9077f](https://github.com/aaryanvangari/pi-block/commit/ac9077fa976bddb2a56f0e038d0e8bc135b25e73)).
+* change rendering of summary grid to fix overflow issues ([08d8f42](https://github.com/aaryanvangari/pi-block/commit/08d8f42279343f0480132fe4ae0f211ccc96996d)).
+* different layouts for desktop, mobile ([baa4a8b](https://github.com/aaryanvangari/pi-block/commit/baa4a8bfc44bbcd4f1b262f4128b32836e76525e)).
+* add actions page, implement 'update gravity' ([e525a83](https://github.com/aaryanvangari/pi-block/commit/e525a83c6f386f79bbfa2d559f071b6d10c085f1)).
+* add documentation ([51835fe](https://github.com/aaryanvangari/pi-block/commit/51835fe5763e882464e5f01db03958ba00bf67bf)).
+* session time is derived using ticker instead of timers ([7b150ff](https://github.com/aaryanvangari/pi-block/commit/7b150ff3fdf3ce288d1c3acfda72b1169bc61560)).
+* organize timers ([e769cf7](https://github.com/aaryanvangari/pi-block/commit/e769cf7153ffb570a16605905ded6c6e503c2f06)).
+* polling coordinator ([3b1b6ee](https://github.com/aaryanvangari/pi-block/commit/3b1b6eed72178b46c51726d4dcc9fb2b45d59ff1)).
+* pull to refresh for mobile and refresh button for desktop in stats page ([b610539](https://github.com/aaryanvangari/pi-block/commit/b61053948678a6ce4726f43e23cddc5eae1f915c)).
+* pull to refresh for mobile and refresh button for desktop ([a9be1c9](https://github.com/aaryanvangari/pi-block/commit/a9be1c957102048c4cad898bdbf274e1f10483b1)).
+* add missing cupertino icons package ([0fa3888](https://github.com/aaryanvangari/pi-block/commit/0fa3888f5b5a21e14c2e8f1a43c4d766522f66ba)).
+* setup ios builds ([7dd7ad9](https://github.com/aaryanvangari/pi-block/commit/7dd7ad90e77e8a52b8255d49d0882572bca6cd4d)).
+* platform aware notifications, remove snackbar ([d4bbc0d](https://github.com/aaryanvangari/pi-block/commit/d4bbc0dc6002f45cb6c8568e4650b7f36136d1e5)).
+* move add and edit to separate widgets, fix scaffold issues as well ([9089f7b](https://github.com/aaryanvangari/pi-block/commit/9089f7bef68b2b15176b8cc140f68148ce249f5d)).
+* platform aware info icon buton on login page ([a672856](https://github.com/aaryanvangari/pi-block/commit/a672856616bb0d649a542b5b9a25f476cb210d28)).
+* update icons for android and setup icons for iOS ([2f05f97](https://github.com/aaryanvangari/pi-block/commit/2f05f9702862db6a2c78ad55b8c66b50a59c4c1b)).
+
+### 🐛 Bug Fixes
+
+* fix auto rotate layout issues in mobile mode ([acdb898](https://github.com/aaryanvangari/pi-block/commit/acdb898a2e9a8feedc4dd82d8e16522d590c30f1)).
+* fix title spacing in desktop mode ([291056b](https://github.com/aaryanvangari/pi-block/commit/291056b159e751acf384a5f0bbba9a84bcf46ddb)).
+* move blocs to app view so that layout changes doesnt impact polling mechanism ([7afca70](https://github.com/aaryanvangari/pi-block/commit/7afca70ad39e96a7184e00fe205e4a72d868ae9f)).
+* notifications count not updating after deleting ([8461fc0](https://github.com/aaryanvangari/pi-block/commit/8461fc0d8e71ea11198ddc2a515e77f2bd4c73cf)).
+* fix title alignment ([1f8e645](https://github.com/aaryanvangari/pi-block/commit/1f8e645cfc67789dbec5ff3f8ac2287a35f983fc)).
+* allow/deny in querylog not updating in domains page ([86d6673](https://github.com/aaryanvangari/pi-block/commit/86d66730ef072ac0a6dbf91b2da6fcf14d51c762)).
+* groups are not binding in dropdown for edit for first time ([ac4dd72](https://github.com/aaryanvangari/pi-block/commit/ac4dd72e585f0bc242b41a74029db1927f6a1e73)).
+* increase max lenght of exception message to display on notification title ([0a28011](https://github.com/aaryanvangari/pi-block/commit/0a28011f60b78c9c4d4cf62450dc1bcaaf691b49)).
+* notifications are popped multiple times ([fdab48e](https://github.com/aaryanvangari/pi-block/commit/fdab48ee866d5d456dceb2f1699d13a5b2f9c99e)).
+* increase max size to display overflowed text in iOS ([dca5e10](https://github.com/aaryanvangari/pi-block/commit/dca5e104156538c3ff7ef3f9bc548f2b1b8577e2)).
+* scaffold issues where black bar appears on top and bottom in iOS ([2c29dc8](https://github.com/aaryanvangari/pi-block/commit/2c29dc8978ba751027d3b2b533a9da508ed739ef)).
+* search and pager issues ([2177837](https://github.com/aaryanvangari/pi-block/commit/2177837eff2936bb4621ea7ace91844cbc6a6687)).
+
+### 📝 Documentation
+
+* add actions and iphone testing ([d1ebd4c](https://github.com/aaryanvangari/pi-block/commit/d1ebd4c0aee6ed7ab2f5a9853147da987f6d7f19)).
+
+### 🔨 Refactoring
+
+* dart format suggestions ([40511cc](https://github.com/aaryanvangari/pi-block/commit/40511cc64d43e6bd4b9ea916806d36e6088ce559)).
+* remove commented code ([c91dbf0](https://github.com/aaryanvangari/pi-block/commit/c91dbf0e15a420af49ab8a0be316bb03f16bdba7)).
+
 ## [v5.3.1](https://github.com/aaryanvangari/pi-block/compare/v5.3.0...v5.3.1) (2026-01-04)
 
 ### 🐛 Bug Fixes
