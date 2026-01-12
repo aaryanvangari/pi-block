@@ -26,9 +26,7 @@ class MetricsBloc extends Bloc<MetricsEvent, MetricsState> {
     on<StartPolling>(_startPolling);
     on<StopPolling>(_stopPolling);
     pollingState.addListener(() => _onPollingState(pollingState.value));
-    _log.fine(
-      'PollAgent: MetricsBloc hash=${identityHashCode(this)}',
-    );
+    _log.fine('PollAgent: MetricsBloc hash=${identityHashCode(this)}');
   }
 
   void _onPollingState(bool shouldPoll) {
@@ -159,7 +157,6 @@ final class StartPolling extends MetricsEvent {}
 
 final class StopPolling extends MetricsEvent {}
 
-
 enum VersionStateStatus { initial, loading, success, failure, empty }
 
 class MetricsState extends Equatable {
@@ -171,7 +168,7 @@ class MetricsState extends Equatable {
     this.cache = const SectionState(),
     this.replies = const SectionState(),
     this.dhcp = const SectionState(),
-    this.version = 0
+    this.version = 0,
   });
 
   MetricsState copyWith({
@@ -184,7 +181,7 @@ class MetricsState extends Equatable {
       cache: cache ?? this.cache,
       replies: replies ?? this.replies,
       dhcp: dhcp ?? this.dhcp,
-      version: version ?? this.version
+      version: version ?? this.version,
     );
   }
 

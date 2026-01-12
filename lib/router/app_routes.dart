@@ -95,4 +95,3 @@ extension AppDestinationExtension on AppDestination {
     }
   }
 }
-

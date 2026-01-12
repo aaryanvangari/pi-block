@@ -607,11 +607,10 @@ class PiholeRepository {
 
   Stream<GravityLog> getGravityLogs() {
     try {
-      var result = piholeDataProvider.getGravityLogs()
-        .map((log) {
-          _log.fine(() => 'getGravityLogs: ${log.message}');
-          return log;
-        });
+      var result = piholeDataProvider.getGravityLogs().map((log) {
+        _log.fine(() => 'getGravityLogs: ${log.message}');
+        return log;
+      });
       return result;
     } catch (e) {
       rethrow;

@@ -61,8 +61,7 @@ class _AddDomainModalState extends State<AddDomainModal> {
                       children: [
                         TextFormField(
                           focusNode: domainFieldNode,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: domainController,
                           maxLines: 1,
                           validator: (value) =>
@@ -78,8 +77,7 @@ class _AddDomainModalState extends State<AddDomainModal> {
                         const SizedBox(height: 10),
                         TextFormField(
                           focusNode: commentFieldNode,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: commentController,
                           maxLines: 2,
                           validator: (value) =>
@@ -87,8 +85,7 @@ class _AddDomainModalState extends State<AddDomainModal> {
                           decoration: InputDecoration(
                             labelText: "Comment",
                             suffixIcon: IconButton(
-                              onPressed: () =>
-                                  commentController.clear(),
+                              onPressed: () => commentController.clear(),
                               icon: Icon(Icons.clear),
                             ),
                           ),
@@ -96,11 +93,8 @@ class _AddDomainModalState extends State<AddDomainModal> {
                         const SizedBox(height: 10),
                         BlocBuilder<GroupsBloc, GroupsState>(
                           builder: (context, state) {
-                            if (state.status ==
-                                GroupsStateStatus.success) {
-                              return CustomMultiSelectDropdown<
-                                GroupModel
-                              >(
+                            if (state.status == GroupsStateStatus.success) {
+                              return CustomMultiSelectDropdown<GroupModel>(
                                 hintText: 'Select Groups',
                                 items: state.groups,
                                 selectedItems: state.selectedGroups,
@@ -124,29 +118,22 @@ class _AddDomainModalState extends State<AddDomainModal> {
                           runSpacing: 10,
                           children: [
                             CustomToggleSwitch(
-                              initialLabelIndex: kind == "regex"
-                                  ? 0
-                                  : 1,
+                              initialLabelIndex: kind == "regex" ? 0 : 1,
                               labels: ['Regex', 'Exact'],
-                              onToggle: (index) => kind = (index == 0)
-                                  ? "regex"
-                                  : "exact",
+                              onToggle: (index) =>
+                                  kind = (index == 0) ? "regex" : "exact",
                             ),
                             CustomToggleSwitch(
-                              initialLabelIndex: type == "allow"
-                                  ? 0
-                                  : 1,
+                              initialLabelIndex: type == "allow" ? 0 : 1,
                               labels: ['Allow', 'Deny'],
-                              onToggle: (index) => type = (index == 0)
-                                  ? "allow"
-                                  : "deny",
+                              onToggle: (index) =>
+                                  type = (index == 0) ? "allow" : "deny",
                             ),
                           ],
                         ),
                         const SizedBox(height: 10),
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             BlocConsumer<DomainsBloc, DomainsState>(
                               listener: (context, state) {
@@ -169,10 +156,8 @@ class _AddDomainModalState extends State<AddDomainModal> {
                                     DomainsItemStateStatus.loading;
                                 return FilledButton(
                                   onPressed: () {
-                                    if (formKey.currentState!
-                                        .validate()) {
-                                      DomainModel
-                                      domainModel = DomainModel(
+                                    if (formKey.currentState!.validate()) {
+                                      DomainModel domainModel = DomainModel(
                                         domain: domainController.text,
                                         comment: commentController.text,
                                         type: type,
@@ -193,8 +178,7 @@ class _AddDomainModalState extends State<AddDomainModal> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                   child: isLoading

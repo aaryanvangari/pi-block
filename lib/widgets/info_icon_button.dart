@@ -16,10 +16,7 @@ class InfoIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon = Icon(
-      Icons.info_outline,
-      size: iconSize,
-    );
+    final icon = Icon(Icons.info_outline, size: iconSize);
 
     // iOS → Cupertino dialog
     if (Platform.isIOS) {

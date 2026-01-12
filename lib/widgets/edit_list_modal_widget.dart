@@ -36,7 +36,7 @@ class _EditListModalState extends State<EditListModal> {
     commentController = TextEditingController(text: widget.listsModel.comment);
     type = widget.listsModel.type;
     enabled = widget.listsModel.enabled;
-    
+
     final groupsBloc = context.read<GroupsBloc>();
 
     // Reset previous modal’s selection
@@ -83,8 +83,7 @@ class _EditListModalState extends State<EditListModal> {
                       children: [
                         TextFormField(
                           focusNode: commentFieldNode,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: commentController,
                           maxLines: 3,
                           validator: (value) =>
@@ -92,8 +91,7 @@ class _EditListModalState extends State<EditListModal> {
                           decoration: InputDecoration(
                             labelText: "Comment",
                             suffixIcon: IconButton(
-                              onPressed: () =>
-                                  commentController.clear(),
+                              onPressed: () => commentController.clear(),
                               icon: Icon(Icons.clear),
                             ),
                           ),
@@ -101,11 +99,8 @@ class _EditListModalState extends State<EditListModal> {
                         const SizedBox(height: 10),
                         BlocBuilder<GroupsBloc, GroupsState>(
                           builder: (context, state) {
-                            if (state.status ==
-                                GroupsStateStatus.success) {
-                              return CustomMultiSelectDropdown<
-                                GroupModel
-                              >(
+                            if (state.status == GroupsStateStatus.success) {
+                              return CustomMultiSelectDropdown<GroupModel>(
                                 hintText: 'Select Groups',
                                 items: state.groups,
                                 selectedItems: state.selectedGroups,
@@ -137,8 +132,7 @@ class _EditListModalState extends State<EditListModal> {
                         ),
                         const SizedBox(height: 15),
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             BlocConsumer<ListsBloc, ListsState>(
                               listener: (context, state) {
@@ -161,29 +155,26 @@ class _EditListModalState extends State<EditListModal> {
                                     ListsItemStateStatus.loading;
                                 return FilledButton(
                                   onPressed: () {
-                                    if (formKey.currentState!
-                                        .validate()) {
+                                    if (formKey.currentState!.validate()) {
                                       context.read<ListsBloc>().add(
                                         UpdateListsItem(
                                           listsModel: widget.listsModel,
                                           type: type,
-                                          comment:
-                                              commentController.text,
+                                          comment: commentController.text,
                                           enabled: enabled,
                                           groups: context
-                                            .read<GroupsBloc>()
-                                            .state
-                                            .selectedGroups
-                                            .map((g) => g.id)
-                                            .toList(),
+                                              .read<GroupsBloc>()
+                                              .state
+                                              .selectedGroups
+                                              .map((g) => g.id)
+                                              .toList(),
                                         ),
                                       );
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                   child: isLoading

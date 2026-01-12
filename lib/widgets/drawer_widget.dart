@@ -65,7 +65,9 @@ class DrawerWidget extends StatelessWidget {
                       if (Navigator.canPop(context)) {
                         Navigator.of(context).pop(); // closes drawer
                       }
-                      navigationShell.goBranch(AppDestination.dashboard.branchIndex);
+                      navigationShell.goBranch(
+                        AppDestination.dashboard.branchIndex,
+                      );
                     },
                   ),
                   ListTile(
@@ -76,7 +78,9 @@ class DrawerWidget extends StatelessWidget {
                       if (Navigator.canPop(context)) {
                         Navigator.of(context).pop(); // closes drawer
                       }
-                      navigationShell.goBranch(AppDestination.stats.branchIndex);
+                      navigationShell.goBranch(
+                        AppDestination.stats.branchIndex,
+                      );
                     },
                   ),
                   ListTile(
@@ -87,7 +91,9 @@ class DrawerWidget extends StatelessWidget {
                       if (Navigator.canPop(context)) {
                         Navigator.of(context).pop(); // closes drawer
                       }
-                      navigationShell.goBranch(AppDestination.querylog.branchIndex);
+                      navigationShell.goBranch(
+                        AppDestination.querylog.branchIndex,
+                      );
                     },
                   ),
                   ListTile(
@@ -98,7 +104,9 @@ class DrawerWidget extends StatelessWidget {
                       if (Navigator.canPop(context)) {
                         Navigator.of(context).pop(); // closes drawer
                       }
-                      navigationShell.goBranch(AppDestination.domains.branchIndex);
+                      navigationShell.goBranch(
+                        AppDestination.domains.branchIndex,
+                      );
                     },
                   ),
                   ListTile(
@@ -109,7 +117,9 @@ class DrawerWidget extends StatelessWidget {
                       if (Navigator.canPop(context)) {
                         Navigator.of(context).pop(); // closes drawer
                       }
-                      navigationShell.goBranch(AppDestination.lists.branchIndex);
+                      navigationShell.goBranch(
+                        AppDestination.lists.branchIndex,
+                      );
                     },
                   ),
                 ],
@@ -121,18 +131,25 @@ class DrawerWidget extends StatelessWidget {
                     if (Navigator.canPop(context)) {
                       Navigator.of(context).pop(); // closes drawer
                     }
-                    navigationShell.goBranch(AppDestination.groups.branchIndex); // Groups branch index
+                    navigationShell.goBranch(
+                      AppDestination.groups.branchIndex,
+                    ); // Groups branch index
                   },
                 ),
                 ListTile(
-                  title: Text("Clients", style: KTextStyle.drawerEntryItemTitle),
+                  title: Text(
+                    "Clients",
+                    style: KTextStyle.drawerEntryItemTitle,
+                  ),
                   leading: Icon(FontAwesomeIcons.laptop),
                   selected: currentLocation == AppRoutes.clientsPath,
                   onTap: () {
                     if (Navigator.canPop(context)) {
                       Navigator.of(context).pop(); // closes drawer
                     }
-                    navigationShell.goBranch(AppDestination.clients.branchIndex); // Clients branch index
+                    navigationShell.goBranch(
+                      AppDestination.clients.branchIndex,
+                    ); // Clients branch index
                   },
                 ),
                 ListTile(
@@ -143,18 +160,25 @@ class DrawerWidget extends StatelessWidget {
                     if (Navigator.canPop(context)) {
                       Navigator.of(context).pop(); // closes drawer
                     }
-                    navigationShell.goBranch(AppDestination.logs.branchIndex); // Logs branch index
+                    navigationShell.goBranch(
+                      AppDestination.logs.branchIndex,
+                    ); // Logs branch index
                   },
                 ),
                 ListTile(
-                  title: Text("Actions", style: KTextStyle.drawerEntryItemTitle),
+                  title: Text(
+                    "Actions",
+                    style: KTextStyle.drawerEntryItemTitle,
+                  ),
                   leading: Icon(Icons.pending_actions),
                   selected: currentLocation == AppRoutes.actionsPath,
                   onTap: () {
                     if (Navigator.canPop(context)) {
                       Navigator.of(context).pop(); // closes drawer
                     }
-                    navigationShell.goBranch(AppDestination.actions.branchIndex); // Actions branch index
+                    navigationShell.goBranch(
+                      AppDestination.actions.branchIndex,
+                    ); // Actions branch index
                   },
                 ),
                 ListTile(
@@ -163,7 +187,8 @@ class DrawerWidget extends StatelessWidget {
                     style: KTextStyle.drawerEntryItemTitle,
                   ),
                   leading: Icon(Icons.code),
-                  selected: currentLocation == AppRoutes.piholeConfigurationPath,
+                  selected:
+                      currentLocation == AppRoutes.piholeConfigurationPath,
                   onTap: () {
                     if (Navigator.canPop(context)) {
                       Navigator.of(context).pop(); // closes drawer
@@ -174,20 +199,25 @@ class DrawerWidget extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  title: Text("Settings", style: KTextStyle.drawerEntryItemTitle),
+                  title: Text(
+                    "Settings",
+                    style: KTextStyle.drawerEntryItemTitle,
+                  ),
                   leading: Icon(Icons.settings),
                   selected: currentLocation == AppRoutes.settingsPath,
                   onTap: () {
                     if (Navigator.canPop(context)) {
                       Navigator.of(context).pop(); // closes drawer
                     }
-                    navigationShell.goBranch(AppDestination.settings.branchIndex); // Settings branch index
+                    navigationShell.goBranch(
+                      AppDestination.settings.branchIndex,
+                    ); // Settings branch index
                   },
                 ),
               ],
             ),
           ),
-          
+
           Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: ListTile(

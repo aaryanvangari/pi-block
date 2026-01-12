@@ -49,21 +49,20 @@ class DomainsView extends StatefulWidget {
 }
 
 class _DomainsViewState extends State<DomainsView> {
-
   @override
   void initState() {
     super.initState();
     // getting bloc from appView context as domains data is being shared by querylog and domains
     // querylog is using it for allow/deny action and it needs to update domains
-    // if the bloc is page scoped then both data will be different and does not update 
+    // if the bloc is page scoped then both data will be different and does not update
     // unless a reload of bloc which happens only when logout and login
-    // Loading domains 
+    // Loading domains
     context.read<DomainsBloc>().add(LoadDomains());
   }
 
   void addDomainFormModal(BuildContext ctx) {
     final pageIndexNotifier = ValueNotifier<int>(0);
-    
+
     final domainsBloc = ctx.read<DomainsBloc>();
     final groupsBloc = ctx.read<GroupsBloc>();
     groupsBloc.add(ResetGroupsSelection());
@@ -86,7 +85,7 @@ class _DomainsViewState extends State<DomainsView> {
                 BlocProvider<DomainsBloc>.value(value: domainsBloc),
                 BlocProvider<GroupsBloc>.value(value: groupsBloc),
               ],
-              child: AddDomainModal()
+              child: AddDomainModal(),
             ),
           ),
         ];
@@ -637,11 +636,13 @@ class _DomainsViewState extends State<DomainsView> {
                                   visualDensity: VisualDensity.compact,
                                   tooltip: 'Refresh Domains',
                                   onPressed: () {
-                                    context.read<DomainsBloc>().add(LoadDomains());
+                                    context.read<DomainsBloc>().add(
+                                      LoadDomains(),
+                                    );
                                   },
                                   icon: Icon(Icons.refresh),
                                 ),
-                                const SizedBox(width: 5,),
+                                const SizedBox(width: 5),
                                 IconButton.filled(
                                   onPressed: () {
                                     addDomainFormModal(context);
@@ -659,11 +660,13 @@ class _DomainsViewState extends State<DomainsView> {
 
                                 return width < 500
                                     ? RefreshIndicator(
-                                      onRefresh: () async {
-                                        context.read<DomainsBloc>().add(LoadDomains());
-                                      },
-                                      child: getDomains(domainModels)
-                                    )
+                                        onRefresh: () async {
+                                          context.read<DomainsBloc>().add(
+                                            LoadDomains(),
+                                          );
+                                        },
+                                        child: getDomains(domainModels),
+                                      )
                                     : GridView.builder(
                                         padding: const EdgeInsets.all(10),
                                         gridDelegate:

@@ -23,9 +23,7 @@ class UpstreamsStats extends StatelessWidget {
       child: BlocListener<StatsBloc, StatsState>(
         listenWhen: (prev, curr) => prev.version != curr.version,
         listener: (context, state) {
-          context.read<UpstreamsPiechartBloc>().add(
-            LoadUpstreamsPiechart(),
-          );
+          context.read<UpstreamsPiechartBloc>().add(LoadUpstreamsPiechart());
         },
         child: UpstreamsPiechartView(),
       ),

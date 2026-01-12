@@ -2,8 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class StatsBloc extends Bloc<StatsEvent, StatsState> {
-  StatsBloc()
-    : super(StatsState(version: 0)) {
+  StatsBloc() : super(StatsState(version: 0)) {
     on<RefreshStats>(_refreshStats);
   }
 
@@ -16,15 +15,15 @@ sealed class StatsEvent extends Equatable {}
 
 final class RefreshStats extends StatsEvent {
   RefreshStats();
-  
+
   @override
   List<Object?> get props => [];
 }
 
-class StatsState  extends Equatable{
+class StatsState extends Equatable {
   final int version;
   const StatsState({required this.version});
-  
+
   @override
   List<Object?> get props => [version];
 }

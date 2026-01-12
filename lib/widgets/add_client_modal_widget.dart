@@ -72,12 +72,10 @@ class _AddClientModalState extends State<AddClientModal> {
                                 hintText: 'Suggested Clients',
                                 overlayHeight: 400,
                                 decoration: CustomDropdownDecoration(
-                                  searchFieldDecoration:
-                                      SearchFieldDecoration(
-                                        fillColor: colorScheme.surface,
-                                      ),
-                                  expandedFillColor:
-                                      colorScheme.surface,
+                                  searchFieldDecoration: SearchFieldDecoration(
+                                    fillColor: colorScheme.surface,
+                                  ),
+                                  expandedFillColor: colorScheme.surface,
                                   closedFillColor: Colors.transparent,
                                   closedBorder: BoxBorder.all(
                                     color: Colors.transparent,
@@ -88,13 +86,12 @@ class _AddClientModalState extends State<AddClientModal> {
                                   errorStyle: TextStyle(
                                     color: colorScheme.error,
                                   ),
-                                  listItemDecoration:
-                                      ListItemDecoration(
-                                        selectedColor: colorScheme
-                                            .secondaryContainer,
-                                        highlightColor: colorScheme
-                                            .onSecondaryContainer,
-                                      ),
+                                  listItemDecoration: ListItemDecoration(
+                                    selectedColor:
+                                        colorScheme.secondaryContainer,
+                                    highlightColor:
+                                        colorScheme.onSecondaryContainer,
+                                  ),
                                   hintStyle: theme.textTheme.bodyLarge,
                                 ),
 
@@ -113,9 +110,7 @@ class _AddClientModalState extends State<AddClientModal> {
                                   clientController.selection =
                                       TextSelection.fromPosition(
                                         TextPosition(
-                                          offset: clientController
-                                              .text
-                                              .length,
+                                          offset: clientController.text.length,
                                         ),
                                       );
                                 },
@@ -129,8 +124,7 @@ class _AddClientModalState extends State<AddClientModal> {
 
                         TextFormField(
                           focusNode: clientFieldNode,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: clientController,
                           maxLines: 1,
                           validator: (value) =>
@@ -146,8 +140,7 @@ class _AddClientModalState extends State<AddClientModal> {
                         const SizedBox(height: 10),
                         TextFormField(
                           focusNode: commentFieldNode,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: commentController,
                           maxLines: 2,
                           validator: (value) =>
@@ -155,8 +148,7 @@ class _AddClientModalState extends State<AddClientModal> {
                           decoration: InputDecoration(
                             labelText: "Comment",
                             suffixIcon: IconButton(
-                              onPressed: () =>
-                                  commentController.clear(),
+                              onPressed: () => commentController.clear(),
                               icon: Icon(Icons.clear),
                             ),
                           ),
@@ -164,11 +156,8 @@ class _AddClientModalState extends State<AddClientModal> {
                         const SizedBox(height: 10),
                         BlocBuilder<GroupsBloc, GroupsState>(
                           builder: (context, state) {
-                            if (state.status ==
-                                GroupsStateStatus.success) {
-                              return CustomMultiSelectDropdown<
-                                GroupModel
-                              >(
+                            if (state.status == GroupsStateStatus.success) {
+                              return CustomMultiSelectDropdown<GroupModel>(
                                 hintText: 'Select Groups',
                                 items: state.groups,
                                 selectedItems: state.selectedGroups,
@@ -188,8 +177,7 @@ class _AddClientModalState extends State<AddClientModal> {
                         ),
                         const SizedBox(height: 10),
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             BlocConsumer<ClientsBloc, ClientsState>(
                               listener: (context, state) {
@@ -212,10 +200,8 @@ class _AddClientModalState extends State<AddClientModal> {
                                     ClientsItemStateStatus.loading;
                                 return FilledButton(
                                   onPressed: () {
-                                    if (formKey.currentState!
-                                        .validate()) {
-                                      ClientModel
-                                      clientModel = ClientModel(
+                                    if (formKey.currentState!.validate()) {
+                                      ClientModel clientModel = ClientModel(
                                         client: clientController.text,
                                         comment: commentController.text,
                                         groups: context
@@ -234,8 +220,7 @@ class _AddClientModalState extends State<AddClientModal> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                   child: isLoading

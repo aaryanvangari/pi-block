@@ -25,9 +25,7 @@ class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
     on<StartPolling>(_startPolling);
     on<StopPolling>(_stopPolling);
     pollingState.addListener(() => _onPollingState(pollingState.value));
-    _log.fine(
-      'PollAgent: SummaryBloc hash=${identityHashCode(this)}',
-    );
+    _log.fine('PollAgent: SummaryBloc hash=${identityHashCode(this)}');
   }
 
   void _onPollingState(bool shouldPoll) {

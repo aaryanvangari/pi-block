@@ -30,6 +30,7 @@ class PollingCoordinator {
         state.sid.isNotEmpty &&
         _authBloc.checkSessionValidity();
   }
+
   bool get shouldPoll {
     final location = _routeNotifier.value;
 

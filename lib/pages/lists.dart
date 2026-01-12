@@ -445,7 +445,7 @@ class ListsView extends StatelessWidget {
     final pageIndexNotifier = ValueNotifier<int>(0);
     final listsBloc = ctx.read<ListsBloc>();
     final groupsBloc = ctx.read<GroupsBloc>();
-    
+
     WoltModalSheet.show(
       context: ctx,
       pageIndexNotifier: pageIndexNotifier,
@@ -464,7 +464,7 @@ class ListsView extends StatelessWidget {
                 BlocProvider<ListsBloc>.value(value: listsBloc),
                 BlocProvider<GroupsBloc>.value(value: groupsBloc),
               ],
-              child: EditListModal(listsModel: listsModel)
+              child: EditListModal(listsModel: listsModel),
             ),
           ),
         ];
@@ -499,7 +499,7 @@ class ListsView extends StatelessWidget {
                 BlocProvider<ListsBloc>.value(value: listsBloc),
                 BlocProvider<GroupsBloc>.value(value: groupsBloc),
               ],
-              child: AddListModal()
+              child: AddListModal(),
             ),
           ),
         ];
@@ -653,11 +653,13 @@ class ListsView extends StatelessWidget {
                                       visualDensity: VisualDensity.compact,
                                       tooltip: 'Refresh Lists',
                                       onPressed: () {
-                                        context.read<ListsBloc>().add(LoadLists());
+                                        context.read<ListsBloc>().add(
+                                          LoadLists(),
+                                        );
                                       },
                                       icon: Icon(Icons.refresh),
                                     ),
-                                    const SizedBox(width: 5,),
+                                    const SizedBox(width: 5),
                                     IconButton.filled(
                                       onPressed: () {
                                         addListFormModal(context);
@@ -675,10 +677,12 @@ class ListsView extends StatelessWidget {
 
                                     return width < 500
                                         ? RefreshIndicator(
-                                          onRefresh: () async {
-                                            context.read<ListsBloc>().add(LoadLists());
-                                          },
-                                            child: getLists(listsModels)
+                                            onRefresh: () async {
+                                              context.read<ListsBloc>().add(
+                                                LoadLists(),
+                                              );
+                                            },
+                                            child: getLists(listsModels),
                                           )
                                         : GridView.builder(
                                             padding: const EdgeInsets.all(10),

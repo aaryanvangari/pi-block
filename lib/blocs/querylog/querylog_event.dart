@@ -37,7 +37,6 @@ class UpdateCurrentPage extends QuerylogEvent {
   List<Object> get props => [page];
 }
 
-
 final class AllowDenyQuerylogDomain extends QuerylogEvent {
   const AllowDenyQuerylogDomain({required this.queryModel, required this.type});
 

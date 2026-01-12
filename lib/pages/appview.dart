@@ -36,7 +36,7 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
     super.initState();
     // For observing app lifecycle states
     WidgetsBinding.instance.addObserver(this);
-    
+
     // Orchestrates polling mechanism.
     // Listens to route changes and then auth changes
     // and then start/stop polling based on location
@@ -54,10 +54,7 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
     pollingCoordinator.onRouteChanged();
 
     // Setup GoRouter
-    _router = appRouter.create(
-      context.read<AuthBloc>(),
-      routeLocationNotifier,
-    );
+    _router = appRouter.create(context.read<AuthBloc>(), routeLocationNotifier);
     _log.finer('GoRouter: instance ${identityHashCode(_router)}');
 
     // Listen to route changes and do things based on route
@@ -80,9 +77,7 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    routeLocationNotifier.removeListener(
-      pollingCoordinator.onRouteChanged,
-    );
+    routeLocationNotifier.removeListener(pollingCoordinator.onRouteChanged);
     _router.routeInformationProvider.removeListener(_onRouteInfo);
     routeLocationNotifier.dispose();
     super.dispose();
@@ -107,7 +102,7 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
           BlocProvider<DomainsBloc>(
             create: (context) => DomainsBloc(context.read<PiholeRepository>()),
           ),
-          // Notifications bloc is used in two places and anyways notifications is 
+          // Notifications bloc is used in two places and anyways notifications is
           // app level bloc and not scoped to page level
           BlocProvider<NotificationsBloc>(
             create: (context) =>
@@ -116,7 +111,7 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
           ),
           // Need to provide dashboard blocs here because they need to be above router
           // and layout changes, otherwise if layout changes from mobile to desktop
-          // then blocs will be disposed and then when next events get added 
+          // then blocs will be disposed and then when next events get added
           // from PollingCoordinator it will crash.
           // This will probably not needed in mobile or tablet layouts but if any case
           // layout changes in any device especially web then crash happens.
@@ -127,11 +122,13 @@ class _AppViewState extends State<AppView> with WidgetsBindingObserver {
           // need real time refresh or need to find out other strategies
           BlocProvider(
             create: (_) =>
-                SummaryBloc(context.read<PiholeRepository>())..add(LoadSummary()),
+                SummaryBloc(context.read<PiholeRepository>())
+                  ..add(LoadSummary()),
           ),
           BlocProvider(
             create: (_) =>
-                SystemInfoBloc(context.read<PiholeRepository>())..add(LoadSystemInfo()),
+                SystemInfoBloc(context.read<PiholeRepository>())
+                  ..add(LoadSystemInfo()),
           ),
         ],
         child: ValueListenableBuilder<ThemeMode>(

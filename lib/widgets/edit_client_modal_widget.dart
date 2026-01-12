@@ -26,7 +26,6 @@ class _EditClientModalState extends State<EditClientModal> {
   final formKey = GlobalKey<FormState>();
   final PiValidators piValidators = PiValidators();
 
-
   @override
   void initState() {
     super.initState();
@@ -77,8 +76,7 @@ class _EditClientModalState extends State<EditClientModal> {
                       children: [
                         TextFormField(
                           focusNode: commentFieldNode,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: commentController,
                           maxLines: 3,
                           validator: (value) =>
@@ -86,8 +84,7 @@ class _EditClientModalState extends State<EditClientModal> {
                           decoration: InputDecoration(
                             labelText: "Comment",
                             suffixIcon: IconButton(
-                              onPressed: () =>
-                                  commentController.clear(),
+                              onPressed: () => commentController.clear(),
                               icon: const Icon(Icons.clear),
                             ),
                           ),
@@ -95,11 +92,8 @@ class _EditClientModalState extends State<EditClientModal> {
                         const SizedBox(height: 10),
                         BlocBuilder<GroupsBloc, GroupsState>(
                           builder: (context, state) {
-                            if (state.status ==
-                                GroupsStateStatus.success) {
-                              return CustomMultiSelectDropdown<
-                                GroupModel
-                              >(
+                            if (state.status == GroupsStateStatus.success) {
+                              return CustomMultiSelectDropdown<GroupModel>(
                                 hintText: 'Select Groups',
                                 items: state.groups,
                                 selectedItems: state.selectedGroups,
@@ -119,8 +113,7 @@ class _EditClientModalState extends State<EditClientModal> {
                         ),
                         const SizedBox(height: 10),
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             BlocConsumer<ClientsBloc, ClientsState>(
                               listener: (context, state) {
@@ -143,27 +136,24 @@ class _EditClientModalState extends State<EditClientModal> {
                                     ClientsItemStateStatus.loading;
                                 return FilledButton(
                                   onPressed: () {
-                                    if (formKey.currentState!
-                                        .validate()) {
+                                    if (formKey.currentState!.validate()) {
                                       context.read<ClientsBloc>().add(
                                         UpdateClientsItem(
                                           clientModel: widget.clientModel,
-                                          comment:
-                                              commentController.text,
+                                          comment: commentController.text,
                                           groups: context
-                                            .read<GroupsBloc>()
-                                            .state
-                                            .selectedGroups
-                                            .map((g) => g.id)
-                                            .toList(),
+                                              .read<GroupsBloc>()
+                                              .state
+                                              .selectedGroups
+                                              .map((g) => g.id)
+                                              .toList(),
                                         ),
                                       );
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                   child: isLoading

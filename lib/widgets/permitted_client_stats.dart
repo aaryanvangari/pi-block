@@ -24,9 +24,7 @@ class PermittedClientStats extends StatelessWidget {
       child: BlocListener<StatsBloc, StatsState>(
         listenWhen: (prev, curr) => prev.version != curr.version,
         listener: (context, state) {
-          context.read<ClientsPermittedBloc>().add(
-            LoadPermittedClients({}),
-          );
+          context.read<ClientsPermittedBloc>().add(LoadPermittedClients({}));
         },
         child: PermittedClientsListView(),
       ),

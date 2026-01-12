@@ -15,7 +15,6 @@ class AddGroupModal extends StatefulWidget {
 }
 
 class _AddGroupModalState extends State<AddGroupModal> {
-
   PiValidators piValidators = PiValidators();
   TextEditingController commentController = TextEditingController();
   TextEditingController groupController = TextEditingController();
@@ -23,7 +22,7 @@ class _AddGroupModalState extends State<AddGroupModal> {
 
   final FocusNode commentFieldNode = FocusNode();
   final FocusNode groupFieldNode = FocusNode();
-  
+
   @override
   void dispose() {
     commentController.dispose();
@@ -58,8 +57,7 @@ class _AddGroupModalState extends State<AddGroupModal> {
                       children: [
                         TextFormField(
                           focusNode: groupFieldNode,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: groupController,
                           maxLines: 1,
                           validator: (value) =>
@@ -75,8 +73,7 @@ class _AddGroupModalState extends State<AddGroupModal> {
                         const SizedBox(height: 10),
                         TextFormField(
                           focusNode: commentFieldNode,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: commentController,
                           maxLines: 2,
                           validator: (value) =>
@@ -84,16 +81,14 @@ class _AddGroupModalState extends State<AddGroupModal> {
                           decoration: InputDecoration(
                             labelText: "Comment",
                             suffixIcon: IconButton(
-                              onPressed: () =>
-                                  commentController.clear(),
+                              onPressed: () => commentController.clear(),
                               icon: Icon(Icons.clear),
                             ),
                           ),
                         ),
                         const SizedBox(height: 10),
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             BlocConsumer<GroupsBloc, GroupsState>(
                               listener: (context, state) {
@@ -116,10 +111,8 @@ class _AddGroupModalState extends State<AddGroupModal> {
                                     GroupsItemStateStatus.loading;
                                 return FilledButton(
                                   onPressed: () {
-                                    if (formKey.currentState!
-                                        .validate()) {
-                                      GroupModel
-                                      groupModel = GroupModel(
+                                    if (formKey.currentState!.validate()) {
+                                      GroupModel groupModel = GroupModel(
                                         name: groupController.text,
                                         comment: commentController.text,
 
@@ -127,16 +120,13 @@ class _AddGroupModalState extends State<AddGroupModal> {
                                         enabled: true,
                                       );
                                       context.read<GroupsBloc>().add(
-                                        AddGroupsItem(
-                                          groupModel: groupModel,
-                                        ),
+                                        AddGroupsItem(groupModel: groupModel),
                                       );
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                   child: isLoading

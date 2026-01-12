@@ -88,7 +88,9 @@ class _MainScaffoldState extends State<MainScaffold>
             title: Text(AppRoutes.routeTitles[location] ?? 'Page'),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () => widget.navigationShell!.goBranch(AppDestination.dashboard.branchIndex),
+              onPressed: () => widget.navigationShell!.goBranch(
+                AppDestination.dashboard.branchIndex,
+              ),
             ),
           )
         : AppBar(
@@ -99,16 +101,16 @@ class _MainScaffoldState extends State<MainScaffold>
                 onPressed: () async {
                   final newMode =
                       themeModeOptionNotifier.value == ThemeModeOption.dark
-                          ? ThemeModeOption.light
-                          : ThemeModeOption.dark;
+                      ? ThemeModeOption.light
+                      : ThemeModeOption.dark;
                   await SettingsService().updateSettings(
                     (settings) => settings.copyWith(themeModeOption: newMode),
                   );
                   themeModeOptionNotifier.value = newMode;
                   themeModeNotifier.value =
                       themeModeOptionNotifier.value == ThemeModeOption.dark
-                          ? ThemeMode.dark
-                          : ThemeMode.light;
+                      ? ThemeMode.dark
+                      : ThemeMode.light;
                 },
                 icon: ValueListenableBuilder(
                   valueListenable: themeModeOptionNotifier,
@@ -120,9 +122,7 @@ class _MainScaffoldState extends State<MainScaffold>
                 ),
               ),
               // Enabling notifications for all routes in desktop
-              NotificationsWidget(
-                navigationShell: widget.navigationShell!,
-              ),
+              NotificationsWidget(navigationShell: widget.navigationShell!),
             ],
             titleSpacing: isDesktop ? null : 0,
             title: Row(
@@ -155,7 +155,9 @@ class _MainScaffoldState extends State<MainScaffold>
           title: Text(AppRoutes.routeTitles[location] ?? 'Page'),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () => widget.navigationShell!.goBranch(AppDestination.dashboard.branchIndex),
+            onPressed: () => widget.navigationShell!.goBranch(
+              AppDestination.dashboard.branchIndex,
+            ),
           ),
         ),
         body: widget.navigationShell,
@@ -174,11 +176,11 @@ class _MainScaffoldState extends State<MainScaffold>
               )
             : widget.navigationShell!,
         // Hide drawer for independent routes on mobile
-        drawer: !isDesktop && !isIndependent ? drawer : null, 
+        drawer: !isDesktop && !isIndependent ? drawer : null,
         // Hide bottom bar for independent routes on mobile
         bottomNavigationBar: !isDesktop && !isIndependent
             ? NavbarWidget(navigationShell: widget.navigationShell!)
-            : null, 
+            : null,
       );
     }
   }

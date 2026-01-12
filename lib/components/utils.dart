@@ -52,7 +52,9 @@ class PiUtils {
     String errorTitle = e.toString().length > maxTitleLength
         ? e.toString().substring(0, maxTitleLength)
         : e.toString();
-    String errorDescription = e.toString().length > maxTitleLength ? e.toString() : "";
+    String errorDescription = e.toString().length > maxTitleLength
+        ? e.toString()
+        : "";
     if (errorClass == "APIException") {
       APIException apiException = e as APIException;
       errorTitle = apiException.message;

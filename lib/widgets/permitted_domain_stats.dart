@@ -24,9 +24,7 @@ class PermittedDomainStats extends StatelessWidget {
       child: BlocListener<StatsBloc, StatsState>(
         listenWhen: (prev, curr) => prev.version != curr.version,
         listener: (context, state) {
-          context.read<DomainsPermittedBloc>().add(
-            LoadPermittedDomains({}),
-          );
+          context.read<DomainsPermittedBloc>().add(LoadPermittedDomains({}));
         },
         child: PermittedDomainsListView(),
       ),

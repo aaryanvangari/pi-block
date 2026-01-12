@@ -90,11 +90,12 @@ class _LoginPageState extends State<LoginPage> {
                                             left: 5.0,
                                           ),
                                           child: InfoIconButton(
-                                            message: "Pi-Hole server URL.\n\n"
-                                            "Examples:\n"
-                                            "https://pihole.example.com\n"
-                                            "http://pihole.local\n"
-                                            "http://192.168.1.2:8053",
+                                            message:
+                                                "Pi-Hole server URL.\n\n"
+                                                "Examples:\n"
+                                                "https://pihole.example.com\n"
+                                                "http://pihole.local\n"
+                                                "http://192.168.1.2:8053",
                                             title: "Pi-Hole Server Url",
                                           ),
                                         ),
@@ -140,7 +141,8 @@ class _LoginPageState extends State<LoginPage> {
                                             left: 5.0,
                                           ),
                                           child: InfoIconButton(
-                                            message: "API Token which is used for FTLCONF_webserver_api_password in environment file",
+                                            message:
+                                                "API Token which is used for FTLCONF_webserver_api_password in environment file",
                                             title: "API Token",
                                           ),
                                         ),

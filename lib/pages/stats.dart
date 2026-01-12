@@ -113,14 +113,18 @@ class StatsPage extends StatelessWidget {
                           return Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: GridView.builder(
-                              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                                crossAxisSpacing: 8.0, // Space between columns
-                                mainAxisSpacing: 8.0, // Space between rows
-                                mainAxisExtent: KGridCardSizes.stats["height"]!
-                                    .toDouble(),
-                                maxCrossAxisExtent: KGridCardSizes.stats["width"]!
-                                    .toDouble(),
-                              ),
+                              gridDelegate:
+                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                    crossAxisSpacing:
+                                        8.0, // Space between columns
+                                    mainAxisSpacing: 8.0, // Space between rows
+                                    mainAxisExtent: KGridCardSizes
+                                        .stats["height"]!
+                                        .toDouble(),
+                                    maxCrossAxisExtent: KGridCardSizes
+                                        .stats["width"]!
+                                        .toDouble(),
+                                  ),
                               shrinkWrap: true,
                               physics: AlwaysScrollableScrollPhysics(),
                               itemCount: widgets.length,
@@ -136,7 +140,7 @@ class StatsPage extends StatelessWidget {
                 ],
               ),
             );
-          }
+          },
         ),
       ),
     );

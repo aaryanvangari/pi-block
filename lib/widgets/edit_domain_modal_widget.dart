@@ -38,7 +38,7 @@ class _EditDomainModalState extends State<EditDomainModal> {
     type = widget.domainModel.type;
     enabled = widget.domainModel.enabled;
     kind = widget.domainModel.kind;
-    
+
     final groupsBloc = context.read<GroupsBloc>();
 
     // Reset previous modal’s selection

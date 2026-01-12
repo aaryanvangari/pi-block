@@ -7,35 +7,29 @@ class GlobalBanner {
   GlobalBanner._();
 
   static const Duration infoDuration = Duration(seconds: KTimers.snackbarInfo);
-  static const Duration errorDuration = Duration(seconds: KTimers.snackbarError);
+  static const Duration errorDuration = Duration(
+    seconds: KTimers.snackbarError,
+  );
 
-  static void info(
-    BuildContext context,
-    String message,
-    String description,
-  ) {
+  static void info(BuildContext context, String message, String description) {
     _show(
       context,
       background: Theme.of(context).colorScheme.primary,
       foreground: Theme.of(context).colorScheme.onPrimary,
       message: message,
       description: description,
-      duration: infoDuration
+      duration: infoDuration,
     );
   }
 
-  static void error(
-    BuildContext context,
-    String message,
-    String description,
-  ) {
+  static void error(BuildContext context, String message, String description) {
     _show(
       context,
       background: Theme.of(context).colorScheme.error,
       foreground: Theme.of(context).colorScheme.onError,
       message: message,
       description: description,
-      duration: errorDuration
+      duration: errorDuration,
     );
   }
 
@@ -49,7 +43,7 @@ class GlobalBanner {
   }) async {
     final overlay = Overlay.of(context);
 
-     // wait for frame to fully finish
+    // wait for frame to fully finish
     await SchedulerBinding.instance.endOfFrame;
 
     late OverlayEntry entry;

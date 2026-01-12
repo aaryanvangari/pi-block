@@ -74,8 +74,7 @@ class _EditGroupModalState extends State<EditGroupModal> {
                       children: [
                         TextFormField(
                           focusNode: groupFieldNode,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: groupController,
                           maxLines: 1,
                           validator: (value) =>
@@ -91,8 +90,7 @@ class _EditGroupModalState extends State<EditGroupModal> {
                         const SizedBox(height: 10),
                         TextFormField(
                           focusNode: commentFieldNode,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: commentController,
                           maxLines: 3,
                           validator: (value) =>
@@ -100,8 +98,7 @@ class _EditGroupModalState extends State<EditGroupModal> {
                           decoration: InputDecoration(
                             labelText: "Comment",
                             suffixIcon: IconButton(
-                              onPressed: () =>
-                                  commentController.clear(),
+                              onPressed: () => commentController.clear(),
                               icon: const Icon(Icons.clear),
                             ),
                           ),
@@ -121,8 +118,7 @@ class _EditGroupModalState extends State<EditGroupModal> {
                         ),
                         const SizedBox(height: 10),
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             BlocConsumer<GroupsBloc, GroupsState>(
                               listener: (context, state) {
@@ -145,13 +141,11 @@ class _EditGroupModalState extends State<EditGroupModal> {
                                     GroupsItemStateStatus.loading;
                                 return FilledButton(
                                   onPressed: () {
-                                    if (formKey.currentState!
-                                        .validate()) {
+                                    if (formKey.currentState!.validate()) {
                                       context.read<GroupsBloc>().add(
                                         UpdateGroupsItem(
                                           groupModel: widget.groupModel,
-                                          comment:
-                                              commentController.text,
+                                          comment: commentController.text,
                                           enabled: enabled,
                                           name: groupController.text,
                                         ),
@@ -160,8 +154,7 @@ class _EditGroupModalState extends State<EditGroupModal> {
                                   },
                                   style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                   child: isLoading

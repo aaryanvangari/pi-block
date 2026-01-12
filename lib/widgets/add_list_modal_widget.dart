@@ -19,7 +19,6 @@ class AddListModal extends StatefulWidget {
 }
 
 class _AddListModalState extends State<AddListModal> {
-
   String type = "allow";
   PiValidators piValidators = PiValidators();
   TextEditingController commentController = TextEditingController();
@@ -28,7 +27,7 @@ class _AddListModalState extends State<AddListModal> {
 
   final FocusNode commentFieldNode = FocusNode();
   final FocusNode addressFieldNode = FocusNode();
-  
+
   @override
   void dispose() {
     commentController.dispose();
@@ -63,8 +62,7 @@ class _AddListModalState extends State<AddListModal> {
                       children: [
                         TextFormField(
                           focusNode: addressFieldNode,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: addressController,
                           maxLines: 1,
                           validator: (value) =>
@@ -72,8 +70,7 @@ class _AddListModalState extends State<AddListModal> {
                           decoration: InputDecoration(
                             labelText: "Address",
                             suffixIcon: IconButton(
-                              onPressed: () =>
-                                  addressController.clear(),
+                              onPressed: () => addressController.clear(),
                               icon: Icon(Icons.clear),
                             ),
                           ),
@@ -81,8 +78,7 @@ class _AddListModalState extends State<AddListModal> {
                         const SizedBox(height: 10),
                         TextFormField(
                           focusNode: commentFieldNode,
-                          autovalidateMode:
-                              AutovalidateMode.onUserInteraction,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: commentController,
                           maxLines: 2,
                           validator: (value) =>
@@ -90,8 +86,7 @@ class _AddListModalState extends State<AddListModal> {
                           decoration: InputDecoration(
                             labelText: "Comment",
                             suffixIcon: IconButton(
-                              onPressed: () =>
-                                  commentController.clear(),
+                              onPressed: () => commentController.clear(),
                               icon: Icon(Icons.clear),
                             ),
                           ),
@@ -99,11 +94,8 @@ class _AddListModalState extends State<AddListModal> {
                         const SizedBox(height: 10),
                         BlocBuilder<GroupsBloc, GroupsState>(
                           builder: (context, state) {
-                            if (state.status ==
-                                GroupsStateStatus.success) {
-                              return CustomMultiSelectDropdown<
-                                GroupModel
-                              >(
+                            if (state.status == GroupsStateStatus.success) {
+                              return CustomMultiSelectDropdown<GroupModel>(
                                 hintText: 'Select Groups',
                                 items: state.groups,
                                 selectedItems: state.selectedGroups,
@@ -127,9 +119,7 @@ class _AddListModalState extends State<AddListModal> {
                           runSpacing: 10,
                           children: [
                             CustomToggleSwitch(
-                              initialLabelIndex: type == "allow"
-                                  ? 0
-                                  : 1,
+                              initialLabelIndex: type == "allow" ? 0 : 1,
                               labels: ['Allow', 'BLock'],
                               onToggle: (index) =>
                                   type = index == 0 ? "allow" : "block",
@@ -138,8 +128,7 @@ class _AddListModalState extends State<AddListModal> {
                         ),
                         const SizedBox(height: 10),
                         Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             BlocConsumer<ListsBloc, ListsState>(
                               listener: (context, state) {
@@ -162,10 +151,8 @@ class _AddListModalState extends State<AddListModal> {
                                     ListsItemStateStatus.loading;
                                 return FilledButton(
                                   onPressed: () {
-                                    if (formKey.currentState!
-                                        .validate()) {
-                                      ListsModel
-                                      listsModel = ListsModel(
+                                    if (formKey.currentState!.validate()) {
+                                      ListsModel listsModel = ListsModel(
                                         type: type,
                                         comment: commentController.text,
                                         address: addressController.text,
@@ -177,16 +164,13 @@ class _AddListModalState extends State<AddListModal> {
                                             .toList(),
                                       );
                                       context.read<ListsBloc>().add(
-                                        AddListsItem(
-                                          listsModel: listsModel,
-                                        ),
+                                        AddListsItem(listsModel: listsModel),
                                       );
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                   child: isLoading

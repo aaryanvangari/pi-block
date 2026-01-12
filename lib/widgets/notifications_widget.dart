@@ -20,7 +20,9 @@ class _NotificationsWidgetState extends State<NotificationsWidget> {
       padding: const EdgeInsets.only(right: 10.0),
       child: IconButton(
         onPressed: () {
-          widget.navigationShell.goBranch(AppDestination.notifications.branchIndex);
+          widget.navigationShell.goBranch(
+            AppDestination.notifications.branchIndex,
+          );
         },
         icon: BlocBuilder<NotificationsBloc, NotificationsState>(
           builder: (context, state) {
