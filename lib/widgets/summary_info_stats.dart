@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pi_block/blocs/dashboard/summary_bloc.dart';
 import 'package:pi_block/components/utils.dart';
+import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/models/summary_model.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/widgets/error_card_widget.dart';
@@ -21,6 +22,33 @@ class SummaryInfoStatsView extends StatelessWidget {
   const SummaryInfoStatsView({super.key});
 
   static const _title = "Summary";
+
+  static final summaryCards = [
+    SummaryCardConfig(
+      title: 'Total Queries',
+      icon: FontAwesomeIcons.earthAmericas,
+      color: KSummaryStatsColors.totalQueries,
+      valueBuilder: (s) => s.queries.total.toString(),
+    ),
+    SummaryCardConfig(
+      title: 'Queries Blocked',
+      icon: FontAwesomeIcons.hand,
+      color: KSummaryStatsColors.queriesBlocked,
+      valueBuilder: (s) => s.queries.blocked.toString(),
+    ),
+    SummaryCardConfig(
+      title: 'Percentage Blocked',
+      icon: FontAwesomeIcons.chartPie,
+      color: KSummaryStatsColors.percentBlocked,
+      valueBuilder: (s) => '${s.queries.percentBlocked.toStringAsFixed(2)}%',
+    ),
+    SummaryCardConfig(
+      title: 'Domains on Lists',
+      icon: FontAwesomeIcons.list,
+      color: KSummaryStatsColors.domainsOnList,
+      valueBuilder: (s) => s.gravity.domainsBeingBlocked.toString(),
+    ),
+  ];
 
   Widget _buildStatCard(
     BuildContext context, {
@@ -110,47 +138,46 @@ class SummaryInfoStatsView extends StatelessWidget {
           return const WaitingCardWidget(header: _title);
         } else if (state.status == SummaryStateStatus.success) {
           SummaryModel summaryModel = state.summaryModel;
-
-          return GridView.count(
-            crossAxisCount: 2,
+          return GridView.builder(
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+              crossAxisSpacing: 3.0, // Space between columns
+              mainAxisSpacing: 3.0, // Space between rows
+              mainAxisExtent:
+                  KGridCardSizes.dashboardSummary["height"]!, // height
+              maxCrossAxisExtent:
+                  KGridCardSizes.dashboardSummary["width"]!, // width
+            ),
             shrinkWrap: true,
-            childAspectRatio: 1.1,
             physics: NeverScrollableScrollPhysics(),
-            children: [
-              _buildStatCard(
+            itemCount: 4,
+            itemBuilder: (context, index) {
+              var card = summaryCards[index];
+              return _buildStatCard(
                 context,
-                title: "Total Queries",
-                value: summaryModel.queries.total.toString(),
-                icon: FontAwesomeIcons.earthAmericas,
-                color: KSummaryStatsColors.totalQueries,
-              ),
-              _buildStatCard(
-                context,
-                title: "Queries Blocked",
-                value: summaryModel.queries.blocked.toString(),
-                icon: FontAwesomeIcons.hand,
-                color: KSummaryStatsColors.queriesBlocked,
-              ),
-              _buildStatCard(
-                context,
-                title: "Percentage Blocked",
-                value:
-                    '${summaryModel.queries.percentBlocked.toStringAsFixed(2)}%',
-                icon: FontAwesomeIcons.chartPie,
-                color: KSummaryStatsColors.percentBlocked,
-              ),
-              _buildStatCard(
-                context,
-                title: "Domains on Lists",
-                value: summaryModel.gravity.domainsBeingBlocked.toString(),
-                icon: FontAwesomeIcons.list,
-                color: KSummaryStatsColors.domainsOnList,
-              ),
-            ],
+                title: card.title,
+                value: card.valueBuilder(summaryModel),
+                icon: card.icon,
+                color: card.color,
+              );
+            },
           );
         }
         return const SizedBox.shrink();
       },
     );
   }
+}
+
+class SummaryCardConfig {
+  final String title;
+  final IconData icon;
+  final Color color;
+  final String Function(SummaryModel summary) valueBuilder;
+
+  const SummaryCardConfig({
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.valueBuilder,
+  });
 }

@@ -23,6 +23,7 @@ class KTimers {
 
 class KGridCardSizes {
   static const dashboard = {"width": 450, "height": 400};
+  static const dashboardSummary = {"width": 230.0, "height": 200.0};
   static const stats = {"width": 600, "height": 550};
   static const querylog = {"width": 400, "height": 250};
   static const domains = {"width": 400, "height": 275};
