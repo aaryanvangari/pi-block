@@ -119,95 +119,75 @@ class _NotificationsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.ui; // updates AppUiTokens when theme changes
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Notifications"),
-        elevation: 0,
-        leading: BackButton(),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Diagnostic Messages",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      iconSize: 25,
-                      padding: EdgeInsets.zero,
-                      alignment: Alignment.center,
-                      constraints: BoxConstraints(
-                        minHeight: 25,
-                        minWidth: 25,
-                      ),
-                      visualDensity: VisualDensity.compact,
-                      tooltip: 'Refresh Notifications',
-                      onPressed: () {
-                        context.read<NotificationsBloc>().add(LoadNotifications());
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Diagnostic Messages",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    iconSize: 25,
+                    padding: EdgeInsets.zero,
+                    alignment: Alignment.center,
+                    constraints: BoxConstraints(minHeight: 25, minWidth: 25),
+                    visualDensity: VisualDensity.compact,
+                    tooltip: 'Refresh Notifications',
+                    onPressed: () {
+                      context.read<NotificationsBloc>().add(
+                        LoadNotifications(),
+                      );
+                    },
+                    icon: Icon(Icons.refresh),
+                  ),
+                ],
+              ),
+            ),
+            BlocConsumer<NotificationsBloc, NotificationsState>(
+              listener: (context, state) {
+                if (state.status == NotificationsStateStatus.failure) {
+                  PiUtils.handleGeneralException(context, "An Error Occured");
+                } else if (state.itemStatus ==
+                    NotificationsItemStateStatus.failure) {
+                  PiUtils.handleGeneralException(context, "An Error Occured");
+                }
+              },
+              builder: (context, state) {
+                if (state.status == NotificationsStateStatus.loading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state.status == NotificationsStateStatus.failure) {
+                  return const CustomErrorWidget(message: "Error loading data");
+                } else if (state.messages.isEmpty) {
+                  return const Center(child: EmptyWidget(message: "No data"));
+                } else if (state.status == NotificationsStateStatus.success) {
+                  List<DiagnosticMessageModel> diagnosticMessagesList =
+                      state.messages;
+                  return Expanded(
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        context.read<NotificationsBloc>().add(
+                          LoadNotifications(),
+                        );
                       },
-                      icon: Icon(Icons.refresh),
-                    ),
-                  ],
-                ),
-              ),
-              BlocConsumer<NotificationsBloc, NotificationsState>(
-                listener: (context, state) {
-                  if (state.status == NotificationsStateStatus.failure) {
-                    PiUtils.handleGeneralException(
-                      context,
-                      "An Error Occured",
-                    );
-                  } else if (state.itemStatus ==
-                      NotificationsItemStateStatus.failure) {
-                    PiUtils.handleGeneralException(
-                      context,
-                      "An Error Occured",
-                    );
-                  }
-                },
-                builder: (context, state) {
-                  if (state.status == NotificationsStateStatus.loading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state.status == NotificationsStateStatus.failure) {
-                    return const CustomErrorWidget(
-                      message: "Error loading data",
-                    );
-                  } else if (state.messages.isEmpty) {
-                    return const Center(
-                      child: EmptyWidget(message: "No data"),
-                    );
-                  } else if (state.status == NotificationsStateStatus.success) {
-                    List<DiagnosticMessageModel> diagnosticMessagesList =
-                        state.messages;
-                    return Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () async {
-                          context.read<NotificationsBloc>().add(LoadNotifications());
-                        },
-                        child: generateDiagnosticsMessages(
-                          diagnosticMessagesList,
-                        ),
+                      child: generateDiagnosticsMessages(
+                        diagnosticMessagesList,
                       ),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-            ],
-          ),
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
         ),
       ),
     );

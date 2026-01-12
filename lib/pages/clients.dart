@@ -453,110 +453,96 @@ class ClientsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.ui; // updates AppUiTokens when theme changes
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Clients"),
-        elevation: 0,
-        leading: BackButton(),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: BlocConsumer<ClientsBloc, ClientsState>(
-                  listener: (context, state) {
-                    if (state.status == ClientsStateStatus.failure) {
-                      PiUtils.handleGeneralException(
-                        context,
-                        "An Error Occured",
-                      );
-                    } else if (state.itemStatus ==
-                        ClientsItemStateStatus.success) {
-                      GlobalBanner.info(context, state.message, "");
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state.status == ClientsStateStatus.loading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state.status == ClientsStateStatus.failure) {
-                      return const CustomErrorWidget(
-                        message: "Error loading data",
-                      );
-                    } else if (state.clients.isEmpty) {
-                      return const Center(
-                        child: EmptyWidget(message: "No data"),
-                      );
-                    } else if (state.status == ClientsStateStatus.success) {
-                      List<ClientModel> clientModels = state.clients;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  "Clients",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: BlocConsumer<ClientsBloc, ClientsState>(
+                listener: (context, state) {
+                  if (state.status == ClientsStateStatus.failure) {
+                    PiUtils.handleGeneralException(context, "An Error Occured");
+                  } else if (state.itemStatus ==
+                      ClientsItemStateStatus.success) {
+                    GlobalBanner.info(context, state.message, "");
+                  }
+                },
+                builder: (context, state) {
+                  if (state.status == ClientsStateStatus.loading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state.status == ClientsStateStatus.failure) {
+                    return const CustomErrorWidget(
+                      message: "Error loading data",
+                    );
+                  } else if (state.clients.isEmpty) {
+                    return const Center(child: EmptyWidget(message: "No data"));
+                  } else if (state.status == ClientsStateStatus.success) {
+                    List<ClientModel> clientModels = state.clients;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Clients",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                IconButton.filled(
-                                  onPressed: () {
-                                    addClientFormModal(context);
-                                  },
-                                  icon: Icon(Icons.add, size: 15),
-                                  visualDensity: VisualDensity.compact,
-                                ),
-                              ],
-                            ),
+                              ),
+                              IconButton.filled(
+                                onPressed: () {
+                                  addClientFormModal(context);
+                                },
+                                icon: Icon(Icons.add, size: 15),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                            ],
                           ),
-                          Expanded(
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                final width = constraints.maxWidth;
+                        ),
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final width = constraints.maxWidth;
 
-                                return width < 500
-                                    ? getClients(clientModels)
-                                    : GridView.builder(
-                                        padding: const EdgeInsets.all(10),
-                                        gridDelegate:
-                                            SliverGridDelegateWithMaxCrossAxisExtent(
-                                              crossAxisSpacing: 8,
-                                              mainAxisSpacing: 8,
-                                              mainAxisExtent: KGridCardSizes
-                                                  .clients["height"]!
-                                                  .toDouble(),
-                                              maxCrossAxisExtent: KGridCardSizes
-                                                  .clients["width"]!
-                                                  .toDouble(),
-                                            ),
-                                        itemCount: clientModels.length,
-                                        itemBuilder: (context, index) {
-                                          return _clientRowCard(
-                                            clientModels[index],
-                                            context,
-                                          );
-                                        },
-                                      );
-                              },
-                            ),
+                              return width < 500
+                                  ? getClients(clientModels)
+                                  : GridView.builder(
+                                      padding: const EdgeInsets.all(10),
+                                      gridDelegate:
+                                          SliverGridDelegateWithMaxCrossAxisExtent(
+                                            crossAxisSpacing: 8,
+                                            mainAxisSpacing: 8,
+                                            mainAxisExtent: KGridCardSizes
+                                                .clients["height"]!
+                                                .toDouble(),
+                                            maxCrossAxisExtent: KGridCardSizes
+                                                .clients["width"]!
+                                                .toDouble(),
+                                          ),
+                                      itemCount: clientModels.length,
+                                      itemBuilder: (context, index) {
+                                        return _clientRowCard(
+                                          clientModels[index],
+                                          context,
+                                        );
+                                      },
+                                    );
+                            },
                           ),
-                        ],
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

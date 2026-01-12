@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pi_block/blocs/auth/auth_bloc.dart';
 import 'package:pi_block/logging/app_logger.dart';
@@ -29,6 +30,21 @@ class AppRouter {
   late final GoRouter router;
   late final RouteSignalQueue routeSignalQueue;
   final _log = AppLogger.get('AppRouter');
+  final _rootNavigatorKey = GlobalKey<NavigatorState>();
+  final _dashboardNavigatorKey = GlobalKey<NavigatorState>();
+  final _statsNavigatorKey = GlobalKey<NavigatorState>();
+  final _querylogNavigatorKey = GlobalKey<NavigatorState>();
+  final _domainsNavigatorKey = GlobalKey<NavigatorState>();
+  final _listsNavigatorKey = GlobalKey<NavigatorState>();
+  final _settingsNavigatorKey = GlobalKey<NavigatorState>();
+  final _notificationsNavigatorKey = GlobalKey<NavigatorState>();
+  final _localDnsNavigatorKey = GlobalKey<NavigatorState>();
+  final _groupsNavigatorKey = GlobalKey<NavigatorState>();
+  final _clientsNavigatorKey = GlobalKey<NavigatorState>();
+  final _logsNavigatorKey = GlobalKey<NavigatorState>();
+  final _actionsNavigatorKey = GlobalKey<NavigatorState>();
+  final _piholeConfigurationNavigatorKey = GlobalKey<NavigatorState>();
+
   GoRouter create(
     AuthBloc authBloc,
     RouteLocationNotifier routeLocationNotifier,
@@ -41,6 +57,7 @@ class AppRouter {
     ]);
     routeSignalQueue = RouteSignalQueue(routeLocationNotifier);
     router = GoRouter(
+      navigatorKey: _rootNavigatorKey,
       initialLocation: AppRoutes.welcomePath,
       debugLogDiagnostics: true,
       refreshListenable: routerRefresh,
@@ -89,11 +106,13 @@ class AppRouter {
 
         /// -------- Authenticated shell --------
         StatefulShellRoute.indexedStack(
+          parentNavigatorKey: _rootNavigatorKey,
           builder: (context, state, navigationShell) {
             return MainScaffold(navigationShell: navigationShell);
           },
           branches: [
             StatefulShellBranch(
+              navigatorKey: _dashboardNavigatorKey,
               routes: [
                 GoRoute(
                   name: AppRoutes.home,
@@ -103,6 +122,7 @@ class AppRouter {
               ],
             ),
             StatefulShellBranch(
+              navigatorKey: _statsNavigatorKey,
               routes: [
                 GoRoute(
                   name: AppRoutes.stats,
@@ -112,6 +132,7 @@ class AppRouter {
               ],
             ),
             StatefulShellBranch(
+              navigatorKey: _querylogNavigatorKey,
               routes: [
                 GoRoute(
                   name: AppRoutes.queryLog,
@@ -121,6 +142,7 @@ class AppRouter {
               ],
             ),
             StatefulShellBranch(
+              navigatorKey: _domainsNavigatorKey,
               routes: [
                 GoRoute(
                   name: AppRoutes.domains,
@@ -130,6 +152,7 @@ class AppRouter {
               ],
             ),
             StatefulShellBranch(
+              navigatorKey: _listsNavigatorKey,
               routes: [
                 GoRoute(
                   name: AppRoutes.lists,
@@ -138,50 +161,87 @@ class AppRouter {
                 ),
               ],
             ),
+            StatefulShellBranch(
+              navigatorKey: _settingsNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.settings,
+                  path: AppRoutes.settingsPath,
+                  builder: (context, state) => const SettingsPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _notificationsNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.notifications,
+                  path: AppRoutes.notificationsPath,
+                  builder: (context, state) => const NotificationsPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _localDnsNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.localDns,
+                  path: AppRoutes.localDnsPath,
+                  builder: (context, state) => const LocalDnsPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _groupsNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.groups,
+                  path: AppRoutes.groupsPath,
+                  builder: (context, state) => const GroupsPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _clientsNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.clients,
+                  path: AppRoutes.clientsPath,
+                  builder: (context, state) => const ClientsPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _logsNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.logs,
+                  path: AppRoutes.logsPath,
+                  builder: (context, state) => const LogsPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _actionsNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.actions,
+                  path: AppRoutes.actionsPath,
+                  builder: (context, state) => const ActionsPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _piholeConfigurationNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.piholeConfiguration,
+                  path: AppRoutes.piholeConfigurationPath,
+                  builder: (context, state) => const PiholeConfigurationPage(),
+                ),
+              ],
+            ),
           ],
-        ),
-
-        // other authenticated pages
-        // pages which dont need main scaffold
-        GoRoute(
-          name: AppRoutes.settings,
-          path: AppRoutes.settingsPath,
-          builder: (context, state) => const SettingsPage(),
-        ),
-        GoRoute(
-          name: AppRoutes.notifications,
-          path: AppRoutes.notificationsPath,
-          builder: (context, state) => const NotificationsPage(),
-        ),
-        GoRoute(
-          name: AppRoutes.localDns,
-          path: AppRoutes.localDnsPath,
-          builder: (context, state) => const LocalDnsPage(),
-        ),
-        GoRoute(
-          name: AppRoutes.groups,
-          path: AppRoutes.groupsPath,
-          builder: (context, state) => const GroupsPage(),
-        ),
-        GoRoute(
-          name: AppRoutes.clients,
-          path: AppRoutes.clientsPath,
-          builder: (context, state) => const ClientsPage(),
-        ),
-        GoRoute(
-          name: AppRoutes.logs,
-          path: AppRoutes.logsPath,
-          builder: (context, state) => const LogsPage(),
-        ),
-        GoRoute(
-          name: AppRoutes.actions,
-          path: AppRoutes.actionsPath,
-          builder: (context, state) => const ActionsPage(),
-        ),
-        GoRoute(
-          name: AppRoutes.piholeConfiguration,
-          path: AppRoutes.piholeConfigurationPath,
-          builder: (context, state) => const PiholeConfigurationPage(),
         ),
       ],
     );

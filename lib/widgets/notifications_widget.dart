@@ -5,25 +5,22 @@ import 'package:pi_block/blocs/notifications/notifications_bloc.dart';
 import 'package:pi_block/models/diagnostic_message_model.dart';
 import 'package:pi_block/router/app_routes.dart';
 
-class NotificationsWidget extends StatelessWidget {
-  const NotificationsWidget({super.key});
+class NotificationsWidget extends StatefulWidget {
+  final StatefulNavigationShell navigationShell;
+  const NotificationsWidget({super.key, required this.navigationShell});
 
   @override
-  Widget build(BuildContext context) {
-    return const NotificationsListView();
-  }
+  State<NotificationsWidget> createState() => _NotificationsWidgetState();
 }
 
-class NotificationsListView extends StatelessWidget {
-  const NotificationsListView({super.key});
-
+class _NotificationsWidgetState extends State<NotificationsWidget> {
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(right: 10.0),
       child: IconButton(
         onPressed: () {
-          context.pushNamed(AppRoutes.notifications);
+          widget.navigationShell.goBranch(AppDestination.notifications.branchIndex);
         },
         icon: BlocBuilder<NotificationsBloc, NotificationsState>(
           builder: (context, state) {

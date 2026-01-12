@@ -430,117 +430,100 @@ class GroupsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     context.ui; // updates AppUiTokens when theme changes
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Groups"),
-        elevation: 0,
-        leading: BackButton(),
-      ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Expanded(
-                child: BlocConsumer<GroupsBloc, GroupsState>(
-                  listener: (context, state) {
-                    if (state.status == GroupsStateStatus.failure) {
-                      PiUtils.handleGeneralException(
-                        context,
-                        "An Error Occured",
-                      );
-                    } else if (state.itemToggleStatus ==
-                        GroupsItemToggleStateStatus.failure) {
-                      context.read<GroupsBloc>().add(ResetItemToggleError());
-                      PiUtils.handleGeneralException(
-                        context,
-                        "An Error Occured",
-                      );
-                    } else if (state.itemStatus ==
-                        GroupsItemStateStatus.success) {
-                      GlobalBanner.info(context, state.message, "");
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state.status == GroupsStateStatus.loading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state.status == GroupsStateStatus.failure) {
-                      return const CustomErrorWidget(
-                        message: "Error loading data",
-                      );
-                    } else if (state.groups.isEmpty) {
-                      return const Center(
-                        child: EmptyWidget(message: "No data"),
-                      );
-                    } else if (state.status == GroupsStateStatus.success) {
-                      List<GroupModel> groupModels = state.groups;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  "Groups",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: BlocConsumer<GroupsBloc, GroupsState>(
+                listener: (context, state) {
+                  if (state.status == GroupsStateStatus.failure) {
+                    PiUtils.handleGeneralException(context, "An Error Occured");
+                  } else if (state.itemToggleStatus ==
+                      GroupsItemToggleStateStatus.failure) {
+                    context.read<GroupsBloc>().add(ResetItemToggleError());
+                    PiUtils.handleGeneralException(context, "An Error Occured");
+                  } else if (state.itemStatus ==
+                      GroupsItemStateStatus.success) {
+                    GlobalBanner.info(context, state.message, "");
+                  }
+                },
+                builder: (context, state) {
+                  if (state.status == GroupsStateStatus.loading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state.status == GroupsStateStatus.failure) {
+                    return const CustomErrorWidget(
+                      message: "Error loading data",
+                    );
+                  } else if (state.groups.isEmpty) {
+                    return const Center(child: EmptyWidget(message: "No data"));
+                  } else if (state.status == GroupsStateStatus.success) {
+                    List<GroupModel> groupModels = state.groups;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                "Groups",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                IconButton.filled(
-                                  onPressed: () {
-                                    addGroupFormModal(context);
-                                  },
-                                  icon: Icon(Icons.add, size: 15),
-                                  visualDensity: VisualDensity.compact,
-                                ),
-                              ],
-                            ),
+                              ),
+                              IconButton.filled(
+                                onPressed: () {
+                                  addGroupFormModal(context);
+                                },
+                                icon: Icon(Icons.add, size: 15),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                            ],
                           ),
-                          Expanded(
-                            child: LayoutBuilder(
-                              builder: (context, constraints) {
-                                final width = constraints.maxWidth;
+                        ),
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final width = constraints.maxWidth;
 
-                                return width < 500
-                                    ? getGroups(groupModels)
-                                    : GridView.builder(
-                                        padding: const EdgeInsets.all(10),
-                                        gridDelegate:
-                                            SliverGridDelegateWithMaxCrossAxisExtent(
-                                              crossAxisSpacing: 8,
-                                              mainAxisSpacing: 8,
-                                              mainAxisExtent: KGridCardSizes
-                                                  .groups["height"]!
-                                                  .toDouble(),
-                                              maxCrossAxisExtent: KGridCardSizes
-                                                  .groups["width"]!
-                                                  .toDouble(),
-                                            ),
-                                        itemCount: groupModels.length,
-                                        itemBuilder: (context, index) {
-                                          return _groupRowCard(
-                                            groupModels[index],
-                                            context,
-                                          );
-                                        },
-                                      );
-                              },
-                            ),
+                              return width < 500
+                                  ? getGroups(groupModels)
+                                  : GridView.builder(
+                                      padding: const EdgeInsets.all(10),
+                                      gridDelegate:
+                                          SliverGridDelegateWithMaxCrossAxisExtent(
+                                            crossAxisSpacing: 8,
+                                            mainAxisSpacing: 8,
+                                            mainAxisExtent: KGridCardSizes
+                                                .groups["height"]!
+                                                .toDouble(),
+                                            maxCrossAxisExtent: KGridCardSizes
+                                                .groups["width"]!
+                                                .toDouble(),
+                                          ),
+                                      itemCount: groupModels.length,
+                                      itemBuilder: (context, index) {
+                                        return _groupRowCard(
+                                          groupModels[index],
+                                          context,
+                                        );
+                                      },
+                                    );
+                            },
                           ),
-                        ],
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
