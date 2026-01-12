@@ -1,0 +1,11 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "unlock-keychain",
+      "type": "shell",
+      "command": "security unlock-keychain -p ${env:IOS_BUILD_PASSWORD} ${env:IOS_BUILD_KEYCHAIN_PATH} && security list-keychains -d user -s ~/Library/Keychains/login.keychain-db /Library/Keychains/System.keychain /System/Library/Keychains/SystemRootCertificates.keychain ${env:IOS_BUILD_KEYCHAIN_PATH}",
+      "problemMatcher": []
+    }
+  ]
+}
