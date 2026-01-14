@@ -19,6 +19,7 @@ import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/models/lists_update_model.dart';
 import 'package:pi_block/models/logs_model.dart';
 import 'package:pi_block/models/metrics_model.dart';
+import 'package:pi_block/models/network_gateway_model.dart';
 import 'package:pi_block/models/pihole_config_model.dart';
 import 'package:pi_block/models/query_model.dart';
 import 'package:pi_block/models/session_model.dart';
@@ -612,6 +613,19 @@ class PiholeRepository {
         return log;
       });
       return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<NetworkGatewayModel> getNetworkGateway() async {
+    try {
+      var result = await piholeDataProvider.getNetworkGateway();
+      NetworkGatewayModel networkGatewayModel = NetworkGatewayModel.fromJson(result);
+
+      _log.fine(() => 'getNetworkGateway: ${networkGatewayModel.toString()}');
+
+      return networkGatewayModel;
     } catch (e) {
       rethrow;
     }

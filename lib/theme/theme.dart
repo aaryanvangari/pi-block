@@ -411,6 +411,8 @@ class MaterialTheme {
     tagBackground: cs.onSurfaceVariant.withAlpha(50),
     editIconColor: cs.onSurface.withAlpha(170),
     deleteIconColor: cs.error.withAlpha(170),
+    networkAddressColor: KColors.networkGatewayAddress.withAlpha(170),
+    networkAddressBackgroundColor: KColors.networkGatewayAddress.withAlpha(20)
   );
 
   AppUiTokens darkUiTokens(ColorScheme cs) => AppUiTokens(
@@ -431,6 +433,8 @@ class MaterialTheme {
     tagBackground: cs.onSurfaceVariant.withAlpha(50),
     editIconColor: cs.onSurface.withAlpha(170),
     deleteIconColor: cs.error.withAlpha(170),
+    networkAddressColor: cs.onSurface.withAlpha(170),
+    networkAddressBackgroundColor: cs.onSurfaceVariant.withAlpha(50)
   );
 }
 

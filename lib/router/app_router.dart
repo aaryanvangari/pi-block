@@ -7,6 +7,7 @@ import 'package:pi_block/pages/clients.dart';
 import 'package:pi_block/pages/dashboard.dart';
 import 'package:pi_block/pages/domains.dart';
 import 'package:pi_block/pages/groups.dart';
+import 'package:pi_block/pages/interfaces.dart';
 import 'package:pi_block/pages/lists.dart';
 import 'package:pi_block/pages/local_dns.dart';
 import 'package:pi_block/pages/login.dart';
@@ -44,6 +45,7 @@ class AppRouter {
   final _logsNavigatorKey = GlobalKey<NavigatorState>();
   final _actionsNavigatorKey = GlobalKey<NavigatorState>();
   final _piholeConfigurationNavigatorKey = GlobalKey<NavigatorState>();
+  final _interfacesNavigatorKey = GlobalKey<NavigatorState>();
 
   GoRouter create(
     AuthBloc authBloc,
@@ -238,6 +240,16 @@ class AppRouter {
                   name: AppRoutes.piholeConfiguration,
                   path: AppRoutes.piholeConfigurationPath,
                   builder: (context, state) => const PiholeConfigurationPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _interfacesNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.interfaces,
+                  path: AppRoutes.interfacesPath,
+                  builder: (context, state) => InterfacesPage(),
                 ),
               ],
             ),

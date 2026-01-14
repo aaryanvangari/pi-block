@@ -200,6 +200,23 @@ class DrawerWidget extends StatelessWidget {
                 ),
                 ListTile(
                   title: Text(
+                    "Interfaces",
+                    style: KTextStyle.drawerEntryItemTitle,
+                  ),
+                  leading: Icon(Icons.wifi),
+                  selected:
+                      currentLocation == AppRoutes.interfacesPath,
+                  onTap: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.of(context).pop(); // closes drawer
+                    }
+                    navigationShell.goBranch(
+                      AppDestination.interfaces.branchIndex,
+                    ); // Interfaces branch index
+                  },
+                ),
+                ListTile(
+                  title: Text(
                     "Settings",
                     style: KTextStyle.drawerEntryItemTitle,
                   ),

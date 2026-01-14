@@ -17,6 +17,9 @@ class KColors {
   static const systemLoadMedium = Colors.orange;
   static const systemLoadHigh = Colors.red;
   static const links = Colors.blue;
+  static const interfaceConnected = Colors.green;
+  static const interfaceDisconnected = Colors.red;
+  static Color networkGatewayAddress = Color(0xFFc7254e);
 
   /// Dynamic colors
   static Color welcomeCircle1 = Colors.white.withAlpha(10);

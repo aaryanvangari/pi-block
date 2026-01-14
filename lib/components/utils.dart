@@ -68,12 +68,12 @@ class PiUtils {
     GlobalBanner.error(context, errorTitle, errorDescription);
   }
 
-  static String getDateFormatter(double milliseconds) {
+  static String getDateFormatter(double milliseconds, {String format = 'yyyy-MM-dd H:m:s.SSS'}) {
     if (milliseconds == 0) return "N/A";
     final dateTime = DateTime.fromMillisecondsSinceEpoch(
       (milliseconds * 1000).toInt(),
     );
-    final DateFormat formatter = DateFormat('yyyy-MM-dd H:m:s.SSS');
+    final DateFormat formatter = DateFormat(format);
     final String formatted = formatter.format(dateTime);
     return formatted;
   }

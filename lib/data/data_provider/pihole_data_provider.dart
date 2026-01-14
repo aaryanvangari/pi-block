@@ -692,5 +692,22 @@ class PiholeDataProvider {
     }
   }
 
+  Future<Map<String, dynamic>> getNetworkGateway() async {
+    try {
+      final queryParameter = <String, dynamic>{'detailed': 'true'};
+      var result = await piHttpClient.get(
+        ApiUrls.networkGateway,
+        queryParams: queryParameter,
+      );
+      PiUtils.handleAPIException(result, false);
+
+      _log.fine(() => 'getNetworkGateway: ${result.toString()}');
+
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   void close() => piHttpClient.close();
 }

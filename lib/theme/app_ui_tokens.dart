@@ -11,6 +11,8 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
   final Color tagBackground;
   final Color editIconColor;
   final Color deleteIconColor;
+  final Color networkAddressColor;
+  final Color networkAddressBackgroundColor;
 
   const AppUiTokens({
     required this.slidePrimary,
@@ -22,6 +24,8 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
     required this.tagBackground,
     required this.editIconColor,
     required this.deleteIconColor,
+    required this.networkAddressColor,
+    required this.networkAddressBackgroundColor,
   });
 
   @override
@@ -35,6 +39,8 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
     Color? tagBackground,
     Color? editIconColor,
     Color? deleteIconColor,
+    Color? networkAddressColor,
+    Color? networkAddressBackgroundColor,
   }) {
     return AppUiTokens(
       slidePrimary: slidePrimary ?? this.slidePrimary,
@@ -48,6 +54,9 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
       tagBackground: tagBackground ?? this.tagBackground,
       editIconColor: editIconColor ?? this.editIconColor,
       deleteIconColor: deleteIconColor ?? this.deleteIconColor,
+      networkAddressColor: networkAddressColor ?? this.networkAddressColor,
+      networkAddressBackgroundColor:
+          networkAddressBackgroundColor ?? this.networkAddressBackgroundColor,
     );
   }
 
@@ -81,6 +90,13 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
       tagBackground: Color.lerp(tagBackground, other.tagBackground, t)!,
       editIconColor: Color.lerp(editIconColor, other.editIconColor, t)!,
       deleteIconColor: Color.lerp(deleteIconColor, other.deleteIconColor, t)!,
+      networkAddressColor:
+          Color.lerp(networkAddressColor, other.networkAddressColor, t)!,
+      networkAddressBackgroundColor: Color.lerp(
+        networkAddressBackgroundColor,
+        other.networkAddressBackgroundColor,
+        t,
+      )!,
     );
   }
 }
