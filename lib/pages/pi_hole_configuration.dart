@@ -149,10 +149,12 @@ class _PiholeConfigurationViewState extends State<_PiholeConfigurationView> {
                               IconButton(
                                 onPressed: () => controller.expandAllNodes(),
                                 icon: const Icon(Icons.expand_rounded),
+                                tooltip: "Expand All",
                               ),
                               IconButton(
                                 onPressed: () => controller.collapseAllNodes(),
                                 icon: const Icon(Icons.compress),
+                                tooltip: "Collapse All",
                               ),
                             ],
                           ],

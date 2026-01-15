@@ -22,16 +22,27 @@ class NavbarWidget extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.dashboard),
           label: "Dashboard",
+          tooltip: "Dashboard",
         ),
-        BottomNavigationBarItem(icon: Icon(Icons.auto_graph), label: "Stats"),
-        BottomNavigationBarItem(icon: Icon(Icons.list_alt), label: "Query Log"),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.auto_graph),
+          label: "Stats",
+          tooltip: "Statistics",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.list_alt),
+          label: "Query Log",
+          tooltip: "Query Log",
+        ),
         BottomNavigationBarItem(
           icon: Icon(FontAwesomeIcons.list),
           label: "Domains",
+          tooltip: "Domains"
         ),
         BottomNavigationBarItem(
           icon: Icon(FontAwesomeIcons.shieldHalved),
           label: "Lists",
+          tooltip: "Block/Allow Lists",
         ),
       ],
     );
