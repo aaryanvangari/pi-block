@@ -9,6 +9,7 @@ import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/gravity_log_model.dart';
 import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/models/lists_model.dart';
+import 'package:pi_block/models/network_devices.dart';
 
 class PiholeDataProvider {
   PiHttpClient piHttpClient = PiHttpClient();
@@ -703,6 +704,42 @@ class PiholeDataProvider {
 
       _log.fine(() => 'getNetworkGateway: ${result.toString()}');
 
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> getNetworkDevices(
+    int maxDevices,
+    int maxAddresses,
+  ) async {
+    try {
+      final queryParameter = <String, dynamic>{
+        '_': DateTime.now().millisecondsSinceEpoch.toString(),
+        'max_devices': maxDevices.toString(),
+        'max_addresses': maxAddresses.toString(),
+      };
+      var result = await piHttpClient.get(
+        ApiUrls.networkDevices,
+        queryParams: queryParameter,
+      );
+      PiUtils.handleAPIException(result, false);
+
+      _log.fine(() => 'getNetworkDevices: ${result.toString()}');
+
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteNetworkDevice(Device device) async {
+    try {
+      var result = await piHttpClient.delete('${ApiUrls.networkDevices}/${device.id}');
+      PiUtils.handleAPIException(result, false);
+
+      _log.fine(() => 'deleteNetworkDevice: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;

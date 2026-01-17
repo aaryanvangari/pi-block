@@ -19,7 +19,11 @@ class KColors {
   static const links = Colors.blue;
   static const interfaceConnected = Colors.green;
   static const interfaceDisconnected = Colors.red;
-  static Color networkGatewayAddress = Color(0xFFc7254e);
+  static const networkGatewayAddress = Color(0xFFc7254e);
+  static const deviceLessThanHour = Colors.green;
+  static const deviceLessThanDay = Colors.amber;
+  static const deviceGreaterThanDay = Colors.orange;
+  static const deviceDoesNotUsePihole = Colors.red;
 
   /// Dynamic colors
   static Color welcomeCircle1 = Colors.white.withAlpha(10);

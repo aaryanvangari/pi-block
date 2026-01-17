@@ -13,6 +13,10 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
   final Color deleteIconColor;
   final Color networkAddressColor;
   final Color networkAddressBackgroundColor;
+  final Color networkDeviceLessThanHour;
+  final Color networkDeviceLessThanDay;
+  final Color networkDeviceGreaterThanDay;
+  final Color networkDeviceDoesNotUsePihole;
 
   const AppUiTokens({
     required this.slidePrimary,
@@ -26,6 +30,10 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
     required this.deleteIconColor,
     required this.networkAddressColor,
     required this.networkAddressBackgroundColor,
+    required this.networkDeviceLessThanHour,
+    required this.networkDeviceLessThanDay,
+    required this.networkDeviceGreaterThanDay,
+    required this.networkDeviceDoesNotUsePihole,
   });
 
   @override
@@ -41,6 +49,10 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
     Color? deleteIconColor,
     Color? networkAddressColor,
     Color? networkAddressBackgroundColor,
+    Color? networkDeviceLessThanHour,
+    Color? networkDeviceLessThanDay,
+    Color? networkDeviceGreaterThanDay,
+    Color? networkDeviceDoesNotUsePihole,
   }) {
     return AppUiTokens(
       slidePrimary: slidePrimary ?? this.slidePrimary,
@@ -57,6 +69,10 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
       networkAddressColor: networkAddressColor ?? this.networkAddressColor,
       networkAddressBackgroundColor:
           networkAddressBackgroundColor ?? this.networkAddressBackgroundColor,
+      networkDeviceLessThanHour: networkDeviceLessThanHour ?? this.networkDeviceLessThanHour,
+      networkDeviceLessThanDay: networkDeviceLessThanDay ?? this.networkDeviceLessThanDay,
+      networkDeviceGreaterThanDay: networkDeviceGreaterThanDay ?? this.networkDeviceGreaterThanDay,
+      networkDeviceDoesNotUsePihole: networkDeviceDoesNotUsePihole ?? this.networkDeviceDoesNotUsePihole,
     );
   }
 
@@ -97,6 +113,10 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
         other.networkAddressBackgroundColor,
         t,
       )!,
+      networkDeviceLessThanHour: Color.lerp(networkDeviceLessThanHour, other.networkDeviceLessThanHour, t)!,
+      networkDeviceLessThanDay: Color.lerp(networkDeviceLessThanDay, other.networkDeviceLessThanDay, t)!,
+      networkDeviceGreaterThanDay: Color.lerp(networkDeviceGreaterThanDay, other.networkDeviceGreaterThanDay, t)!,
+      networkDeviceDoesNotUsePihole: Color.lerp(networkDeviceDoesNotUsePihole, other.networkDeviceDoesNotUsePihole, t)! 
     );
   }
 }

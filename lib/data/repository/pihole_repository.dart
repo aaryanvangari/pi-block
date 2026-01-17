@@ -19,6 +19,7 @@ import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/models/lists_update_model.dart';
 import 'package:pi_block/models/logs_model.dart';
 import 'package:pi_block/models/metrics_model.dart';
+import 'package:pi_block/models/network_devices.dart';
 import 'package:pi_block/models/network_gateway_model.dart';
 import 'package:pi_block/models/pihole_config_model.dart';
 import 'package:pi_block/models/query_model.dart';
@@ -626,6 +627,35 @@ class PiholeRepository {
       _log.fine(() => 'getNetworkGateway: ${networkGatewayModel.toString()}');
 
       return networkGatewayModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<NetworkDevicesModel> getNetworkDevices(int maxDevices, int maxAddresses) async {
+    try {
+      var result = await piholeDataProvider.getNetworkDevices(maxDevices, maxAddresses);
+      NetworkDevicesModel networkDevicesModel = NetworkDevicesModel.fromJson(result);
+
+      _log.fine(() => 'getNetworkDevices: ${networkDevicesModel.toString()}');
+
+      return networkDevicesModel;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<bool> deleteNetworkDevice(Device item) async {
+    try {
+      var result = await piholeDataProvider.deleteNetworkDevice(item);
+      bool isDeleted = false;
+      if (result.containsKey("deleted") && result["deleted"]) {
+        isDeleted = true;
+      }
+
+      _log.fine(() => 'deleteNetworkDevice: ${result.toString()}');
+
+      return isDeleted;
     } catch (e) {
       rethrow;
     }
