@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:http/http.dart' as http;
 import 'package:pi_block/data/data_provider/pihole_data_provider.dart';
 import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/blocking_model.dart';
@@ -15,6 +18,8 @@ import 'package:pi_block/models/groups_model.dart';
 import 'package:pi_block/models/groups_update_model.dart';
 import 'package:pi_block/models/history_model.dart';
 import 'package:pi_block/models/host_model.dart';
+import 'package:pi_block/models/import_config_model.dart';
+import 'package:pi_block/models/import_options_model.dart';
 import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/models/lists_update_model.dart';
 import 'package:pi_block/models/logs_model.dart';
@@ -656,6 +661,39 @@ class PiholeRepository {
       _log.fine(() => 'deleteNetworkDevice: ${result.toString()}');
 
       return isDeleted;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<http.Response> exportConfiguration() async {
+    try {
+      http.Response response = await piholeDataProvider.exportConfiguration();
+
+      _log.fine(() => 'exportConfiguration: ${response.statusCode.toString()}');
+
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<ImportConfigModel> importConfiguration(
+    Uint8List fileBytes,
+    String fileName,
+    ImportOptionsModel importOptionsModel,
+  ) async {
+    try {
+      var result = await piholeDataProvider.importConfiguration(
+        fileBytes,
+        fileName,
+        importOptionsModel,
+      );
+      ImportConfigModel importConfigModel = ImportConfigModel.fromJson(result);
+
+      _log.fine(() => 'importConfiguration: ${importConfigModel.toString()}');
+
+      return importConfigModel;
     } catch (e) {
       rethrow;
     }

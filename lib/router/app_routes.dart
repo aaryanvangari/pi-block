@@ -17,6 +17,7 @@ abstract class AppRoutes {
   static const String piholeConfiguration = 'piholeConfiguration';
   static const String interfaces = 'interfaces';
   static const String devices = 'devices';
+  static const String teleporter = 'teleporter';
 
   // Route paths
   static const String welcomePath = '/';
@@ -36,6 +37,7 @@ abstract class AppRoutes {
   static const String piholeConfigurationPath = '/pihole-configuration';
   static const String interfacesPath = '/interfaces';
   static const String devicesPath = '/devices';
+  static const String teleporterPath = '/teleporter';
 
   const AppRoutes._(); // Prevent instantiation
 
@@ -50,6 +52,7 @@ abstract class AppRoutes {
     '/local-dns': 'Local DNS',
     '/interfaces': 'Interfaces',
     '/devices': 'Devices',
+    '/teleporter': 'Teleporter',
   };
 }
 
@@ -68,7 +71,8 @@ enum AppDestination {
   settings,
   localDns,
   interfaces,
-  devices
+  devices,
+  teleporter,
 }
 
 extension AppDestinationExtension on AppDestination {
@@ -104,6 +108,8 @@ extension AppDestinationExtension on AppDestination {
         return 13;
       case AppDestination.devices:
         return 14;
+      case AppDestination.teleporter:
+        return 15;
     }
   }
 }

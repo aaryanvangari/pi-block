@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 import 'package:pi_block/components/utils.dart';
@@ -6,6 +7,7 @@ import 'package:pi_block/logging/app_logger.dart';
 import 'package:pi_block/models/gravity_log_model.dart';
 import 'package:pi_block/services/user_session_service.dart';
 import 'package:pi_block/models/user_session_model.dart';
+import 'package:http_parser/http_parser.dart';
 
 class PiHttpClient {
   final http.Client _httpClient;
@@ -277,6 +279,124 @@ class PiHttpClient {
           .map((line) => PiUtils.parseGravityLog(line));
     } catch (e) {
       _log.severe('postStream: ${e.toString()}', e);
+      rethrow;
+    }
+  }
+
+  dynamic downloadFile(
+    String urlEndpoint,
+    {
+    dynamic queryParams,
+  }) async {
+    UserSessionModel? userSessionModel = UserSessionService().getSession();
+    String scheme = userSessionModel!.serverUri.scheme;
+    String server = userSessionModel.serverUri.host;
+    int port = userSessionModel.serverUri.port;
+    String sid = userSessionModel.session.sid;
+    Uri url;
+    dynamic result;
+    if ((queryParams != null) && (queryParams.keys.length > 0)) {
+      url = Uri(
+        scheme: scheme,
+        host: server,
+        port: port,
+        path: urlEndpoint,
+        queryParameters: queryParams,
+      );
+    } else {
+      url = Uri(scheme: scheme, host: server, port: port, path: urlEndpoint);
+    }
+
+    _log.info('get: ${url.toString()}');
+
+    http.Response response = await _httpClient.get(
+      url,
+      headers: <String, String>{
+        'Accept': 'application/zip',
+        "sid": sid.toString(),
+      },
+    );
+
+    if (response.statusCode != 200) {
+      result = jsonDecode(response.body);
+      return result;
+    }
+
+    _log.info('get: ${response.statusCode.toString()}');
+    return response;
+  }
+
+  dynamic uploadFile(
+    String urlEndpoint,
+    dynamic queryParams,
+    dynamic body,
+    Uint8List fileBytes,
+    String fileName, [
+    String? scheme,
+    String? server,
+    int? port,
+    String? password,
+    String fileField = 'file',
+    String jsonField = 'import',
+  ]) async {
+    dynamic result;
+    String sid = "";
+    Map<String, String> headers = {};
+    try {
+      if (server == null) {
+        UserSessionModel? userSessionModel = UserSessionService().getSession();
+        scheme = userSessionModel!.serverUri.scheme;
+        server = userSessionModel.serverUri.host;
+        port = userSessionModel.serverUri.port;
+        sid = userSessionModel.session.sid;
+        headers = <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          "sid": sid.toString(),
+        };
+      } else {
+        body = jsonEncode(<String, String>{'password': password!});
+      }
+
+      Uri url;
+      if ((queryParams != null) && (queryParams.keys.length > 0)) {
+        url = Uri(
+          scheme: scheme,
+          host: server,
+          port: port,
+          path: urlEndpoint,
+          queryParameters: queryParams,
+        );
+      } else {
+        url = Uri(scheme: scheme, host: server, port: port, path: urlEndpoint);
+      }
+
+      _log.info('uploadFile: ${url.toString()}');
+
+      final request = http.MultipartRequest('POST', url)
+      ..headers.addAll(headers)
+
+      // JSON part
+      ..fields[jsonField] = jsonEncode(body)
+
+      // File part
+      ..files.add(
+        http.MultipartFile.fromBytes(
+          fileField,
+          fileBytes,
+          filename: fileName,
+          contentType: MediaType('application', 'zip'),
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      _log.info('uploadFile: ${response.statusCode}');
+
+      result = jsonDecode(response.body);
+      return result;
+    } catch (e) {
+      _log.severe('post: ${e.toString()}', e);
       rethrow;
     }
   }

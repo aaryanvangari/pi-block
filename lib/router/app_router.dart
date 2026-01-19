@@ -19,6 +19,7 @@ import 'package:pi_block/pages/pi_hole_configuration.dart';
 import 'package:pi_block/pages/querylog.dart';
 import 'package:pi_block/pages/settings.dart';
 import 'package:pi_block/pages/stats.dart';
+import 'package:pi_block/pages/teleporter.dart';
 import 'package:pi_block/pages/welcome.dart';
 import 'package:pi_block/router/gorouter_refresh_stream.dart';
 import 'package:pi_block/router/route_location_notifier.dart';
@@ -48,6 +49,7 @@ class AppRouter {
   final _piholeConfigurationNavigatorKey = GlobalKey<NavigatorState>();
   final _interfacesNavigatorKey = GlobalKey<NavigatorState>();
   final _devicesNavigatorKey = GlobalKey<NavigatorState>();
+  final _teleporterNavigatorKey = GlobalKey<NavigatorState>();
 
   GoRouter create(
     AuthBloc authBloc,
@@ -262,6 +264,16 @@ class AppRouter {
                   name: AppRoutes.devices,
                   path: AppRoutes.devicesPath,
                   builder: (context, state) => NetworkDevicesPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _teleporterNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.teleporter,
+                  path: AppRoutes.teleporterPath,
+                  builder: (context, state) => TeleporterPage(),
                 ),
               ],
             ),

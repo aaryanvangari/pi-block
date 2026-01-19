@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:pi_block/components/pi_http_client.dart';
 import 'package:pi_block/components/utils.dart';
@@ -8,8 +9,10 @@ import 'package:pi_block/models/client_model.dart';
 import 'package:pi_block/models/domain_model.dart';
 import 'package:pi_block/models/gravity_log_model.dart';
 import 'package:pi_block/models/groups_model.dart';
+import 'package:pi_block/models/import_options_model.dart';
 import 'package:pi_block/models/lists_model.dart';
 import 'package:pi_block/models/network_devices.dart';
+import 'package:http/http.dart' as http;
 
 class PiholeDataProvider {
   PiHttpClient piHttpClient = PiHttpClient();
@@ -736,10 +739,54 @@ class PiholeDataProvider {
 
   Future<Map<String, dynamic>> deleteNetworkDevice(Device device) async {
     try {
-      var result = await piHttpClient.delete('${ApiUrls.networkDevices}/${device.id}');
+      var result = await piHttpClient.delete(
+        '${ApiUrls.networkDevices}/${device.id}',
+      );
       PiUtils.handleAPIException(result, false);
 
       _log.fine(() => 'deleteNetworkDevice: ${result.toString()}');
+      return result;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<dynamic> exportConfiguration() async {
+    try {
+      http.Response response;
+      var output = await piHttpClient.downloadFile(ApiUrls.teleporter);
+      if (output.runtimeType == http.Response) {
+        // We got the response and no errors
+        response = output;
+        _log.fine(
+          () => 'exportConfiguration: ${response.statusCode.toString()}',
+        );
+        return response;
+      } else if (output.runtimeType == Map<String, dynamic>) {
+        // Got error deal with it.
+        PiUtils.handleAPIException(output, false);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<dynamic> importConfiguration(
+    Uint8List fileBytes,
+    String fileName,
+    ImportOptionsModel importOptionsModel,
+  ) async {
+    try {
+      var body = importOptionsModel.toJson();
+      var result = await piHttpClient.uploadFile(
+        ApiUrls.teleporter,
+        null,
+        body,
+        fileBytes,
+        fileName,
+      );
+      PiUtils.handleAPIException(result, false);
+      _log.fine(() => 'importConfiguration: ${result.toString()}');
       return result;
     } catch (e) {
       rethrow;

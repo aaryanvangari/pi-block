@@ -30,5 +30,6 @@ class KGridCardSizes {
   static const lists = {"width": 450, "height": 300};
   static const groups = {"width": 400, "height": 230};
   static const clients = {"width": 400, "height": 250};
-  static const devices = {"width": 400, "height": 250};
+  static const devices = {"width": 400, "height": 240};
+  static const teleporter = {"width": 600, "height": 500};
 }

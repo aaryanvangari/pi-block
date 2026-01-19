@@ -234,6 +234,23 @@ class DrawerWidget extends StatelessWidget {
                 ),
                 ListTile(
                   title: Text(
+                    "Teleporter",
+                    style: KTextStyle.drawerEntryItemTitle,
+                  ),
+                  leading: Icon(FontAwesomeIcons.fileExport),
+                  selected:
+                      currentLocation == AppRoutes.teleporterPath,
+                  onTap: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.of(context).pop(); // closes drawer
+                    }
+                    navigationShell.goBranch(
+                      AppDestination.teleporter.branchIndex,
+                    ); // Teleporter branch index
+                  },
+                ),
+                ListTile(
+                  title: Text(
                     "Settings",
                     style: KTextStyle.drawerEntryItemTitle,
                   ),

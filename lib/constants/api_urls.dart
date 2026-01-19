@@ -32,4 +32,5 @@ class ApiUrls {
   static const String gravityLogs = '$base/action/gravity';
   static const String networkGateway = '$base/network/gateway';
   static const String networkDevices = '$base/network/devices';
+  static const String teleporter = '$base/teleporter';
 }

@@ -41,6 +41,11 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_fancy_tree_view2: ^1.6.3
   path_drawing: ^1.0.1
+  path: ^1.9.1
+  path_provider: ^2.1.5
+  flutter_file_dialog: ^3.0.3
+  file_picker: ^10.3.8
+  http_parser: ^4.1.2
 
 dev_dependencies:
   flutter_test:
