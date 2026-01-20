@@ -21,6 +21,7 @@ import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/widgets/edit_list_modal_widget.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
+import 'package:pi_block/widgets/time_ago_widget.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 class ListsPage extends StatelessWidget {
@@ -129,19 +130,7 @@ class ListsView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: Icon(Icons.update, size: 16),
-                        ),
-                        Text(
-                          PiUtils.getTimeAgo(item.date_updated, "milliseconds"),
-                          style: KTextStyle.listHeaderTimeTitle,
-                        ),
-                      ],
-                    ),
+                    TimeAgoWidget(time: item.date_updated),
                   ],
                 ),
               ],
@@ -203,7 +192,7 @@ class ListsView extends StatelessWidget {
     );
   }
 
-  Widget _domainRowCard(ListsModel item, BuildContext context) {
+  Widget _listsRowCard(ListsModel item, BuildContext context) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -287,19 +276,7 @@ class ListsView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: Icon(Icons.update, size: 16),
-                        ),
-                        Text(
-                          PiUtils.getTimeAgo(item.date_updated, "milliseconds"),
-                          style: KTextStyle.listHeaderTimeTitle,
-                        ),
-                      ],
-                    ),
+                    TimeAgoWidget(time: item.date_updated),
                   ],
                 ),
               ],
@@ -700,7 +677,7 @@ class ListsView extends StatelessWidget {
                                                 ),
                                             itemCount: listsModels.length,
                                             itemBuilder: (context, index) {
-                                              return _domainRowCard(
+                                              return _listsRowCard(
                                                 listsModels[index],
                                                 context,
                                               );

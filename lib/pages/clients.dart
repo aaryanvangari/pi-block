@@ -17,6 +17,7 @@ import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/edit_client_modal_widget.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/components/utils.dart';
+import 'package:pi_block/widgets/time_ago_widget.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 class ClientsPage extends StatelessWidget {
@@ -171,27 +172,7 @@ class ClientsView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: const Icon(Icons.update, size: 16),
-                        ),
-                        Text(
-                          PiUtils.getTimeAgo(
-                            item.date_modified,
-                            "milliseconds",
-                          ),
-                          style: KTextStyle.listHeaderTimeTitle,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                TimeAgoWidget(time: item.date_modified),
               ],
             ),
           ),
@@ -269,27 +250,7 @@ class ClientsView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: const Icon(Icons.update, size: 16),
-                        ),
-                        Text(
-                          PiUtils.getTimeAgo(
-                            item.date_modified,
-                            "milliseconds",
-                          ),
-                          style: KTextStyle.listHeaderTimeTitle,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                TimeAgoWidget(time: item.date_modified),
               ],
             ),
             const SizedBox(height: 10),
