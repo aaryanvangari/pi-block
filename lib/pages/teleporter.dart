@@ -47,7 +47,7 @@ class _TeleporterViewState extends State<_TeleporterView> {
                   child: Column(
                     children: [
                       exportWidget(context),
-                      const SizedBox(height: 10, width: 10,),
+                      const SizedBox(height: 10, width: 10),
                       importWidget(context),
                     ],
                   ),
@@ -65,7 +65,8 @@ class _TeleporterViewState extends State<_TeleporterView> {
                           mainAxisSpacing: 8.0, // Space between rows
                           mainAxisExtent: KGridCardSizes.teleporter["height"]!
                               .toDouble(),
-                          maxCrossAxisExtent: KGridCardSizes.teleporter["width"]!
+                          maxCrossAxisExtent: KGridCardSizes
+                              .teleporter["width"]!
                               .toDouble(),
                         ),
                         itemCount: 2,
@@ -235,7 +236,9 @@ Widget importWidget(BuildContext context) {
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8.0),
                                   child: Text(
-                                    (state.fileName.isEmpty) ? "" : state.fileName,
+                                    (state.fileName.isEmpty)
+                                        ? ""
+                                        : state.fileName,
                                     softWrap: true,
                                   ),
                                 ),
@@ -252,9 +255,10 @@ Widget importWidget(BuildContext context) {
                                   context,
                                   title: 'Configuration',
                                   value: state.configuration,
-                                  onChanged: (v) => context
-                                      .read<TeleporterBloc>()
-                                      .add(ToggleImportOption('configuration', v)),
+                                  onChanged: (v) =>
+                                      context.read<TeleporterBloc>().add(
+                                        ToggleImportOption('configuration', v),
+                                      ),
                                 ),
                                 _checkbox(
                                   context,
@@ -284,9 +288,10 @@ Widget importWidget(BuildContext context) {
                                   context,
                                   title: 'Domains / Regexes',
                                   value: state.domainsRegexes,
-                                  onChanged: (v) => context
-                                      .read<TeleporterBloc>()
-                                      .add(ToggleImportOption('domainsRegexes', v)),
+                                  onChanged: (v) =>
+                                      context.read<TeleporterBloc>().add(
+                                        ToggleImportOption('domainsRegexes', v),
+                                      ),
                                 ),
                                 _checkbox(
                                   context,

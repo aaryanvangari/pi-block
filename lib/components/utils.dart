@@ -68,7 +68,10 @@ class PiUtils {
     GlobalBanner.error(context, errorTitle, errorDescription);
   }
 
-  static String getDateFormatter(double milliseconds, {String format = 'yyyy-MM-dd H:m:s.SSS'}) {
+  static String getDateFormatter(
+    double milliseconds, {
+    String format = 'yyyy-MM-dd H:m:s.SSS',
+  }) {
     if (milliseconds == 0) return "N/A";
     final dateTime = DateTime.fromMillisecondsSinceEpoch(
       (milliseconds * 1000).toInt(),

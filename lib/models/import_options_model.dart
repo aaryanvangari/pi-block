@@ -125,12 +125,12 @@ class TeleporterGravityOptions extends Equatable {
 
   @override
   List<Object?> get props => [
-        group,
-        adlist,
-        adlistByGroup,
-        domainlist,
-        domainlistByGroup,
-        client,
-        clientByGroup,
-      ];
+    group,
+    adlist,
+    adlistByGroup,
+    domainlist,
+    domainlistByGroup,
+    client,
+    clientByGroup,
+  ];
 }

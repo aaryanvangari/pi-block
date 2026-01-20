@@ -92,7 +92,7 @@ class NetworkDevicesState extends Equatable {
       initialLoad: initialLoad ?? this.initialLoad,
       loadedDevices: loadedDevices ?? this.loadedDevices,
       searchResults: searchResults ?? this.searchResults,
-      basePage: basePage ?? this.basePage
+      basePage: basePage ?? this.basePage,
     );
   }
 
@@ -117,6 +117,6 @@ class NetworkDevicesState extends Equatable {
     initialLoad,
     loadedDevices,
     searchResults,
-    basePage
+    basePage,
   ];
 }

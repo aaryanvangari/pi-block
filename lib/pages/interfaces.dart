@@ -109,7 +109,9 @@ class _InterfacesViewState extends State<_InterfacesView> {
             Text(
               interface.carrier ? 'Connected' : 'Disconnected',
               style: TextStyle(
-                color: interface.carrier ? KColors.interfaceConnected : KColors.interfaceDisconnected,
+                color: interface.carrier
+                    ? KColors.interfaceConnected
+                    : KColors.interfaceDisconnected,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -348,7 +350,7 @@ class _InterfacesViewState extends State<_InterfacesView> {
                         context.read<InterfacesBloc>().add(InterfacesFetched());
                       },
                       tooltip: "Refresh Data",
-                    )
+                    ),
                   ],
                 ),
               ],
@@ -475,7 +477,7 @@ class MyTreeTile extends StatelessWidget {
                 : const SizedBox.shrink(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Icon(entry.node.icon, size: 20,),
+              child: Icon(entry.node.icon, size: 20),
             ),
             Expanded(child: entry.node.child),
           ],

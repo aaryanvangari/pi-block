@@ -10,10 +10,7 @@ class ImportConfigModel extends Equatable {
   final double took;
 
   /// Default / empty constructor.
-  const ImportConfigModel({
-    this.processed = const [],
-    this.took = 0.0,
-  });
+  const ImportConfigModel({this.processed = const [], this.took = 0.0});
 
   /// Creates a new instance from JSON.
   factory ImportConfigModel.fromJson(Map<String, dynamic> json) {
@@ -28,17 +25,11 @@ class ImportConfigModel extends Equatable {
 
   /// Converts this model to JSON.
   Map<String, dynamic> toJson() {
-    return {
-      'processed': processed,
-      'took': took,
-    };
+    return {'processed': processed, 'took': took};
   }
 
   /// Creates a copy with updated fields.
-  ImportConfigModel copyWith({
-    List<String>? processed,
-    double? took,
-  }) {
+  ImportConfigModel copyWith({List<String>? processed, double? took}) {
     return ImportConfigModel(
       processed: processed ?? this.processed,
       took: took ?? this.took,

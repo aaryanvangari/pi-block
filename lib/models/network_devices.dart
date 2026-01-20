@@ -10,10 +10,7 @@ class NetworkDevicesModel extends Equatable {
   final double took;
 
   /// Empty constructor
-  const NetworkDevicesModel({
-    this.devices = const [],
-    this.took = 0.0,
-  });
+  const NetworkDevicesModel({this.devices = const [], this.took = 0.0});
 
   /// Create instance from JSON
   factory NetworkDevicesModel.fromJson(Map<String, dynamic> json) {
@@ -28,17 +25,11 @@ class NetworkDevicesModel extends Equatable {
 
   /// Convert instance to JSON
   Map<String, dynamic> toJson() {
-    return {
-      'devices': devices.map((e) => e.toJson()).toList(),
-      'took': took,
-    };
+    return {'devices': devices.map((e) => e.toJson()).toList(), 'took': took};
   }
 
   /// Creates a copy of this object with the given fields replaced
-  NetworkDevicesModel copyWith({
-    List<Device>? devices,
-    double? took,
-  }) {
+  NetworkDevicesModel copyWith({List<Device>? devices, double? took}) {
     return NetworkDevicesModel(
       devices: devices ?? this.devices,
       took: took ?? this.took,
@@ -143,15 +134,15 @@ class Device extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        hwaddr,
-        interfaceName,
-        firstSeen,
-        lastQuery,
-        numQueries,
-        macVendor,
-        ips,
-      ];
+    id,
+    hwaddr,
+    interfaceName,
+    firstSeen,
+    lastQuery,
+    numQueries,
+    macVendor,
+    ips,
+  ];
 }
 
 /// Device IP model

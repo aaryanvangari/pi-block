@@ -30,7 +30,6 @@ sealed class InterfacesEvent {}
 
 final class InterfacesFetched extends InterfacesEvent {}
 
-
 @immutable
 sealed class InterfacesState {}
 

@@ -69,10 +69,14 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
       networkAddressColor: networkAddressColor ?? this.networkAddressColor,
       networkAddressBackgroundColor:
           networkAddressBackgroundColor ?? this.networkAddressBackgroundColor,
-      networkDeviceLessThanHour: networkDeviceLessThanHour ?? this.networkDeviceLessThanHour,
-      networkDeviceLessThanDay: networkDeviceLessThanDay ?? this.networkDeviceLessThanDay,
-      networkDeviceGreaterThanDay: networkDeviceGreaterThanDay ?? this.networkDeviceGreaterThanDay,
-      networkDeviceDoesNotUsePihole: networkDeviceDoesNotUsePihole ?? this.networkDeviceDoesNotUsePihole,
+      networkDeviceLessThanHour:
+          networkDeviceLessThanHour ?? this.networkDeviceLessThanHour,
+      networkDeviceLessThanDay:
+          networkDeviceLessThanDay ?? this.networkDeviceLessThanDay,
+      networkDeviceGreaterThanDay:
+          networkDeviceGreaterThanDay ?? this.networkDeviceGreaterThanDay,
+      networkDeviceDoesNotUsePihole:
+          networkDeviceDoesNotUsePihole ?? this.networkDeviceDoesNotUsePihole,
     );
   }
 
@@ -106,17 +110,36 @@ class AppUiTokens extends ThemeExtension<AppUiTokens> {
       tagBackground: Color.lerp(tagBackground, other.tagBackground, t)!,
       editIconColor: Color.lerp(editIconColor, other.editIconColor, t)!,
       deleteIconColor: Color.lerp(deleteIconColor, other.deleteIconColor, t)!,
-      networkAddressColor:
-          Color.lerp(networkAddressColor, other.networkAddressColor, t)!,
+      networkAddressColor: Color.lerp(
+        networkAddressColor,
+        other.networkAddressColor,
+        t,
+      )!,
       networkAddressBackgroundColor: Color.lerp(
         networkAddressBackgroundColor,
         other.networkAddressBackgroundColor,
         t,
       )!,
-      networkDeviceLessThanHour: Color.lerp(networkDeviceLessThanHour, other.networkDeviceLessThanHour, t)!,
-      networkDeviceLessThanDay: Color.lerp(networkDeviceLessThanDay, other.networkDeviceLessThanDay, t)!,
-      networkDeviceGreaterThanDay: Color.lerp(networkDeviceGreaterThanDay, other.networkDeviceGreaterThanDay, t)!,
-      networkDeviceDoesNotUsePihole: Color.lerp(networkDeviceDoesNotUsePihole, other.networkDeviceDoesNotUsePihole, t)! 
+      networkDeviceLessThanHour: Color.lerp(
+        networkDeviceLessThanHour,
+        other.networkDeviceLessThanHour,
+        t,
+      )!,
+      networkDeviceLessThanDay: Color.lerp(
+        networkDeviceLessThanDay,
+        other.networkDeviceLessThanDay,
+        t,
+      )!,
+      networkDeviceGreaterThanDay: Color.lerp(
+        networkDeviceGreaterThanDay,
+        other.networkDeviceGreaterThanDay,
+        t,
+      )!,
+      networkDeviceDoesNotUsePihole: Color.lerp(
+        networkDeviceDoesNotUsePihole,
+        other.networkDeviceDoesNotUsePihole,
+        t,
+      )!,
     );
   }
 }

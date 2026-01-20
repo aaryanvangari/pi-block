@@ -204,8 +204,7 @@ class DrawerWidget extends StatelessWidget {
                     style: KTextStyle.drawerEntryItemTitle,
                   ),
                   leading: Icon(Icons.wifi),
-                  selected:
-                      currentLocation == AppRoutes.interfacesPath,
+                  selected: currentLocation == AppRoutes.interfacesPath,
                   onTap: () {
                     if (Navigator.canPop(context)) {
                       Navigator.of(context).pop(); // closes drawer
@@ -221,8 +220,7 @@ class DrawerWidget extends StatelessWidget {
                     style: KTextStyle.drawerEntryItemTitle,
                   ),
                   leading: Icon(FontAwesomeIcons.networkWired),
-                  selected:
-                      currentLocation == AppRoutes.devicesPath,
+                  selected: currentLocation == AppRoutes.devicesPath,
                   onTap: () {
                     if (Navigator.canPop(context)) {
                       Navigator.of(context).pop(); // closes drawer
@@ -238,8 +236,7 @@ class DrawerWidget extends StatelessWidget {
                     style: KTextStyle.drawerEntryItemTitle,
                   ),
                   leading: Icon(FontAwesomeIcons.fileExport),
-                  selected:
-                      currentLocation == AppRoutes.teleporterPath,
+                  selected: currentLocation == AppRoutes.teleporterPath,
                   onTap: () {
                     if (Navigator.canPop(context)) {
                       Navigator.of(context).pop(); // closes drawer

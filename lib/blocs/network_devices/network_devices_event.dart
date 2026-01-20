@@ -45,9 +45,7 @@ class UpdateCurrentPage extends NetworkDevicesEvent {
 }
 
 final class DeleteNetworkDevice extends NetworkDevicesEvent {
-  const DeleteNetworkDevice({
-    required this.networkDevice,
-  });
+  const DeleteNetworkDevice({required this.networkDevice});
 
   final Device networkDevice;
 

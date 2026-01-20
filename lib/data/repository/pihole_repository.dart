@@ -627,7 +627,9 @@ class PiholeRepository {
   Future<NetworkGatewayModel> getNetworkGateway() async {
     try {
       var result = await piholeDataProvider.getNetworkGateway();
-      NetworkGatewayModel networkGatewayModel = NetworkGatewayModel.fromJson(result);
+      NetworkGatewayModel networkGatewayModel = NetworkGatewayModel.fromJson(
+        result,
+      );
 
       _log.fine(() => 'getNetworkGateway: ${networkGatewayModel.toString()}');
 
@@ -637,10 +639,18 @@ class PiholeRepository {
     }
   }
 
-  Future<NetworkDevicesModel> getNetworkDevices(int maxDevices, int maxAddresses) async {
+  Future<NetworkDevicesModel> getNetworkDevices(
+    int maxDevices,
+    int maxAddresses,
+  ) async {
     try {
-      var result = await piholeDataProvider.getNetworkDevices(maxDevices, maxAddresses);
-      NetworkDevicesModel networkDevicesModel = NetworkDevicesModel.fromJson(result);
+      var result = await piholeDataProvider.getNetworkDevices(
+        maxDevices,
+        maxAddresses,
+      );
+      NetworkDevicesModel networkDevicesModel = NetworkDevicesModel.fromJson(
+        result,
+      );
 
       _log.fine(() => 'getNetworkDevices: ${networkDevicesModel.toString()}');
 

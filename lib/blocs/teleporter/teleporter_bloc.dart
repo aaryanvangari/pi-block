@@ -182,11 +182,7 @@ class TeleporterBloc extends Bloc<TeleporterEvent, TeleporterState> {
           break;
       }
 
-      emit(
-        state.copyWith(
-          status: TeleporterStateStatus.initial,
-        ),
-      );
+      emit(state.copyWith(status: TeleporterStateStatus.initial));
     } catch (e) {
       emit(
         state.copyWith(

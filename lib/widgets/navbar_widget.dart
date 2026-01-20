@@ -37,7 +37,7 @@ class NavbarWidget extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(FontAwesomeIcons.list),
           label: "Domains",
-          tooltip: "Domains"
+          tooltip: "Domains",
         ),
         BottomNavigationBarItem(
           icon: Icon(FontAwesomeIcons.shieldHalved),

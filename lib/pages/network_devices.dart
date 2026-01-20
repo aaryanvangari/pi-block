@@ -592,19 +592,19 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
                         availableWidth: constraints.maxWidth,
                         reservedWidth: _reservedWidth,
                       );
-      
+
                       // Notify Bloc ONLY if sizes changes
                       if (_lastItemsPerPage != itemsPerPage) {
                         _lastItemsPerPage = itemsPerPage;
-      
+
                         context.read<NetworkDevicesBloc>().add(
                           UpdateItemsPerPage(itemsPerPage),
                         );
                       }
-      
+
                       if (_lastPagesPerView != pagesPerView) {
                         _lastPagesPerView = pagesPerView;
-      
+
                         context.read<NetworkDevicesBloc>().add(
                           UpdatePagesPerView(pagesPerView),
                         );
@@ -618,7 +618,8 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
                                     "Network Devices",
@@ -670,7 +671,9 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
                                 valueListenable: isNetworkDeviceSearchVisible,
                                 builder: (context, searchVisible, child) {
                                   if (!searchVisible) {
-                                    return const SizedBox(key: ValueKey('empty'));
+                                    return const SizedBox(
+                                      key: ValueKey('empty'),
+                                    );
                                   }
                                   return Padding(
                                     key: const ValueKey('search'),
@@ -765,7 +768,7 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
                                       child: LayoutBuilder(
                                         builder: (context, constraints) {
                                           final width = constraints.maxWidth;
-      
+
                                           return width < 500
                                               ? RefreshIndicator(
                                                   onRefresh: () async {
@@ -820,7 +823,8 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
                                     if (totalPages > 0)
                                       Center(
                                         child: Pager(
-                                          currentItemsPerPage: state.itemsPerPage,
+                                          currentItemsPerPage:
+                                              state.itemsPerPage,
                                           currentPage: state.page,
                                           totalPages:
                                               (state.total / state.itemsPerPage)

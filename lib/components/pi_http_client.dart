@@ -283,11 +283,7 @@ class PiHttpClient {
     }
   }
 
-  dynamic downloadFile(
-    String urlEndpoint,
-    {
-    dynamic queryParams,
-  }) async {
+  dynamic downloadFile(String urlEndpoint, {dynamic queryParams}) async {
     UserSessionModel? userSessionModel = UserSessionService().getSession();
     String scheme = userSessionModel!.serverUri.scheme;
     String server = userSessionModel.serverUri.host;
@@ -373,20 +369,18 @@ class PiHttpClient {
       _log.info('uploadFile: ${url.toString()}');
 
       final request = http.MultipartRequest('POST', url)
-      ..headers.addAll(headers)
-
-      // JSON part
-      ..fields[jsonField] = jsonEncode(body)
-
-      // File part
-      ..files.add(
-        http.MultipartFile.fromBytes(
-          fileField,
-          fileBytes,
-          filename: fileName,
-          contentType: MediaType('application', 'zip'),
-        ),
-      );
+        ..headers.addAll(headers)
+        // JSON part
+        ..fields[jsonField] = jsonEncode(body)
+        // File part
+        ..files.add(
+          http.MultipartFile.fromBytes(
+            fileField,
+            fileBytes,
+            filename: fileName,
+            contentType: MediaType('application', 'zip'),
+          ),
+        );
 
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);

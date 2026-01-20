@@ -416,7 +416,9 @@ class MaterialTheme {
     networkDeviceLessThanHour: KColors.deviceLessThanHour.withAlpha(170),
     networkDeviceLessThanDay: KColors.deviceLessThanDay.withAlpha(170),
     networkDeviceGreaterThanDay: KColors.deviceGreaterThanDay.withAlpha(170),
-    networkDeviceDoesNotUsePihole: KColors.deviceDoesNotUsePihole.withAlpha(170)
+    networkDeviceDoesNotUsePihole: KColors.deviceDoesNotUsePihole.withAlpha(
+      170,
+    ),
   );
 
   AppUiTokens darkUiTokens(ColorScheme cs) => AppUiTokens(
@@ -442,7 +444,9 @@ class MaterialTheme {
     networkDeviceLessThanHour: KColors.deviceLessThanHour.withAlpha(170),
     networkDeviceLessThanDay: KColors.deviceLessThanDay.withAlpha(170),
     networkDeviceGreaterThanDay: KColors.deviceGreaterThanDay.withAlpha(170),
-    networkDeviceDoesNotUsePihole: KColors.deviceDoesNotUsePihole.withAlpha(170)
+    networkDeviceDoesNotUsePihole: KColors.deviceDoesNotUsePihole.withAlpha(
+      170,
+    ),
   );
 }
 

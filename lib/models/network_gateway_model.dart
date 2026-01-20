@@ -356,7 +356,7 @@ class NetworkInterfaceModel extends Equatable {
           .map((e) => InterfaceAddressModel.fromJson(e))
           .toList(),
       parentDeviceName: json['parent_dev_name'],
-      parentDeviceBusName: json['parent_dev_bus_name']
+      parentDeviceBusName: json['parent_dev_bus_name'],
     );
   }
 
