@@ -183,7 +183,7 @@ class DrawerWidget extends StatelessWidget {
                 ),
                 ListTile(
                   title: Text(
-                    "Pi-Hole Configuration",
+                    "Configuration",
                     style: KTextStyle.drawerEntryItemTitle,
                   ),
                   leading: Icon(Icons.code),
