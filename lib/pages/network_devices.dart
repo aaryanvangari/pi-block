@@ -280,7 +280,7 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: KCardStyle.cardPadding,
         child: Column(
           children: [
             // header row

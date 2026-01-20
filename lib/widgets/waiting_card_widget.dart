@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pi_block/theme/app_styles.dart';
 
 class WaitingCardWidget extends StatelessWidget {
   const WaitingCardWidget({super.key, required this.header});
@@ -10,7 +11,7 @@ class WaitingCardWidget extends StatelessWidget {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: KCardStyle.actionsCardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

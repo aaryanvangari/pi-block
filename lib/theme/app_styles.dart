@@ -36,6 +36,7 @@ class KInputStyle {
 class KCardStyle {
   static final EdgeInsets cardPadding = EdgeInsets.all(8);
   static final EdgeInsets dashboardCardPadding = EdgeInsets.all(12);
+  static final EdgeInsets actionsCardPadding = EdgeInsets.all(16);
 }
 
 class KBottomSheetStyle {

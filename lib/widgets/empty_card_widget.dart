@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pi_block/theme/app_styles.dart';
 
 class EmptyCardWidget extends StatelessWidget {
   const EmptyCardWidget({
@@ -15,7 +16,7 @@ class EmptyCardWidget extends StatelessWidget {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: KCardStyle.actionsCardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -5,6 +5,7 @@ import 'package:pi_block/components/global_banner.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/constants/constants.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
+import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/widgets/circular_loader_in_button.dart';
 
 class TeleporterPage extends StatelessWidget {
@@ -90,7 +91,7 @@ Widget exportWidget(BuildContext context) {
     elevation: 4,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
     child: Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: KCardStyle.cardPadding,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -159,7 +160,7 @@ Widget importWidget(BuildContext context) {
     elevation: 4,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
     child: Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: KCardStyle.cardPadding,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
