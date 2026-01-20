@@ -15,6 +15,8 @@ Application to manage Pi-Hole instance.
 * Pi-Hole configuration as JSON
 * Pi-Hole logs like Dnsmasq, FTL and http web server
 * Actions like Update Gravity
+* Network devices and interfaces
+* Teleporter
 * Responsive design
 * Automatically refresh key features data
 
