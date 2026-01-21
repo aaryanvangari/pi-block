@@ -172,27 +172,40 @@ class GroupsView extends StatelessWidget {
           ),
         ),
       ],
-      contentTitleItems: [
-        const Text('Group: ', style: KTextStyle.listExpandedTitle),
-        const Text('Comment: ', style: KTextStyle.listExpandedTitle),
-        const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
-        const Text('Added: ', style: KTextStyle.listExpandedTitle),
-        const Text('Modified: ', style: KTextStyle.listExpandedTitle),
-      ],
-      contentValueItems: [
-        Text(item.name, style: KTextStyle.listExpandedValue),
-        Text(item.comment, style: KTextStyle.listExpandedValue),
-        Text(item.id.toString(), style: KTextStyle.listExpandedValue),
-        Text(
-          '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
-          style: KTextStyle.listExpandedValue,
-        ),
-        Text(
-          '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
-          style: KTextStyle.listExpandedValue,
-        ),
-      ],
+      contentTitleItems: getEntityDetails(item, "titles"),
+      contentValueItems: getEntityDetails(item, "values"),
     );
+  }
+
+  List<Widget> getEntityDetails(GroupModel item, String entityDetailType) {
+    List<Text> entityTitles = const [
+      Text('Group: ', style: KTextStyle.listExpandedTitle),
+      Text('Comment: ', style: KTextStyle.listExpandedTitle),
+      Text('Database ID: ', style: KTextStyle.listExpandedTitle),
+      Text('Added: ', style: KTextStyle.listExpandedTitle),
+      Text('Modified: ', style: KTextStyle.listExpandedTitle),
+    ];
+
+    List<Widget> entityValues = [
+      Text(item.name, style: KTextStyle.listExpandedValue),
+      Text(item.comment, style: KTextStyle.listExpandedValue),
+      Text(item.id.toString(), style: KTextStyle.listExpandedValue),
+      Text(
+        '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
+        style: KTextStyle.listExpandedValue,
+      ),
+      Text(
+        '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
+        style: KTextStyle.listExpandedValue,
+      ),
+    ];
+    if (entityDetailType == "titles") {
+      return entityTitles;
+    } else if (entityDetailType == "values") {
+      return entityValues;
+    } else {
+      return [];
+    }
   }
 
   Widget _groupRowCard(GroupModel item, BuildContext context) {
@@ -262,53 +275,11 @@ class GroupsView extends StatelessWidget {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Group: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Comment: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Database ID: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Added: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Modified: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                          ],
+                          children: getEntityDetails(item, "titles"),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.name,
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              item.comment,
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              item.id.toString(),
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                          ],
+                          children: getEntityDetails(item, "values"),
                         ),
                       ],
                     ),

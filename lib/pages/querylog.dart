@@ -288,15 +288,26 @@ class _QueryLogViewState extends State<_QueryLogView> {
           ),
         ),
       ],
-      contentTitleItems: [
-        const Text('Domain: ', style: KTextStyle.listExpandedTitle),
-        const Text('Received on: ', style: KTextStyle.listExpandedTitle),
-        const Text('Client: ', style: KTextStyle.listExpandedTitle),
-        const Text('Reply: ', style: KTextStyle.listExpandedTitle),
-        const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
-        const Text('Query Status: ', style: KTextStyle.listExpandedTitle),
-      ],
-      contentValueItems: [
+      contentTitleItems: getEntityDetails(item, "titles"),
+      contentValueItems: getEntityDetails(item, "values", queryStatusColorWithAlpha: queryStatusColorWithAlpha),
+    );
+  }
+
+  List<Widget> getEntityDetails(
+    QueryModel item,
+    String entityDetailType, {
+    Color? queryStatusColorWithAlpha,
+  }) {
+    List<Text> entityTitles = const [
+      Text('Domain: ', style: KTextStyle.listExpandedTitle),
+      Text('Received on: ', style: KTextStyle.listExpandedTitle),
+      Text('Client: ', style: KTextStyle.listExpandedTitle),
+      Text('Reply: ', style: KTextStyle.listExpandedTitle),
+      Text('Database ID: ', style: KTextStyle.listExpandedTitle),
+      Text('Query Status: ', style: KTextStyle.listExpandedTitle),
+    ];
+    List<Widget> entityValues(item, queryStatusColorWithAlpha) {
+      return [
         Text(
           getDomainName(item),
           style: KTextStyle.listExpandedValue,
@@ -313,9 +324,16 @@ class _QueryLogViewState extends State<_QueryLogView> {
         ),
         Text(item.reply.type, style: KTextStyle.listExpandedValue),
         Text('${item.id}', style: KTextStyle.listExpandedValue),
-        getStatusHumanReadableText(item, queryStatusColorWithAlpha),
-      ],
-    );
+        getStatusHumanReadableText(item, queryStatusColorWithAlpha!),
+      ];
+    }
+    if (entityDetailType == "titles") {
+      return entityTitles;
+    } else if (entityDetailType == "values") {
+      return entityValues(item, queryStatusColorWithAlpha);
+    } else {
+      return [];
+    }
   }
 
   Widget _querylogRowCard(QueryModel item, BuildContext context) {
@@ -429,63 +447,11 @@ class _QueryLogViewState extends State<_QueryLogView> {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Domain: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Received on: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Client: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Reply: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Database ID: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Query Status: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                          ],
+                          children: getEntityDetails(item, "titles"),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              getDomainName(item),
-                              style: KTextStyle.listExpandedValue,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 3,
-                            ),
-                            Text(
-                              PiUtils.getDateFormatter(item.time),
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${item.client.name} (${item.client.ip})',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              item.reply.type,
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${item.id}',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            getStatusHumanReadableText(
-                              item,
-                              queryStatusColorWithAlpha,
-                            ),
-                          ],
+                          children: getEntityDetails(item, "values", queryStatusColorWithAlpha: queryStatusColorWithAlpha),
                         ),
                       ],
                     ),

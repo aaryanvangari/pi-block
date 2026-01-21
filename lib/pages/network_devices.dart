@@ -247,32 +247,45 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
           ),
         ),
       ],
-      contentTitleItems: [
-        const Text('Hardware Address: ', style: KTextStyle.listExpandedTitle),
-        const Text('Last Query: ', style: KTextStyle.listExpandedTitle),
-        const Text('First Seen: ', style: KTextStyle.listExpandedTitle),
-        const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
-        const Text('IPs: ', style: KTextStyle.listExpandedTitle),
-      ],
-      contentValueItems: [
-        Text(
-          item.hwaddr,
-          style: KTextStyle.listExpandedValue,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 3,
-        ),
-        Text(
-          PiUtils.getDateFormatter(item.lastQuery.toDouble()),
-          style: KTextStyle.listExpandedValue,
-        ),
-        Text(
-          PiUtils.getDateFormatter(item.firstSeen.toDouble()),
-          style: KTextStyle.listExpandedValue,
-        ),
-        Text('${item.id}', style: KTextStyle.listExpandedValue),
-        Text(buildIPs(item)),
-      ],
+      contentTitleItems : getEntityDetails(item, "titles"),
+      contentValueItems: getEntityDetails(item, "values"),
     );
+  }
+
+  List<Widget> getEntityDetails(Device item, String entityDetailType) {
+    List<Text> entityTitles = const [
+      Text('Hardware Address: ', style: KTextStyle.listExpandedTitle),
+      Text('Last Query: ', style: KTextStyle.listExpandedTitle),
+      Text('First Seen: ', style: KTextStyle.listExpandedTitle),
+      Text('Database ID: ', style: KTextStyle.listExpandedTitle),
+      Text('IPs: ', style: KTextStyle.listExpandedTitle),
+    ];
+
+    List<Widget> entityValues = [
+      Text(
+        item.hwaddr,
+        style: KTextStyle.listExpandedValue,
+        overflow: TextOverflow.ellipsis,
+        maxLines: 3,
+      ),
+      Text(
+        PiUtils.getDateFormatter(item.lastQuery.toDouble()),
+        style: KTextStyle.listExpandedValue,
+      ),
+      Text(
+        PiUtils.getDateFormatter(item.firstSeen.toDouble()),
+        style: KTextStyle.listExpandedValue,
+      ),
+      Text('${item.id}', style: KTextStyle.listExpandedValue),
+      Text(buildIPs(item)),
+    ];
+    if (entityDetailType == "titles") {
+      return entityTitles;
+    } else if (entityDetailType == "values") {
+      return entityValues;
+    } else {
+      return [];
+    }
   }
 
   Widget _networkDeviceRowCard(Device item, BuildContext context) {
@@ -363,56 +376,11 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Hardware Address: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Last Query: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'First Seen: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Database ID: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'IPs: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                          ],
+                          children: getEntityDetails(item, "titles"),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.hwaddr,
-                              style: KTextStyle.listExpandedValue,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 3,
-                            ),
-                            Text(
-                              PiUtils.getDateFormatter(
-                                item.lastQuery.toDouble(),
-                              ),
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              PiUtils.getDateFormatter(
-                                item.firstSeen.toDouble(),
-                              ),
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${item.id}',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(buildIPs(item)),
-                          ],
+                          children: getEntityDetails(item, "values"),
                         ),
                       ],
                     ),
