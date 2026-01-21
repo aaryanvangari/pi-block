@@ -178,7 +178,7 @@ class ClientsView extends StatelessWidget {
           ),
         ),
       ],
-      contentTitleItems : getEntityDetails(item, "titles"),
+      contentTitleItems: getEntityDetails(item, "titles"),
       contentValueItems: getEntityDetails(item, "values"),
     );
   }

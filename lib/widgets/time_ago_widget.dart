@@ -4,10 +4,7 @@ import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/theme/app_ui_context.dart';
 
 class TimeAgoWidget extends StatelessWidget {
-  const TimeAgoWidget({
-    super.key,
-    required this.time,
-  });
+  const TimeAgoWidget({super.key, required this.time});
   final int time;
 
   @override

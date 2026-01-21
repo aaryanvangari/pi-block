@@ -138,7 +138,7 @@ class ListsView extends StatelessWidget {
           ),
         ),
       ],
-      contentTitleItems : getEntityDetails(item, "titles"),
+      contentTitleItems: getEntityDetails(item, "titles"),
       contentValueItems: getEntityDetails(item, "values"),
     );
   }
@@ -150,19 +150,10 @@ class ListsView extends StatelessWidget {
       Text('Groups: ', style: KTextStyle.listExpandedTitle),
       Text('Database ID: ', style: KTextStyle.listExpandedTitle),
       Text('Number of entries: ', style: KTextStyle.listExpandedTitle),
-      Text(
-        'Number of non-domains: ',
-        style: KTextStyle.listExpandedTitle,
-      ),
+      Text('Number of non-domains: ', style: KTextStyle.listExpandedTitle),
       Text('Added to Pi-Hole: ', style: KTextStyle.listExpandedTitle),
-      Text(
-        'Database last modified: ',
-        style: KTextStyle.listExpandedTitle,
-      ),
-      Text(
-        'Content last updated on: ',
-        style: KTextStyle.listExpandedTitle,
-      ),
+      Text('Database last modified: ', style: KTextStyle.listExpandedTitle),
+      Text('Content last updated on: ', style: KTextStyle.listExpandedTitle),
     ];
 
     List<Widget> entityValues = [

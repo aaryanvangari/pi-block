@@ -43,7 +43,9 @@ class _InterfacesViewState extends State<_InterfacesView> {
     return (first / second * 100).toStringAsFixed(2);
   }
 
-  buildStatistics(NetworkInterfaceModel interface) {
+  List<NetworkInterfaceElement> buildStatistics(
+    NetworkInterfaceModel interface,
+  ) {
     return [
       NetworkInterfaceElement(
         child: Text(
@@ -100,7 +102,9 @@ class _InterfacesViewState extends State<_InterfacesView> {
     ];
   }
 
-  buildFurtherDetails(NetworkInterfaceModel interface) {
+  List<NetworkInterfaceElement> buildFurtherDetails(
+    NetworkInterfaceModel interface,
+  ) {
     return [
       NetworkInterfaceElement(
         child: Row(
@@ -175,7 +179,9 @@ class _InterfacesViewState extends State<_InterfacesView> {
     ];
   }
 
-  buildAddressDetails(NetworkInterfaceModel interface) {
+  List<NetworkInterfaceElement> buildAddressDetails(
+    NetworkInterfaceModel interface,
+  ) {
     return [
       for (InterfaceAddressModel interfaceAddressModel in interface.addresses)
         NetworkInterfaceElement(
@@ -253,7 +259,9 @@ class _InterfacesViewState extends State<_InterfacesView> {
     ];
   }
 
-  buildMainNodes(NetworkInterfaceModel interface) {
+  List<NetworkInterfaceElement> buildMainNodes(
+    NetworkInterfaceModel interface,
+  ) {
     return [
       if (interface.speed != null)
         NetworkInterfaceElement(

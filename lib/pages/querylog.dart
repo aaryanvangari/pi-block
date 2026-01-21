@@ -226,7 +226,11 @@ class _QueryLogViewState extends State<_QueryLogView> {
         ),
       ],
       contentTitleItems: getEntityDetails(item, "titles"),
-      contentValueItems: getEntityDetails(item, "values", queryStatusColorWithAlpha: queryStatusColorWithAlpha),
+      contentValueItems: getEntityDetails(
+        item,
+        "values",
+        queryStatusColorWithAlpha: queryStatusColorWithAlpha,
+      ),
     );
   }
 
@@ -264,6 +268,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
         getStatusHumanReadableText(item, queryStatusColorWithAlpha!),
       ];
     }
+
     if (entityDetailType == "titles") {
       return entityTitles;
     } else if (entityDetailType == "values") {
@@ -389,7 +394,12 @@ class _QueryLogViewState extends State<_QueryLogView> {
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: getEntityDetails(item, "values", queryStatusColorWithAlpha: queryStatusColorWithAlpha),
+                          children: getEntityDetails(
+                            item,
+                            "values",
+                            queryStatusColorWithAlpha:
+                                queryStatusColorWithAlpha,
+                          ),
                         ),
                       ],
                     ),
@@ -581,10 +591,8 @@ class _QueryLogViewState extends State<_QueryLogView> {
                   // During searching keyboard appears and layout changes
                   // needs to disable that for smoother search
                   if (!layoutLocked && !isSearching) {
-                    PaginationInfo paginationInfo = layoutService.getPaginationInfo(
-                      constraints,
-                      "querylog",
-                    );
+                    PaginationInfo paginationInfo = layoutService
+                        .getPaginationInfo(constraints, "querylog");
 
                     final int itemsPerPage = paginationInfo.itemsPerPage;
                     final int pagesPerView = paginationInfo.pagesPerView;

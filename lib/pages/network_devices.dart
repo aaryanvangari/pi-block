@@ -187,7 +187,7 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
           ),
         ),
       ],
-      contentTitleItems : getEntityDetails(item, "titles"),
+      contentTitleItems: getEntityDetails(item, "titles"),
       contentValueItems: getEntityDetails(item, "values"),
     );
   }

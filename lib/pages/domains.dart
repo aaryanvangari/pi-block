@@ -243,7 +243,7 @@ class _DomainsViewState extends State<DomainsView> {
           ),
         ),
       ],
-      contentTitleItems : getEntityDetails(item, "titles"),
+      contentTitleItems: getEntityDetails(item, "titles"),
       contentValueItems: getEntityDetails(item, "values"),
     );
   }
