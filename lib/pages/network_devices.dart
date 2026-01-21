@@ -11,6 +11,7 @@ import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/network_devices.dart';
 import 'package:pi_block/components/utils.dart';
+import 'package:pi_block/services/layout_service.dart';
 import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/theme/app_ui_context.dart';
 import 'package:pi_block/widgets/custom_error_widget.dart';
@@ -18,8 +19,6 @@ import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
-import 'dart:io' show Platform;
-
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 class NetworkDevicesPage extends StatelessWidget {
@@ -42,9 +41,6 @@ class _NetworkDevicesView extends StatefulWidget {
 }
 
 class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
-  static const double _rowHeight = 85; // Calculated using DevTools
-  static const double _reservedHeight = 80;
-  static const double _reservedWidth = 30;
   static const int maxIpsToDisplay = 3;
 
   int _lastItemsPerPage = 0;
@@ -53,6 +49,7 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
   final FocusNode searchFocusNode = FocusNode();
   Timer? _debounce;
   bool layoutLocked = false;
+  LayoutService layoutService = LayoutService();
 
   @override
   void initState() {
@@ -65,63 +62,6 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
     });
 
     super.initState();
-  }
-
-  int calculatePagesPerView({
-    required double availableWidth,
-    required double reservedWidth,
-  }) {
-    double pagerButtonWidth = 40;
-    switch (Platform.operatingSystem) {
-      case "ios":
-        pagerButtonWidth = 48;
-        break;
-      case "android":
-        pagerButtonWidth = 40;
-        break;
-      default:
-    }
-    double pagerNumberButtonWidth = 56;
-    switch (Platform.operatingSystem) {
-      case "ios":
-        pagerNumberButtonWidth = 64;
-        break;
-      case "android":
-        pagerNumberButtonWidth = 56;
-        break;
-      default:
-    }
-    const int mandatoryButtonsCount = 4;
-    const int maxPagesView = 5;
-
-    final double mandatoryWidth = mandatoryButtonsCount * pagerButtonWidth;
-
-    final double remainingWidth =
-        availableWidth - mandatoryWidth - reservedWidth;
-
-    if (remainingWidth <= pagerNumberButtonWidth) {
-      return 1;
-    }
-
-    final int maxButtons = (remainingWidth / pagerNumberButtonWidth).floor();
-
-    return maxButtons.clamp(1, maxPagesView);
-  }
-
-  int calculateItemsPerPage({
-    required double availableHeight,
-    required double reservedHeight,
-    required double rowHeight,
-    int minItems = 1,
-    int maxItems = 100,
-  }) {
-    final double usableHeight = availableHeight - reservedHeight;
-
-    if (usableHeight <= 0 || rowHeight <= 0) {
-      return minItems;
-    }
-
-    return (usableHeight / rowHeight).floor().clamp(minItems, maxItems);
   }
 
   String getDeviceName(Device item) {
@@ -552,15 +492,10 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
                     // During searching keyboard appears and layout changes
                     // needs to disable that for smoother search
                     if (!layoutLocked && !isSearching) {
-                      final itemsPerPage = calculateItemsPerPage(
-                        availableHeight: constraints.maxHeight,
-                        reservedHeight: _reservedHeight,
-                        rowHeight: _rowHeight,
-                      );
-                      final pagesPerView = calculatePagesPerView(
-                        availableWidth: constraints.maxWidth,
-                        reservedWidth: _reservedWidth,
-                      );
+                      PaginationInfo paginationInfo = layoutService
+                          .getPaginationInfo(constraints, "devices");
+                      final itemsPerPage = paginationInfo.itemsPerPage;
+                      final pagesPerView = paginationInfo.pagesPerView;
 
                       // Notify Bloc ONLY if sizes changes
                       if (_lastItemsPerPage != itemsPerPage) {
@@ -737,6 +672,17 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
                                       child: LayoutBuilder(
                                         builder: (context, constraints) {
                                           final width = constraints.maxWidth;
+                                          final columns = layoutService
+                                              .calculateGridColumns(
+                                                availableWidth:
+                                                    constraints.maxWidth,
+                                                minItemWidth:
+                                                    KGridCardSizes
+                                                        .devices["height"]!
+                                                        .toDouble() *
+                                                    1.25,
+                                                spacing: 8,
+                                              );
 
                                           return width < 500
                                               ? RefreshIndicator(
@@ -763,16 +709,13 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
                                                     10,
                                                   ),
                                                   gridDelegate:
-                                                      SliverGridDelegateWithMaxCrossAxisExtent(
+                                                      SliverGridDelegateWithFixedCrossAxisCount(
+                                                        crossAxisCount: columns,
                                                         crossAxisSpacing: 8,
                                                         mainAxisSpacing: 8,
                                                         mainAxisExtent:
                                                             KGridCardSizes
                                                                 .devices["height"]!
-                                                                .toDouble(),
-                                                        maxCrossAxisExtent:
-                                                            KGridCardSizes
-                                                                .devices["width"]!
                                                                 .toDouble(),
                                                       ),
                                                   itemCount: devices.length,
