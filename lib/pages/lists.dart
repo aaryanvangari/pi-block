@@ -212,6 +212,7 @@ class ListsView extends StatelessWidget {
       child: Padding(
         padding: KCardStyle.cardPadding,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // header row
             Column(

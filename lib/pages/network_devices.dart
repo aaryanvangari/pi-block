@@ -295,6 +295,7 @@ class _NetworkDevicesViewState extends State<_NetworkDevicesView> {
       child: Padding(
         padding: KCardStyle.cardPadding,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // header row
             Column(
