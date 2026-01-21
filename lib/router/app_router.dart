@@ -123,7 +123,7 @@ class AppRouter {
                 GoRoute(
                   name: AppRoutes.home,
                   path: AppRoutes.homePath,
-                  builder: (_, __) => const DashboardPage(),
+                  builder: (context, state) => const DashboardPage(),
                 ),
               ],
             ),
@@ -133,7 +133,7 @@ class AppRouter {
                 GoRoute(
                   name: AppRoutes.stats,
                   path: AppRoutes.statsPath,
-                  builder: (_, __) => const StatsPage(),
+                  builder: (context, state) => const StatsPage(),
                 ),
               ],
             ),
@@ -143,7 +143,7 @@ class AppRouter {
                 GoRoute(
                   name: AppRoutes.queryLog,
                   path: AppRoutes.queryLogPath,
-                  builder: (_, __) => const QueryLogPage(),
+                  builder: (context, state) => const QueryLogPage(),
                 ),
               ],
             ),
@@ -153,7 +153,7 @@ class AppRouter {
                 GoRoute(
                   name: AppRoutes.domains,
                   path: AppRoutes.domainsPath,
-                  builder: (_, __) => const DomainsPage(),
+                  builder: (context, state) => const DomainsPage(),
                 ),
               ],
             ),
@@ -163,7 +163,7 @@ class AppRouter {
                 GoRoute(
                   name: AppRoutes.lists,
                   path: AppRoutes.listsPath,
-                  builder: (_, __) => const ListsPage(),
+                  builder: (context, state) => const ListsPage(),
                 ),
               ],
             ),

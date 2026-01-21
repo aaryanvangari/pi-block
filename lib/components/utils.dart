@@ -18,7 +18,7 @@ import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 class PiUtils {
   static final Logger _log = AppLogger.get('PiUtils');
 
-  static handleAPIException(dynamic result, bool isAuth) {
+  static dynamic handleAPIException(dynamic result, bool isAuth) {
     if (isAuth) {
       if (result?.containsKey("session") &&
           result?["session"]?["sid"] == null) {
@@ -45,7 +45,7 @@ class PiUtils {
     }
   }
 
-  static handleGeneralException(BuildContext context, Object e) async {
+  static dynamic handleGeneralException(BuildContext context, Object e) async {
     _log.severe('handleGeneralException: ${e.toString()}', e);
     final maxTitleLength = 30;
     String errorClass = e.runtimeType.toString();

@@ -1,7 +1,7 @@
 import 'package:validators/validators.dart' as validators;
 
 class PiValidators {
-  apiTokenValidator(String? value) {
+  dynamic apiTokenValidator(String? value) {
     if (value == null || value.isEmpty) {
       return "API token is required";
     }
@@ -11,7 +11,7 @@ class PiValidators {
     return null;
   }
 
-  serverUrlValidator(String? value) {
+  dynamic serverUrlValidator(String? value) {
     if (value == null || value.isEmpty) {
       return "Server URL is required";
     }
@@ -21,21 +21,21 @@ class PiValidators {
     return null;
   }
 
-  commentValidator(String? value) {
+  dynamic commentValidator(String? value) {
     if (!validators.isLength(value ?? "", 0, 100)) {
       return ("Comment can be max 100 characters.");
     }
     return null;
   }
 
-  addressValidator(String? value) {
+  dynamic addressValidator(String? value) {
     if (!validators.isURL(value)) {
       return "Invalid URL";
     }
     return null;
   }
 
-  domainValidator(String? value) {
+  dynamic domainValidator(String? value) {
     if (value == null || value.isEmpty) {
       return "Domain is required";
     }
@@ -45,7 +45,7 @@ class PiValidators {
     return null;
   }
 
-  groupValidator(String? value) {
+  dynamic groupValidator(String? value) {
     if (value == null || value.isEmpty) {
       return "Group is required";
     }
@@ -55,7 +55,7 @@ class PiValidators {
     return null;
   }
 
-  clientValidator(String? value) {
+  dynamic clientValidator(String? value) {
     if (value == null || value.isEmpty) {
       return "Client is required";
     }
