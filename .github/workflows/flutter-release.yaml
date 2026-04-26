@@ -92,6 +92,27 @@ jobs:
           fi
 
       # ------------------------------------------------------------
+      # Decode keystore
+      # ------------------------------------------------------------
+      - name: Decode Keystore
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/piblock-release-key.jks
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
+      # ------------------------------------------------------------
+      # Create key.properties dynamically
+      # ------------------------------------------------------------
+      - name: Create key.properties
+        run: |
+          cat <<EOF > android/key.properties
+          storePassword=${{ secrets.STORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ variables.KEY_ALIAS }}
+          storeFile=piblock-release-key.jks
+          EOF
+
+      # ------------------------------------------------------------
       # Build artifacts
       # ------------------------------------------------------------
       - name: Build release APK
