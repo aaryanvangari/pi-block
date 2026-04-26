@@ -21,6 +21,7 @@ import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/components/utils.dart';
 import 'package:pi_block/widgets/edit_list_modal_widget.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
+import 'package:pi_block/widgets/time_ago_widget.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 class ListsPage extends StatelessWidget {
@@ -129,19 +130,7 @@ class ListsView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: Icon(Icons.update, size: 16),
-                        ),
-                        Text(
-                          PiUtils.getTimeAgo(item.date_updated, "milliseconds"),
-                          style: KTextStyle.listHeaderTimeTitle,
-                        ),
-                      ],
-                    ),
+                    TimeAgoWidget(time: item.date_updated),
                   ],
                 ),
               ],
@@ -149,67 +138,72 @@ class ListsView extends StatelessWidget {
           ),
         ),
       ],
-      contentTitleItems: [
-        const Text('Comment: ', style: KTextStyle.listExpandedTitle),
-        const Text('Address: ', style: KTextStyle.listExpandedTitle),
-        const Text('Groups: ', style: KTextStyle.listExpandedTitle),
-        const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
-        const Text('Number of entries: ', style: KTextStyle.listExpandedTitle),
-        const Text(
-          'Number of non-domains: ',
-          style: KTextStyle.listExpandedTitle,
-        ),
-        const Text('Added to Pi-Hole: ', style: KTextStyle.listExpandedTitle),
-        const Text(
-          'Database last modified: ',
-          style: KTextStyle.listExpandedTitle,
-        ),
-        const Text(
-          'Content last updated on: ',
-          style: KTextStyle.listExpandedTitle,
-        ),
-      ],
-      contentValueItems: [
-        Text(item.comment, style: KTextStyle.listExpandedValue),
-        Text(item.address, style: KTextStyle.listExpandedValue),
-        BlocBuilder<GroupsBloc, GroupsState>(
-          builder: (context, state) {
-            if (state.status == GroupsStateStatus.success) {
-              String groupsListString = state.groups
-                  .where((group) => (item.groups.contains(group.id)))
-                  .map((group) => group.name)
-                  .join(' • ');
-              return Text(groupsListString);
-            }
-            return const SizedBox.shrink();
-          },
-        ),
-        Text(item.id.toString(), style: KTextStyle.listExpandedValue),
-        Text('${item.number}', style: KTextStyle.listExpandedValue),
-        Text('${item.invalid_domains}', style: KTextStyle.listExpandedValue),
-        Text(
-          '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
-          style: KTextStyle.listExpandedValue,
-        ),
-        Text(
-          '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
-          style: KTextStyle.listExpandedValue,
-        ),
-        Text(
-          '${PiUtils.getTimeAgo(item.date_updated, "milliseconds")} (${PiUtils.getDateFormatter(item.date_updated.toDouble())})',
-          style: KTextStyle.listExpandedValue,
-        ),
-      ],
+      contentTitleItems: getEntityDetails(item, "titles"),
+      contentValueItems: getEntityDetails(item, "values"),
     );
   }
 
-  Widget _domainRowCard(ListsModel item, BuildContext context) {
+  List<Widget> getEntityDetails(ListsModel item, String entityDetailType) {
+    List<Text> entityTitles = const [
+      Text('Comment: ', style: KTextStyle.listExpandedTitle),
+      Text('Address: ', style: KTextStyle.listExpandedTitle),
+      Text('Groups: ', style: KTextStyle.listExpandedTitle),
+      Text('Database ID: ', style: KTextStyle.listExpandedTitle),
+      Text('Number of entries: ', style: KTextStyle.listExpandedTitle),
+      Text('Number of non-domains: ', style: KTextStyle.listExpandedTitle),
+      Text('Added to Pi-Hole: ', style: KTextStyle.listExpandedTitle),
+      Text('Database last modified: ', style: KTextStyle.listExpandedTitle),
+      Text('Content last updated on: ', style: KTextStyle.listExpandedTitle),
+    ];
+
+    List<Widget> entityValues = [
+      Text(item.comment, style: KTextStyle.listExpandedValue),
+      Text(item.address, style: KTextStyle.listExpandedValue),
+      BlocBuilder<GroupsBloc, GroupsState>(
+        builder: (context, state) {
+          if (state.status == GroupsStateStatus.success) {
+            String groupsListString = state.groups
+                .where((group) => (item.groups.contains(group.id)))
+                .map((group) => group.name)
+                .join(' • ');
+            return Text(groupsListString);
+          }
+          return const SizedBox.shrink();
+        },
+      ),
+      Text(item.id.toString(), style: KTextStyle.listExpandedValue),
+      Text('${item.number}', style: KTextStyle.listExpandedValue),
+      Text('${item.invalid_domains}', style: KTextStyle.listExpandedValue),
+      Text(
+        '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
+        style: KTextStyle.listExpandedValue,
+      ),
+      Text(
+        '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
+        style: KTextStyle.listExpandedValue,
+      ),
+      Text(
+        '${PiUtils.getTimeAgo(item.date_updated, "milliseconds")} (${PiUtils.getDateFormatter(item.date_updated.toDouble())})',
+        style: KTextStyle.listExpandedValue,
+      ),
+    ];
+    if (entityDetailType == "titles") {
+      return entityTitles;
+    } else if (entityDetailType == "values") {
+      return entityValues;
+    } else {
+      return [];
+    }
+  }
+
+  Widget _listsRowCard(ListsModel item, BuildContext context) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: KCardStyle.cardPadding,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // header row
             Column(
@@ -287,19 +281,7 @@ class ListsView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: Icon(Icons.update, size: 16),
-                        ),
-                        Text(
-                          PiUtils.getTimeAgo(item.date_updated, "milliseconds"),
-                          style: KTextStyle.listHeaderTimeTitle,
-                        ),
-                      ],
-                    ),
+                    TimeAgoWidget(time: item.date_updated),
                   ],
                 ),
               ],
@@ -317,96 +299,11 @@ class ListsView extends StatelessWidget {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Comment: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Address: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Groups: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Database ID: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Number of entries: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Number of non-domains: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Added to Pi-Hole: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Database last modified: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Content last updated on: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                          ],
+                          children: getEntityDetails(item, "titles"),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.comment,
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              item.address,
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            BlocBuilder<GroupsBloc, GroupsState>(
-                              builder: (context, state) {
-                                if (state.status == GroupsStateStatus.success) {
-                                  String groupsListString = state.groups
-                                      .where(
-                                        (group) =>
-                                            (item.groups.contains(group.id)),
-                                      )
-                                      .map((group) => group.name)
-                                      .join(' • ');
-                                  return Text(groupsListString);
-                                }
-                                return const SizedBox.shrink();
-                              },
-                            ),
-                            Text(
-                              item.id.toString(),
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${item.number}',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${item.invalid_domains}',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${PiUtils.getTimeAgo(item.date_updated, "milliseconds")} (${PiUtils.getDateFormatter(item.date_updated.toDouble())})',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                          ],
+                          children: getEntityDetails(item, "values"),
                         ),
                       ],
                     ),
@@ -700,7 +597,7 @@ class ListsView extends StatelessWidget {
                                                 ),
                                             itemCount: listsModels.length,
                                             itemBuilder: (context, index) {
-                                              return _domainRowCard(
+                                              return _listsRowCard(
                                                 listsModels[index],
                                                 context,
                                               );

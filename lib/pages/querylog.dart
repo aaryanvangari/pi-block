@@ -13,6 +13,7 @@ import 'package:pi_block/data/notifiers.dart';
 import 'package:pi_block/data/repository/pihole_repository.dart';
 import 'package:pi_block/models/query_model.dart';
 import 'package:pi_block/components/utils.dart';
+import 'package:pi_block/services/layout_service.dart';
 import 'package:pi_block/theme/app_colors.dart';
 import 'package:pi_block/theme/app_styles.dart';
 import 'package:pi_block/theme/app_ui_context.dart';
@@ -22,7 +23,6 @@ import 'package:pi_block/widgets/custom_tag.dart';
 import 'package:pi_block/widgets/simple_sheet.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
-import 'dart:io' show Platform;
 
 class QueryLogPage extends StatelessWidget {
   const QueryLogPage({super.key});
@@ -44,22 +44,16 @@ class _QueryLogView extends StatefulWidget {
 }
 
 class _QueryLogViewState extends State<_QueryLogView> {
-  static const double _rowHeight = 71;
-  static const double _reservedHeight = 80;
-  static const double _reservedWidth = 30;
-
   int _lastItemsPerPage = 0;
   int _lastPagesPerView = 0;
   final TextEditingController searchController = TextEditingController();
   final FocusNode searchFocusNode = FocusNode();
   Timer? _debounce;
   bool layoutLocked = false;
+  LayoutService layoutService = LayoutService();
 
   @override
   void initState() {
-    // searchFocusNode.addListener(() {
-    //   layoutLocked = searchFocusNode.hasFocus;
-    // });
     searchFocusNode.addListener(() {
       if (layoutLocked != searchFocusNode.hasFocus) {
         setState(() {
@@ -71,64 +65,7 @@ class _QueryLogViewState extends State<_QueryLogView> {
     super.initState();
   }
 
-  int calculatePagesPerView({
-    required double availableWidth,
-    required double reservedWidth,
-  }) {
-    double pagerButtonWidth = 40;
-    switch (Platform.operatingSystem) {
-      case "ios":
-        pagerButtonWidth = 48;
-        break;
-      case "android":
-        pagerButtonWidth = 40;
-        break;
-      default:
-    }
-    double pagerNumberButtonWidth = 56;
-    switch (Platform.operatingSystem) {
-      case "ios":
-        pagerNumberButtonWidth = 64;
-        break;
-      case "android":
-        pagerNumberButtonWidth = 56;
-        break;
-      default:
-    }
-    const int mandatoryButtonsCount = 4;
-    const int maxPagesView = 5;
-
-    final double mandatoryWidth = mandatoryButtonsCount * pagerButtonWidth;
-
-    final double remainingWidth =
-        availableWidth - mandatoryWidth - reservedWidth;
-
-    if (remainingWidth <= pagerNumberButtonWidth) {
-      return 1;
-    }
-
-    final int maxButtons = (remainingWidth / pagerNumberButtonWidth).floor();
-
-    return maxButtons.clamp(1, maxPagesView);
-  }
-
-  int calculateItemsPerPage({
-    required double availableHeight,
-    required double reservedHeight,
-    required double rowHeight,
-    int minItems = 1,
-    int maxItems = 100,
-  }) {
-    final double usableHeight = availableHeight - reservedHeight;
-
-    if (usableHeight <= 0 || rowHeight <= 0) {
-      return minItems;
-    }
-
-    return (usableHeight / rowHeight).floor().clamp(minItems, maxItems);
-  }
-
-  String getDomainName(query) {
+  String getDomainName(QueryModel query) {
     String domainName = "";
     var queryStatusConstant = QuerylogConstants.queryStatus[query.status];
     if (queryStatusConstant?.containsKey("isCNAME")) {
@@ -288,15 +225,30 @@ class _QueryLogViewState extends State<_QueryLogView> {
           ),
         ),
       ],
-      contentTitleItems: [
-        const Text('Domain: ', style: KTextStyle.listExpandedTitle),
-        const Text('Received on: ', style: KTextStyle.listExpandedTitle),
-        const Text('Client: ', style: KTextStyle.listExpandedTitle),
-        const Text('Reply: ', style: KTextStyle.listExpandedTitle),
-        const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
-        const Text('Query Status: ', style: KTextStyle.listExpandedTitle),
-      ],
-      contentValueItems: [
+      contentTitleItems: getEntityDetails(item, "titles"),
+      contentValueItems: getEntityDetails(
+        item,
+        "values",
+        queryStatusColorWithAlpha: queryStatusColorWithAlpha,
+      ),
+    );
+  }
+
+  List<Widget> getEntityDetails(
+    QueryModel item,
+    String entityDetailType, {
+    Color? queryStatusColorWithAlpha,
+  }) {
+    List<Text> entityTitles = const [
+      Text('Domain: ', style: KTextStyle.listExpandedTitle),
+      Text('Received on: ', style: KTextStyle.listExpandedTitle),
+      Text('Client: ', style: KTextStyle.listExpandedTitle),
+      Text('Reply: ', style: KTextStyle.listExpandedTitle),
+      Text('Database ID: ', style: KTextStyle.listExpandedTitle),
+      Text('Query Status: ', style: KTextStyle.listExpandedTitle),
+    ];
+    List<Widget> entityValues(item, queryStatusColorWithAlpha) {
+      return [
         Text(
           getDomainName(item),
           style: KTextStyle.listExpandedValue,
@@ -313,9 +265,17 @@ class _QueryLogViewState extends State<_QueryLogView> {
         ),
         Text(item.reply.type, style: KTextStyle.listExpandedValue),
         Text('${item.id}', style: KTextStyle.listExpandedValue),
-        getStatusHumanReadableText(item, queryStatusColorWithAlpha),
-      ],
-    );
+        getStatusHumanReadableText(item, queryStatusColorWithAlpha!),
+      ];
+    }
+
+    if (entityDetailType == "titles") {
+      return entityTitles;
+    } else if (entityDetailType == "values") {
+      return entityValues(item, queryStatusColorWithAlpha);
+    } else {
+      return [];
+    }
   }
 
   Widget _querylogRowCard(QueryModel item, BuildContext context) {
@@ -333,8 +293,9 @@ class _QueryLogViewState extends State<_QueryLogView> {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: KCardStyle.cardPadding,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // header row
             Column(
@@ -429,63 +390,16 @@ class _QueryLogViewState extends State<_QueryLogView> {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Domain: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Received on: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Client: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Reply: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Database ID: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Query Status: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                          ],
+                          children: getEntityDetails(item, "titles"),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              getDomainName(item),
-                              style: KTextStyle.listExpandedValue,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 3,
-                            ),
-                            Text(
-                              PiUtils.getDateFormatter(item.time),
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${item.client.name} (${item.client.ip})',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              item.reply.type,
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${item.id}',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            getStatusHumanReadableText(
-                              item,
-                              queryStatusColorWithAlpha,
-                            ),
-                          ],
+                          children: getEntityDetails(
+                            item,
+                            "values",
+                            queryStatusColorWithAlpha:
+                                queryStatusColorWithAlpha,
+                          ),
                         ),
                       ],
                     ),
@@ -677,15 +591,11 @@ class _QueryLogViewState extends State<_QueryLogView> {
                   // During searching keyboard appears and layout changes
                   // needs to disable that for smoother search
                   if (!layoutLocked && !isSearching) {
-                    final itemsPerPage = calculateItemsPerPage(
-                      availableHeight: constraints.maxHeight,
-                      reservedHeight: _reservedHeight,
-                      rowHeight: _rowHeight,
-                    );
-                    final pagesPerView = calculatePagesPerView(
-                      availableWidth: constraints.maxWidth,
-                      reservedWidth: _reservedWidth,
-                    );
+                    PaginationInfo paginationInfo = layoutService
+                        .getPaginationInfo(constraints, "querylog");
+
+                    final int itemsPerPage = paginationInfo.itemsPerPage;
+                    final int pagesPerView = paginationInfo.pagesPerView;
 
                     // Notify Bloc ONLY if sizes changes
                     if (_lastItemsPerPage != itemsPerPage) {
@@ -865,6 +775,17 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                     child: LayoutBuilder(
                                       builder: (context, constraints) {
                                         final width = constraints.maxWidth;
+                                        final columns = layoutService
+                                            .calculateGridColumns(
+                                              availableWidth:
+                                                  constraints.maxWidth,
+                                              minItemWidth:
+                                                  KGridCardSizes
+                                                      .querylog["height"]!
+                                                      .toDouble() *
+                                                  1.25,
+                                              spacing: 8,
+                                            );
 
                                         return width < 500
                                             ? RefreshIndicator(
@@ -891,16 +812,13 @@ class _QueryLogViewState extends State<_QueryLogView> {
                                                   10,
                                                 ),
                                                 gridDelegate:
-                                                    SliverGridDelegateWithMaxCrossAxisExtent(
+                                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                                      crossAxisCount: columns,
                                                       crossAxisSpacing: 8,
                                                       mainAxisSpacing: 8,
                                                       mainAxisExtent:
                                                           KGridCardSizes
                                                               .querylog["height"]!
-                                                              .toDouble(),
-                                                      maxCrossAxisExtent:
-                                                          KGridCardSizes
-                                                              .querylog["width"]!
                                                               .toDouble(),
                                                     ),
                                                 itemCount: queryModels.length,

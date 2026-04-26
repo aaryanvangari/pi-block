@@ -7,16 +7,19 @@ import 'package:pi_block/pages/clients.dart';
 import 'package:pi_block/pages/dashboard.dart';
 import 'package:pi_block/pages/domains.dart';
 import 'package:pi_block/pages/groups.dart';
+import 'package:pi_block/pages/interfaces.dart';
 import 'package:pi_block/pages/lists.dart';
 import 'package:pi_block/pages/local_dns.dart';
 import 'package:pi_block/pages/login.dart';
 import 'package:pi_block/pages/logs.dart';
 import 'package:pi_block/pages/main_scaffold.dart';
+import 'package:pi_block/pages/network_devices.dart';
 import 'package:pi_block/pages/notifications.dart';
 import 'package:pi_block/pages/pi_hole_configuration.dart';
 import 'package:pi_block/pages/querylog.dart';
 import 'package:pi_block/pages/settings.dart';
 import 'package:pi_block/pages/stats.dart';
+import 'package:pi_block/pages/teleporter.dart';
 import 'package:pi_block/pages/welcome.dart';
 import 'package:pi_block/router/gorouter_refresh_stream.dart';
 import 'package:pi_block/router/route_location_notifier.dart';
@@ -44,6 +47,9 @@ class AppRouter {
   final _logsNavigatorKey = GlobalKey<NavigatorState>();
   final _actionsNavigatorKey = GlobalKey<NavigatorState>();
   final _piholeConfigurationNavigatorKey = GlobalKey<NavigatorState>();
+  final _interfacesNavigatorKey = GlobalKey<NavigatorState>();
+  final _devicesNavigatorKey = GlobalKey<NavigatorState>();
+  final _teleporterNavigatorKey = GlobalKey<NavigatorState>();
 
   GoRouter create(
     AuthBloc authBloc,
@@ -117,7 +123,7 @@ class AppRouter {
                 GoRoute(
                   name: AppRoutes.home,
                   path: AppRoutes.homePath,
-                  builder: (_, __) => const DashboardPage(),
+                  builder: (context, state) => const DashboardPage(),
                 ),
               ],
             ),
@@ -127,7 +133,7 @@ class AppRouter {
                 GoRoute(
                   name: AppRoutes.stats,
                   path: AppRoutes.statsPath,
-                  builder: (_, __) => const StatsPage(),
+                  builder: (context, state) => const StatsPage(),
                 ),
               ],
             ),
@@ -137,7 +143,7 @@ class AppRouter {
                 GoRoute(
                   name: AppRoutes.queryLog,
                   path: AppRoutes.queryLogPath,
-                  builder: (_, __) => const QueryLogPage(),
+                  builder: (context, state) => const QueryLogPage(),
                 ),
               ],
             ),
@@ -147,7 +153,7 @@ class AppRouter {
                 GoRoute(
                   name: AppRoutes.domains,
                   path: AppRoutes.domainsPath,
-                  builder: (_, __) => const DomainsPage(),
+                  builder: (context, state) => const DomainsPage(),
                 ),
               ],
             ),
@@ -157,7 +163,7 @@ class AppRouter {
                 GoRoute(
                   name: AppRoutes.lists,
                   path: AppRoutes.listsPath,
-                  builder: (_, __) => const ListsPage(),
+                  builder: (context, state) => const ListsPage(),
                 ),
               ],
             ),
@@ -238,6 +244,36 @@ class AppRouter {
                   name: AppRoutes.piholeConfiguration,
                   path: AppRoutes.piholeConfigurationPath,
                   builder: (context, state) => const PiholeConfigurationPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _interfacesNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.interfaces,
+                  path: AppRoutes.interfacesPath,
+                  builder: (context, state) => InterfacesPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _devicesNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.devices,
+                  path: AppRoutes.devicesPath,
+                  builder: (context, state) => NetworkDevicesPage(),
+                ),
+              ],
+            ),
+            StatefulShellBranch(
+              navigatorKey: _teleporterNavigatorKey,
+              routes: [
+                GoRoute(
+                  name: AppRoutes.teleporter,
+                  path: AppRoutes.teleporterPath,
+                  builder: (context, state) => TeleporterPage(),
                 ),
               ],
             ),

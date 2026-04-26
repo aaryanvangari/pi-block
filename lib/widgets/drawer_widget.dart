@@ -183,7 +183,7 @@ class DrawerWidget extends StatelessWidget {
                 ),
                 ListTile(
                   title: Text(
-                    "Pi-Hole Configuration",
+                    "Configuration",
                     style: KTextStyle.drawerEntryItemTitle,
                   ),
                   leading: Icon(Icons.code),
@@ -196,6 +196,54 @@ class DrawerWidget extends StatelessWidget {
                     navigationShell.goBranch(
                       AppDestination.piholeConfiguration.branchIndex,
                     ); // Pi-Hole Configuration branch index
+                  },
+                ),
+                ListTile(
+                  title: Text(
+                    "Interfaces",
+                    style: KTextStyle.drawerEntryItemTitle,
+                  ),
+                  leading: Icon(Icons.wifi),
+                  selected: currentLocation == AppRoutes.interfacesPath,
+                  onTap: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.of(context).pop(); // closes drawer
+                    }
+                    navigationShell.goBranch(
+                      AppDestination.interfaces.branchIndex,
+                    ); // Interfaces branch index
+                  },
+                ),
+                ListTile(
+                  title: Text(
+                    "Devices",
+                    style: KTextStyle.drawerEntryItemTitle,
+                  ),
+                  leading: Icon(FontAwesomeIcons.networkWired),
+                  selected: currentLocation == AppRoutes.devicesPath,
+                  onTap: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.of(context).pop(); // closes drawer
+                    }
+                    navigationShell.goBranch(
+                      AppDestination.devices.branchIndex,
+                    ); // Devices branch index
+                  },
+                ),
+                ListTile(
+                  title: Text(
+                    "Teleporter",
+                    style: KTextStyle.drawerEntryItemTitle,
+                  ),
+                  leading: Icon(FontAwesomeIcons.fileExport),
+                  selected: currentLocation == AppRoutes.teleporterPath,
+                  onTap: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.of(context).pop(); // closes drawer
+                    }
+                    navigationShell.goBranch(
+                      AppDestination.teleporter.branchIndex,
+                    ); // Teleporter branch index
                   },
                 ),
                 ListTile(

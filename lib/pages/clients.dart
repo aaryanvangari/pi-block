@@ -17,6 +17,7 @@ import 'package:pi_block/widgets/custom_expansion_tile_widget.dart';
 import 'package:pi_block/widgets/edit_client_modal_widget.dart';
 import 'package:pi_block/widgets/empty_widget.dart';
 import 'package:pi_block/components/utils.dart';
+import 'package:pi_block/widgets/time_ago_widget.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 class ClientsPage extends StatelessWidget {
@@ -171,66 +172,59 @@ class ClientsView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: const Icon(Icons.update, size: 16),
-                        ),
-                        Text(
-                          PiUtils.getTimeAgo(
-                            item.date_modified,
-                            "milliseconds",
-                          ),
-                          style: KTextStyle.listHeaderTimeTitle,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                TimeAgoWidget(time: item.date_modified),
               ],
             ),
           ),
         ),
       ],
-      contentTitleItems: [
-        const Text('Client: ', style: KTextStyle.listExpandedTitle),
-        const Text('Comment: ', style: KTextStyle.listExpandedTitle),
-        const Text('Groups: ', style: KTextStyle.listExpandedTitle),
-        const Text('Database ID: ', style: KTextStyle.listExpandedTitle),
-        const Text('Added: ', style: KTextStyle.listExpandedTitle),
-        const Text('Modified: ', style: KTextStyle.listExpandedTitle),
-      ],
-      contentValueItems: [
-        Text(item.client, style: KTextStyle.listExpandedValue),
-        Text(item.comment, style: KTextStyle.listExpandedValue),
-        BlocBuilder<GroupsBloc, GroupsState>(
-          builder: (context, state) {
-            if (state.status == GroupsStateStatus.success) {
-              String groupsListString = state.groups
-                  .where((group) => (item.groups.contains(group.id)))
-                  .map((group) => group.name)
-                  .join(' • ');
-              return Text(groupsListString);
-            }
-            return const SizedBox.shrink();
-          },
-        ),
-        Text(item.id.toString(), style: KTextStyle.listExpandedValue),
-        Text(
-          '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
-          style: KTextStyle.listExpandedValue,
-        ),
-        Text(
-          '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
-          style: KTextStyle.listExpandedValue,
-        ),
-      ],
+      contentTitleItems: getEntityDetails(item, "titles"),
+      contentValueItems: getEntityDetails(item, "values"),
     );
+  }
+
+  List<Widget> getEntityDetails(ClientModel item, String entityDetailType) {
+    List<Text> entityTitles = const [
+      Text('Client: ', style: KTextStyle.listExpandedTitle),
+      Text('Comment: ', style: KTextStyle.listExpandedTitle),
+      Text('Groups: ', style: KTextStyle.listExpandedTitle),
+      Text('Database ID: ', style: KTextStyle.listExpandedTitle),
+      Text('Added: ', style: KTextStyle.listExpandedTitle),
+      Text('Modified: ', style: KTextStyle.listExpandedTitle),
+    ];
+
+    List<Widget> entityValues = [
+      Text(item.client, style: KTextStyle.listExpandedValue),
+      Text(item.comment, style: KTextStyle.listExpandedValue),
+      BlocBuilder<GroupsBloc, GroupsState>(
+        builder: (context, state) {
+          if (state.status == GroupsStateStatus.success) {
+            String groupsListString = state.groups
+                .where((group) => (item.groups.contains(group.id)))
+                .map((group) => group.name)
+                .join(' • ');
+            return Text(groupsListString);
+          }
+          return const SizedBox.shrink();
+        },
+      ),
+      Text(item.id.toString(), style: KTextStyle.listExpandedValue),
+      Text(
+        '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
+        style: KTextStyle.listExpandedValue,
+      ),
+      Text(
+        '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
+        style: KTextStyle.listExpandedValue,
+      ),
+    ];
+    if (entityDetailType == "titles") {
+      return entityTitles;
+    } else if (entityDetailType == "values") {
+      return entityValues;
+    } else {
+      return [];
+    }
   }
 
   Widget _clientRowCard(ClientModel item, BuildContext context) {
@@ -238,8 +232,9 @@ class ClientsView extends StatelessWidget {
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: KCardStyle.cardPadding,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             // header row
             Column(
@@ -269,27 +264,7 @@ class ClientsView extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                          child: const Icon(Icons.update, size: 16),
-                        ),
-                        Text(
-                          PiUtils.getTimeAgo(
-                            item.date_modified,
-                            "milliseconds",
-                          ),
-                          style: KTextStyle.listHeaderTimeTitle,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                TimeAgoWidget(time: item.date_modified),
               ],
             ),
             const SizedBox(height: 10),
@@ -305,72 +280,11 @@ class ClientsView extends StatelessWidget {
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Client: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Comment: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Groups: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Database ID: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Added: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                            const Text(
-                              'Modified: ',
-                              style: KTextStyle.listExpandedTitle,
-                            ),
-                          ],
+                          children: getEntityDetails(item, "titles"),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.client,
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              item.comment,
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            BlocBuilder<GroupsBloc, GroupsState>(
-                              builder: (context, state) {
-                                if (state.status == GroupsStateStatus.success) {
-                                  String groupsListString = state.groups
-                                      .where(
-                                        (group) =>
-                                            (item.groups.contains(group.id)),
-                                      )
-                                      .map((group) => group.name)
-                                      .join(' • ');
-                                  return Text(groupsListString);
-                                }
-                                return const SizedBox.shrink();
-                              },
-                            ),
-                            Text(
-                              item.id.toString(),
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${PiUtils.getTimeAgo(item.date_added, "milliseconds")} (${PiUtils.getDateFormatter(item.date_added.toDouble())})',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                            Text(
-                              '${PiUtils.getTimeAgo(item.date_modified, "milliseconds")} (${PiUtils.getDateFormatter(item.date_modified.toDouble())})',
-                              style: KTextStyle.listExpandedValue,
-                            ),
-                          ],
+                          children: getEntityDetails(item, "values"),
                         ),
                       ],
                     ),

@@ -65,7 +65,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     Text(
                       "Application Settings",
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
