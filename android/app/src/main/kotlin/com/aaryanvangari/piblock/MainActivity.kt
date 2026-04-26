@@ -1,4 +1,4 @@
-package com.example.pi_block
+package com.aaryanvangari.piblock
 
 import io.flutter.embedding.android.FlutterActivity
 
