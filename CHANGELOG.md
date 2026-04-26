@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.5.1](https://github.com/aaryanvangari/pi-block/compare/v5.5.0...v5.5.1) (2026-04-26)
+
+### 👷 CI
+
+* fixed KEY_ALIAS variable ([1a93f9e](https://github.com/aaryanvangari/pi-block/commit/1a93f9e81081b21011e9bae64e4b26facba3aa80)).
+
 ## [v5.5.0](https://github.com/aaryanvangari/pi-block/compare/v5.4.0...v5.5.0) (2026-04-26)
 
 ### ✨ Features
