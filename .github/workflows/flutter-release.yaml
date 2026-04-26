@@ -108,7 +108,7 @@ jobs:
           cat <<EOF > android/key.properties
           storePassword=${{ secrets.STORE_PASSWORD }}
           keyPassword=${{ secrets.KEY_PASSWORD }}
-          keyAlias=${{ variables.KEY_ALIAS }}
+          keyAlias=${{ vars.KEY_ALIAS }}
           storeFile=piblock-release-key.jks
           EOF
 
