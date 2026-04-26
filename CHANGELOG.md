@@ -1,5 +1,40 @@
 # Changelog
 
+## [v5.5.0](https://github.com/aaryanvangari/pi-block/compare/v5.4.0...v5.5.0) (2026-04-26)
+
+### ✨ Features
+
+* fix package name in android and setup release build ([493f04c](https://github.com/aaryanvangari/pi-block/commit/493f04ce6430b9b6a556ef403d09c70b414db9d4)).
+* organize entity details ([24aef15](https://github.com/aaryanvangari/pi-block/commit/24aef15fecf8dd2a0fab73a6aacc0cf373444ffc)).
+* implement time ago widget ([7df2da4](https://github.com/aaryanvangari/pi-block/commit/7df2da4a88cf80902caa74b9c295ea842537f47a)).
+* upgrade packages ([119a2d3](https://github.com/aaryanvangari/pi-block/commit/119a2d36eb07cd4ef8e756aabe5b83f622a8905e)).
+* renamed pi-hole configuration to just configuration ([b43b947](https://github.com/aaryanvangari/pi-block/commit/b43b9479eda053cf278ef1735ee4f7bf2dfb9fb1)).
+* standardize card padding ([bdcbe48](https://github.com/aaryanvangari/pi-block/commit/bdcbe48cb30cd743031a93ce80ca1dfdf036c0e6)).
+* add teleporter page ([b078759](https://github.com/aaryanvangari/pi-block/commit/b0787591cf2ecc05a98761654eee3c1fb5e02725)).
+* add network devices page ([ae5f7c6](https://github.com/aaryanvangari/pi-block/commit/ae5f7c6f03f63304f6d7a4cd04c0b75d9baa60cf)).
+* add tooltips for buttons ([2e3b552](https://github.com/aaryanvangari/pi-block/commit/2e3b552f82813abaa147ba23a810b550d3cb38e4)).
+* add network interfaces page ([9636e52](https://github.com/aaryanvangari/pi-block/commit/9636e52084e03b1604e77a7ed1600a918eb79947)).
+
+### 🐛 Bug Fixes
+
+* fix wrong items per page in grid views ([79c7106](https://github.com/aaryanvangari/pi-block/commit/79c7106c47f2dcb0954e044dc1921d3664f4db0c)).
+* fix entity action bar alignment ([e7f0f60](https://github.com/aaryanvangari/pi-block/commit/e7f0f6013327763339628037081cdc4e1c609ea1)).
+* to be in sync with other pages ([29ee1fd](https://github.com/aaryanvangari/pi-block/commit/29ee1fdd3f79083976f40984bb36d173ca97806d)).
+
+### 👷 CI
+
+* signing build with release keys ([21ce86a](https://github.com/aaryanvangari/pi-block/commit/21ce86a7dc4b94f432833975670dbbe42f24a291)).
+
+### 📝 Documentation
+
+* add support for network devices, interfaces and teleporter ([97a93f7](https://github.com/aaryanvangari/pi-block/commit/97a93f73b57f6fc8dd1f063fbd6d2f27bef6f0e0)).
+
+### 🔨 Refactoring
+
+* dart format suggestions ([b72cb78](https://github.com/aaryanvangari/pi-block/commit/b72cb7846ba8b0db7133f10f191fed32a10cbce6)).
+* flutter analyze suggestions ([b9637b4](https://github.com/aaryanvangari/pi-block/commit/b9637b4f2323ac2a13300b95be2e0b2d83cb70c0)).
+* dart format suggestions ([699ab20](https://github.com/aaryanvangari/pi-block/commit/699ab20d764ced594a672bdbebb3709090cbd226)).
+
 ## [v5.4.0](https://github.com/aaryanvangari/pi-block/compare/v5.3.1...v5.4.0) (2026-01-12)
 
 ### ✨ Features
