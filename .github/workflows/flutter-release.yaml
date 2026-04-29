@@ -146,3 +146,37 @@ jobs:
           files: |
             build/app/outputs/flutter-apk/${{ env.APP_NAME }}-${{ env.VERSION }}.apk
             build/app/outputs/bundle/release/${{ env.APP_NAME }}-${{ env.VERSION }}.aab
+
+      
+      # ------------------------------------------------------------
+      # Decode Play service account
+      # ------------------------------------------------------------
+      - name: Decode Play Service Account
+        run: |
+          echo "$PLAY_SERVICE_ACCOUNT_JSON" | base64 --decode > play-account.json
+        env:
+          PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+
+      # ------------------------------------------------------------
+      # Upload to Play Store
+      # ------------------------------------------------------------
+
+      # Internal (dev builds)
+      - name: Upload Internal
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: play-account.json
+          packageName: ${{ vars.PACKAGE_NAME }}
+          releaseFiles: build/app/outputs/bundle/release/${{ env.APP_NAME }}-${{ env.VERSION }}.aab
+          track: internal
+          status: completed
+
+      # Alpha (release builds)
+      - name: Upload Alpha
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: play-account.json
+          packageName: ${{ vars.PACKAGE_NAME }}
+          releaseFiles: build/app/outputs/bundle/release/${{ env.APP_NAME }}-${{ env.VERSION }}.aab
+          track: alpha
+          status: completed
