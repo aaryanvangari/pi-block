@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.6.1](https://github.com/aaryanvangari/pi-block/compare/v5.6.0...v5.6.1) (2026-04-29)
+
+### 👷 CI
+
+* uploading to only closed testing track in Google Play Console ([620af04](https://github.com/aaryanvangari/pi-block/commit/620af04023981480adac1f8eee7cb7c1e095234c)).
+
 ## [v5.6.0](https://github.com/aaryanvangari/pi-block/compare/v5.5.1...v5.6.0) (2026-04-29)
 
 ### 👷 CI
