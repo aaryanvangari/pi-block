@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.6.0](https://github.com/aaryanvangari/pi-block/compare/v5.5.1...v5.6.0) (2026-04-29)
+
+### 👷 CI
+
+* add Google Play Upload build for internal and closed testing ([cd31494](https://github.com/aaryanvangari/pi-block/commit/cd3149470a9dbdfa4f08e23d968c47f35d1cc93e)).
+
 ## [v5.5.1](https://github.com/aaryanvangari/pi-block/compare/v5.5.0...v5.5.1) (2026-04-26)
 
 ### 👷 CI
