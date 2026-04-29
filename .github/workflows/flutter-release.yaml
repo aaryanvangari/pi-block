@@ -162,14 +162,14 @@ jobs:
       # ------------------------------------------------------------
 
       # Internal (dev builds)
-      - name: Upload Internal
-        uses: r0adkll/upload-google-play@v1
-        with:
-          serviceAccountJson: play-account.json
-          packageName: ${{ vars.PACKAGE_NAME }}
-          releaseFiles: build/app/outputs/bundle/release/${{ env.APP_NAME }}-${{ env.VERSION }}.aab
-          track: internal
-          status: completed
+      # - name: Upload Internal
+      #   uses: r0adkll/upload-google-play@v1
+      #   with:
+      #     serviceAccountJson: play-account.json
+      #     packageName: ${{ vars.PACKAGE_NAME }}
+      #     releaseFiles: build/app/outputs/bundle/release/${{ env.APP_NAME }}-${{ env.VERSION }}.aab
+      #     track: internal
+      #     status: completed
 
       # Alpha (release builds)
       - name: Upload Alpha
