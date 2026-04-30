@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.1](https://github.com/aaryanvangari/pi-block/compare/v5.7.0...v5.7.1) (2026-04-30)
+
+### 👷 CI
+
+* fix error related to ruby version ([349c257](https://github.com/aaryanvangari/pi-block/commit/349c257359b721374796691d912e98345961fd3c)).
+
 ## [v5.7.0](https://github.com/aaryanvangari/pi-block/compare/v5.6.1...v5.7.0) (2026-04-30)
 
 ### 👷 CI
