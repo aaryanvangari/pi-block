@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.0](https://github.com/aaryanvangari/pi-block/compare/v5.6.1...v5.7.0) (2026-04-30)
+
+### 👷 CI
+
+* setup fastlane with android ([c8702aa](https://github.com/aaryanvangari/pi-block/commit/c8702aad30bae6afc3274ed29ad5c168a8f72d83)).
+
 ## [v5.6.1](https://github.com/aaryanvangari/pi-block/compare/v5.6.0...v5.6.1) (2026-04-29)
 
 ### 👷 CI
