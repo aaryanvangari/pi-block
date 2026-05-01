@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.2](https://github.com/aaryanvangari/pi-block/compare/v5.7.1...v5.7.2) (2026-05-01)
+
+### 👷 CI
+
+* cleanup - removed upload to Google Play using actions, fastlane is future ([5074352](https://github.com/aaryanvangari/pi-block/commit/5074352e35e188a2f7596ddd76cbde707486b567)).
+
 ## [v5.7.1](https://github.com/aaryanvangari/pi-block/compare/v5.7.0...v5.7.1) (2026-04-30)
 
 ### 👷 CI
