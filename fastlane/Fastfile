@@ -2,18 +2,9 @@ default_platform(:android)
 
 platform :android do
 
-  def get_version_code
-    properties = {}
-    File.readlines("android/local.properties").each do |line|
-        key, value = line.strip.split('=')
-        properties[key] = value
-    end
-    return properties["flutter.versionCode"]
-  end
-
   desc "Upload new build to Internal testing"
   lane :internal do
-    version_code = get_version_code
+    version_code = ENV["VERSION_CODE"]
     upload_to_play_store(
       track: "internal",
       aab: ENV["AAB_PATH"] || "build/app/outputs/bundle/release/app-release.aab",
