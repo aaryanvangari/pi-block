@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.5](https://github.com/aaryanvangari/pi-block/compare/v5.7.4...v5.7.5) (2026-05-01)
+
+### 👷 CI
+
+* fix extraction of version_code in CI environment ([d5209a5](https://github.com/aaryanvangari/pi-block/commit/d5209a5a8be777b1cc9c586fda987658e1d68b79)).
+
 ## [v5.7.4](https://github.com/aaryanvangari/pi-block/compare/v5.7.3...v5.7.4) (2026-05-01)
 
 ### 👷 CI
