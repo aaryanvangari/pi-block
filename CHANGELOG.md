@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.4](https://github.com/aaryanvangari/pi-block/compare/v5.7.3...v5.7.4) (2026-05-01)
+
+### 👷 CI
+
+* fix missing comma while parsing ([83c1257](https://github.com/aaryanvangari/pi-block/commit/83c1257f0df4a00939c999ab68ab03b9460b3f3f)).
+
 ## [v5.7.3](https://github.com/aaryanvangari/pi-block/compare/v5.7.2...v5.7.3) (2026-05-01)
 
 ### 👷 CI
