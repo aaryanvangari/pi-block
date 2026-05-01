@@ -20,7 +20,7 @@ platform :android do
       version_code: version_code,
       
       # Enable changelog upload
-      skip_upload_metadata: false
+      skip_upload_metadata: false,
       
       skip_upload_images: true,
       skip_upload_screenshots: true
