@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.3](https://github.com/aaryanvangari/pi-block/compare/v5.7.2...v5.7.3) (2026-05-01)
+
+### 👷 CI
+
+* fix version_code error while deploying to Google Play through fastlane ([75bf0dc](https://github.com/aaryanvangari/pi-block/commit/75bf0dcaf8667e7efec7cd8e85f039aae66c6819)).
+
 ## [v5.7.2](https://github.com/aaryanvangari/pi-block/compare/v5.7.1...v5.7.2) (2026-05-01)
 
 ### 👷 CI
