@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.6](https://github.com/aaryanvangari/pi-block/compare/v5.7.5...v5.7.6) (2026-05-01)
+
+### 👷 CI
+
+* fix version_code in alpha lane in fastlane ([74fffd2](https://github.com/aaryanvangari/pi-block/commit/74fffd2a76eda48701b45b09683289046a95247a)).
+
 ## [v5.7.5](https://github.com/aaryanvangari/pi-block/compare/v5.7.4...v5.7.5) (2026-05-01)
 
 ### 👷 CI
