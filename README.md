@@ -27,3 +27,11 @@ Application to manage Pi-Hole instance.
 * Samsung Note 4
 * Samsung Galaxy A52
 * iPhone 13 Mini
+
+## Known Issues
+
+* Flickering when scrolling from bottom to top in stats page
+* Stats - In top clients section, if client has no name it is dispaying as empty
+* Dashboard - In versions section new versions links might not work
+* Logs out when app goes to background for some time
+* Dashboard - Stats, in light mode icon right corner is not rounded off
