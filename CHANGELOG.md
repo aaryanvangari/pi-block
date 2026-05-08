@@ -1,5 +1,12 @@
 # Changelog
 
+## [v5.7.8](https://github.com/aaryanvangari/pi-block/compare/v5.7.7...v5.7.8) (2026-05-08)
+
+### 📝 Documentation
+
+* add banner ([e50934f](https://github.com/aaryanvangari/pi-block/commit/e50934f5f5bb6db0965c13de11aa4511d475c7bc)).
+* add license in README ([2caa97e](https://github.com/aaryanvangari/pi-block/commit/2caa97ea402b88173c855d56f36704e08b26ec53)).
+
 ## [v5.7.7](https://github.com/aaryanvangari/pi-block/compare/v5.7.6...v5.7.7) (2026-05-08)
 
 ### 📝 Documentation
