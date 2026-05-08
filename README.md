@@ -1,5 +1,7 @@
 # Pi Block
 
+![Pi Block Banner](https://github.com/user-attachments/assets/90deb7c7-1870-485a-92d9-f0acda100b4a)
+
 Application to manage Pi-Hole instance.
 
 ## Features
