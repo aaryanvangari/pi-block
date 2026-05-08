@@ -1,5 +1,7 @@
 # Pi Block
 
+![Pi Block Banner](https://github.com/user-attachments/assets/90deb7c7-1870-485a-92d9-f0acda100b4a)
+
 Application to manage Pi-Hole instance.
 
 ## Features
@@ -35,3 +37,8 @@ Application to manage Pi-Hole instance.
 * Dashboard - In versions section new versions links might not work
 * Logs out when app goes to background for some time
 * Dashboard - Stats, in light mode icon right corner is not rounded off
+
+## License
+
+(c) Aaryan Vangari
+MPL-2.0 (see LICENSE.txt)
