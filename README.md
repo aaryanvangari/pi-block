@@ -35,3 +35,8 @@ Application to manage Pi-Hole instance.
 * Dashboard - In versions section new versions links might not work
 * Logs out when app goes to background for some time
 * Dashboard - Stats, in light mode icon right corner is not rounded off
+
+## License
+
+(c) Aaryan Vangari
+MPL-2.0 (see LICENSE.txt)
