@@ -1,5 +1,13 @@
 # Changelog
 
+## [v5.7.7](https://github.com/aaryanvangari/pi-block/compare/v5.7.6...v5.7.7) (2026-05-08)
+
+### 📝 Documentation
+
+* add license ([e91a971](https://github.com/aaryanvangari/pi-block/commit/e91a971dcaabc767033a808d2b5413de30a0a518)).
+* add known issues section in README ([bcc842f](https://github.com/aaryanvangari/pi-block/commit/bcc842f425f9e92697a08f9b8704bd7975f280f5)).
+* updated testing section in README ([111aae7](https://github.com/aaryanvangari/pi-block/commit/111aae75d448d6a94ea326801819e835c9350bb5)).
+
 ## [v5.7.6](https://github.com/aaryanvangari/pi-block/compare/v5.7.5...v5.7.6) (2026-05-01)
 
 ### 👷 CI
