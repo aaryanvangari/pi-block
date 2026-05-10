@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.9](https://github.com/aaryanvangari/pi-block/compare/v5.7.8...v5.7.9) (2026-05-10)
+
+### 📝 Documentation
+
+* add privacy policy ([172f829](https://github.com/aaryanvangari/pi-block/commit/172f829c0a1d99408646ce00eaaa46992debc538)).
+
 ## [v5.7.8](https://github.com/aaryanvangari/pi-block/compare/v5.7.7...v5.7.8) (2026-05-08)
 
 ### 📝 Documentation
