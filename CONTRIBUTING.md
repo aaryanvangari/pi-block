@@ -7,6 +7,8 @@ If you have a question you can open an issue on the repository,
 
 This guide is for Linux environment. This guide might not be complete so please make relevant changes as per your environment
 
+**Note**: Code segments are needed to be added to bashrc or bash_profile
+
 ### Get Flutter
 
 * Install the [Flutter framework](https://docs.flutter.dev/install/quick).
@@ -18,9 +20,6 @@ sudo apt install cmake ninja-build clang
 ```
 
 ### Setting up Flutter environment
-
-* Below code sets up FLUTTER_SDK and its binaries
-* Please add below code to your bash profile
 
 ```shell
 ############
@@ -35,7 +34,7 @@ test -d $HOME/.pub-cache/bin && export PATH=$HOME/.pub-cache/bin:$PATH
 
 * `PIHOLE_SERVER_URL` is your Pi-Hole server URL. It might look like `http://192.168.1.2:8053` for local Pi-Hole servers.
 * `PIHOLE_API_TOKEN` is the API token which you have setup for your Pi-Hole (`FTLCONF_webserver_api_password`)
-* Please add below code to your bash profile
+* This is secure way of handling credentials and easy way to change servers if needed.
 
 ```shell
 ############
@@ -45,11 +44,7 @@ export PIHOLE_SERVER_URL=
 export PIHOLE_API_TOKEN=
 ```
 
-**Note**: This is secure way of handling credentials and easy way to change servers if needed.
-
 ### Setting up Android environment
-
-* Please add below code to your bashrc
 
 ```shell
 ############
@@ -63,11 +58,7 @@ test -d $HOME/.android/avd/ && export ANDROID_AVD_HOME=$HOME/.android/avd/
 test -d $HOME/Android/Sdk/platform-tools/ && export PATH=$HOME/Android/Sdk/platform-tools:$PATH
 ```
 
-**Note**: Above code makes sure avd and platform-tools are available in PATH
-
 ### Setting up Web environment
-
-* Please add below code to your bash profile
 
 ```shell
 # Chroimum browser as default for web
