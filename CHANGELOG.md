@@ -1,5 +1,12 @@
 # Changelog
 
+## [v5.7.10](https://github.com/aaryanvangari/pi-block/compare/v5.7.9...v5.7.10) (2026-05-11)
+
+### 📝 Documentation
+
+* refactor contributing guidelines ([dd8ee05](https://github.com/aaryanvangari/pi-block/commit/dd8ee051f423745a0f5c89f4c9e8b587009f2c9b)).
+* add contributing guidelines ([8931539](https://github.com/aaryanvangari/pi-block/commit/89315395ba5d72e077ad9d32213adf5de27362f2)).
+
 ## [v5.7.9](https://github.com/aaryanvangari/pi-block/compare/v5.7.8...v5.7.9) (2026-05-10)
 
 ### 📝 Documentation
