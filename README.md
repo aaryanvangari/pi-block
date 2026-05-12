@@ -38,6 +38,14 @@ Application to manage Pi-Hole instance.
 * Logs out when app goes to background for some time
 * Dashboard - Stats, in light mode icon right corner is not rounded off
 
+## Contributing guidelines
+
+If anyone wants to contribute to project they can go through [contributing guidelines](./CONTRIBUTING.md)
+
+## Privacy Policy
+
+Please check the app [privacy policy](./PRIVACY_POLICY.md).
+
 ## License
 
 (c) Aaryan Vangari
