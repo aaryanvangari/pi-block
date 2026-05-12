@@ -26,7 +26,7 @@ As an open-source project, you can verify how your data is handled by reviewing 
 
 ## License
 
-Please also read the License which also governs the use of Pi Block as well as liability of its authors.
+Please also read the [License](./LICENSE.txt) which also governs the use of Pi Block as well as liability of its authors.
 
 ## Contact Us
 
