@@ -101,4 +101,26 @@ flutter pub get
 
 For full list of commands follow this link [Flutter CLI](<https://docs.flutter.dev/reference/flutter-cli>)
 
-Happy developing and thank you for your contributions!
+## Troubleshooting
+
+### Cannot authenticate with PiHole' due to API seats exceeded
+
+Reason is that Pi-Hole has 16 sessions as default.
+
+While we are developing with Pi-Block we might definitely cross this limit
+
+If you exceed the sessions limit then run below commands
+
+```shell
+docker exec pihole pihole-FTL --config webserver.api.max_sessions 17
+```
+
+Above command exceeds sessions limit to 17 so that there would be one session available for login
+
+Then login from web and then remove unnecessary sessions
+
+From next time please look out for increasing sessions
+
+**Note**: This issue will be solved if we save credentials in mobile storage which is one of the action item for future
+
+**Happy developing and thank you for your contributions!**
