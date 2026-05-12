@@ -1,5 +1,13 @@
 # Changelog
 
+## [v5.7.11](https://github.com/aaryanvangari/pi-block/compare/v5.7.10...v5.7.11) (2026-05-12)
+
+### 📝 Documentation
+
+* add license links in documents ([ccb2ce4](https://github.com/aaryanvangari/pi-block/commit/ccb2ce459a45e5cd753dc090d73b86a15ceeb056)).
+* add troubleshooting section in contributing guidelines ([6950819](https://github.com/aaryanvangari/pi-block/commit/69508196159bcfb1ddb699190939ee050630acff)).
+* add contributing guidelines and privacy policy in readme ([9d6c946](https://github.com/aaryanvangari/pi-block/commit/9d6c94626969a4b9e2299ca9172a12c479fbaf0a)).
+
 ## [v5.7.10](https://github.com/aaryanvangari/pi-block/compare/v5.7.9...v5.7.10) (2026-05-11)
 
 ### 📝 Documentation
