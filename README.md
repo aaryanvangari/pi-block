@@ -49,4 +49,4 @@ Please check the app [privacy policy](./PRIVACY_POLICY.md).
 ## License
 
 (c) Aaryan Vangari
-MPL-2.0 (see LICENSE.txt)
+MPL-2.0 (see [License](./LICENSE.txt))
