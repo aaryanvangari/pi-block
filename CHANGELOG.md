@@ -1,5 +1,12 @@
 # Changelog
 
+## [v5.7.13](https://github.com/aaryanvangari/pi-block/compare/v5.7.12...v5.7.13) (2026-05-13)
+
+### 📝 Documentation
+
+* add screenshots section in readme ([d8ac6bc](https://github.com/aaryanvangari/pi-block/commit/d8ac6bcb53d0eb1441f9aa43e7930b3e44cf5329)).
+* add secreenshots in assets ([db4f804](https://github.com/aaryanvangari/pi-block/commit/db4f804b91fe32f6475393d80bf932f71d51638a)).
+
 ## [v5.7.12](https://github.com/aaryanvangari/pi-block/compare/v5.7.11...v5.7.12) (2026-05-13)
 
 ### 📝 Documentation
