@@ -1,8 +1,20 @@
 # Pi Block
 
-![Pi Block Banner](https://github.com/user-attachments/assets/90deb7c7-1870-485a-92d9-f0acda100b4a)
+<p align="center">
+  <img width="100" height="100" alt="pi-block-icon" src="https://raw.githubusercontent.com/aaryanvangari/pi-block/master/assets/icon/ic_logo_radius.png" />
+  
+</p>
+<h2 align="center">Pi Block</h2>
+<p align="center">
+  An open-source application to manage Pi-Hole instance, built with Flutter
+</p>
+<p align="center">
+  <a href="#"><img src="https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-US" alt="Download on the App Store" height="48"></a>
+  <a href="https://play.google.com/store/apps/details?id=com.aaryanvangari.piblock">
+  <img alt="Get it on Google Play" title="Google Play" src="https://raw.githubusercontent.com/aaryanvangari/pi-block/master/assets/google-play-badge.png" height="48" alt="Google Play"/></a>
+</p>
 
-Application to manage Pi-Hole instance.
+![Pi Block Banner](https://raw.githubusercontent.com/aaryanvangari/pi-block/master/assets/banner.jpg)
 
 ## Features
 
@@ -29,6 +41,11 @@ Application to manage Pi-Hole instance.
 * Samsung Note 4
 * Samsung Galaxy A52
 * iPhone 13 Mini
+
+## Limitations
+
+* For now only Android builds are available through Google Play
+* iOS build is work in progress
 
 ## Known Issues
 
