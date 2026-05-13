@@ -1,5 +1,12 @@
 # Changelog
 
+## [v5.7.12](https://github.com/aaryanvangari/pi-block/compare/v5.7.11...v5.7.12) (2026-05-13)
+
+### 📝 Documentation
+
+* update introduction section of app in readme ([4b5b608](https://github.com/aaryanvangari/pi-block/commit/4b5b608188ea759e0b6531771a4cd639df1763d0)).
+* add google play badge and app banner ([d11d01a](https://github.com/aaryanvangari/pi-block/commit/d11d01ae2bceded27fa2de8822e7d8b62d86e93c)).
+
 ## [v5.7.11](https://github.com/aaryanvangari/pi-block/compare/v5.7.10...v5.7.11) (2026-05-12)
 
 ### 📝 Documentation
