@@ -16,6 +16,16 @@
 
 ![Pi Block Banner](https://raw.githubusercontent.com/aaryanvangari/pi-block/master/assets/banner.jpg)
 
+## Screenshots
+
+<p>
+  <img src="https://raw.githubusercontent.com/aaryanvangari/pi-block/master/assets/screenshots/dashboard.png" alt="Dashboard" width="400" />
+  <img src="https://raw.githubusercontent.com/aaryanvangari/pi-block/master/assets/screenshots/dashboard-dark.png" alt="Dark dashboard" width="400" />
+  <img src="https://raw.githubusercontent.com/aaryanvangari/pi-block/master/assets/screenshots/graphs.png" alt="Graphs" width="400" />
+  <img src="https://raw.githubusercontent.com/aaryanvangari/pi-block/master/assets/screenshots/metrics.png" alt="Metrics" width="400" />
+  <img src="https://raw.githubusercontent.com/aaryanvangari/pi-block/master/assets/screenshots/query-log.png" alt="Query Log" width="400" />
+</p>
+
 ## Features
 
 * Disable Pi-Hole DNS blocking indefinitely and for specific time periods
