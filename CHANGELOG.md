@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.17](https://github.com/aaryanvangari/pi-block/compare/v5.7.16...v5.7.17) (2026-05-15)
+
+### 📝 Documentation
+
+* fix google play restriction of 8 images for phone in fastlane ([159079c](https://github.com/aaryanvangari/pi-block/commit/159079ce8094c077501c6aaec8069b4cfade3a18)).
+
 ## [v5.7.16](https://github.com/aaryanvangari/pi-block/compare/v5.7.15...v5.7.16) (2026-05-15)
 
 ### 📝 Documentation

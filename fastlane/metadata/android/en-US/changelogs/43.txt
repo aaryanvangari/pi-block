@@ -1,0 +1,1 @@
+* fix google play restriction of 8 images for phone in fastlane
