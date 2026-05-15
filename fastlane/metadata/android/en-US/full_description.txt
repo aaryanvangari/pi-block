@@ -1,0 +1,47 @@
+Pi Block
+
+An open-source application to manage Pi-Hole server
+
+Features
+
+    * Disable Pi-Hole DNS blocking indefinitely and for specific time periods
+    * Overview of Pi-Hole query summary, session, system, versions, dns server, dhcp server information
+    * Bar graphs for Total Queries, Client Activity
+    * Pie charts for Query Types, Upstreams, DNS cache
+    * Statistics on Domains and clients
+    * Browse and search Query Log
+    * Manage domains, lists, groups, clients
+    * Pi-Hole diagnostic messages
+    * Pi-Hole configuration as JSON
+    * Pi-Hole logs like Dnsmasq, FTL and http web server
+    * Actions like Update Gravity
+    * Network devices and interfaces
+    * Teleporter
+    * Responsive design
+    * Automatically refresh key features data
+
+Limitations
+
+    * For now only Android builds are available through Google Play
+    * iOS build is work in progress
+
+Known Issues
+
+    * Flickering when scrolling from bottom to top in stats page
+    * Stats - In top clients section, if client has no name it is dispaying as empty
+    * Dashboard - In versions section new versions links might not work
+    * Logs out when app goes to background for some time
+    * Dashboard - Stats, in light mode icon right corner is not rounded off
+
+More information on https://piblock.opensquares.in
+
+Having Issues?
+
+Please file bug reports or requests for help over on Github:
+https://github.com/aaryanvangari/pi-block/issues/
+
+Legal
+
+License: https://github.com/aaryanvangari/pi-block/blob/master/LICENSE.txt
+
+Privacy Policy: https://github.com/aaryanvangari/pi-block/blob/master/PRIVACY_POLICY.md
