@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.16](https://github.com/aaryanvangari/pi-block/compare/v5.7.15...v5.7.16) (2026-05-15)
+
+### 📝 Documentation
+
+* fix fastlane linting error ([b0e84c0](https://github.com/aaryanvangari/pi-block/commit/b0e84c0af9a7d4878eaa596a1418fc789778035a)).
+
 ## [v5.7.15](https://github.com/aaryanvangari/pi-block/compare/v5.7.14...v5.7.15) (2026-05-15)
 
 ### 📝 Documentation
