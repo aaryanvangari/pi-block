@@ -13,8 +13,12 @@ platform :android do
       # Enable changelog upload
       skip_upload_metadata: false,
       
-      skip_upload_images: true,
-      skip_upload_screenshots: true
+      skip_upload_images: false,
+      skip_upload_screenshots: false
+
+      # Sync images from the metadata directory to the Play Store
+      # Change it to true only if you want to sync, otherwise it will delete existing ones from the Play Store
+      sync_image_upload: true
     )
   end
 
