@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.15](https://github.com/aaryanvangari/pi-block/compare/v5.7.14...v5.7.15) (2026-05-15)
+
+### 📝 Documentation
+
+* add images and upload them through fastlane ([9c34083](https://github.com/aaryanvangari/pi-block/commit/9c34083cc98efebf2788a12a853b07dc866def71)).
+
 ## [v5.7.14](https://github.com/aaryanvangari/pi-block/compare/v5.7.13...v5.7.14) (2026-05-15)
 
 ### 📝 Documentation
