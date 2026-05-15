@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.14](https://github.com/aaryanvangari/pi-block/compare/v5.7.13...v5.7.14) (2026-05-15)
+
+### 📝 Documentation
+
+* add descriptions and title in fastlane metadata ([fce6339](https://github.com/aaryanvangari/pi-block/commit/fce6339fcf58c828ae4628a53809408388876634)).
+
 ## [v5.7.13](https://github.com/aaryanvangari/pi-block/compare/v5.7.12...v5.7.13) (2026-05-13)
 
 ### 📝 Documentation
