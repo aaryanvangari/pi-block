@@ -3,13 +3,35 @@
 All contributions, code, feedback and strategic advice, are welcome.
 If you have a question you can open an issue on the repository,
 
-## Development
+## ⚙️ How to make changes in the code
+
+### 1. Where to begin
+
+Start by looking at the [open issues](https://github.com/aaryanvangari/pi-block/issues/) to contribute code.
+
+Also, take a look at [**Coding Guidelines**](#-coding-guidelines) before making code changes.
+
+### 2. Testing
+
+Make sure that all existing and new tests are passing.
+
+## 📋 Coding Guidelines
+
+- Keep it snimple snupid: [KISS](https://en.wikipedia.org/wiki/KISS_principle)
+- No repeating yourself. [Re-use your own code and that of others](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself).
+- If you want to help, triaging and keeping up with the issue and TODO list is great.
+- Try to follow our coding style and formatting before submitting a patch.
+- All merge requests should come from a feature branch created on your Git fork. Your code will be reviewed, and only merged to the master branch if it doesn't break the build.
+- When you submit a merge request, try to explain what issue you're fixing, and what you're fixing in detail, so it's easier for us to read your patches.
+- Well named methods and code re-usability is preferable to a lot of comments.
+
+## 🛠️ Development
 
 This guide is for Linux environment. This guide might not be complete so please make relevant changes as per your environment
 
 **Note**: Code segments are needed to be added to bashrc or bash_profile
 
-### Get Flutter
+### 1. Get Flutter
 
 * Install the [Flutter framework](https://docs.flutter.dev/install/quick).
 
@@ -19,7 +41,7 @@ This guide is for Linux environment. This guide might not be complete so please 
 sudo apt install cmake ninja-build clang
 ```
 
-### Setting up Flutter environment
+### 2. Setting up Flutter environment
 
 ```shell
 ############
@@ -30,7 +52,7 @@ test -d $FLUTTER_SDK/flutter/bin && export PATH=$FLUTTER_SDK/flutter/bin:$PATH
 test -d $HOME/.pub-cache/bin && export PATH=$HOME/.pub-cache/bin:$PATH
 ```
 
-### Pi Block Credentials setup
+### 3. Pi Block Credentials setup
 
 * `PIHOLE_SERVER_URL` is your Pi-Hole server URL. It might look like `http://192.168.1.2:8053` for local Pi-Hole servers.
 * `PIHOLE_API_TOKEN` is the API token which you have setup for your Pi-Hole (`FTLCONF_webserver_api_password`)
@@ -44,7 +66,7 @@ export PIHOLE_SERVER_URL=
 export PIHOLE_API_TOKEN=
 ```
 
-### Setting up Android environment
+### 4. Setting up Android environment
 
 ```shell
 ############
@@ -58,7 +80,7 @@ test -d $HOME/.android/avd/ && export ANDROID_AVD_HOME=$HOME/.android/avd/
 test -d $HOME/Android/Sdk/platform-tools/ && export PATH=$HOME/Android/Sdk/platform-tools:$PATH
 ```
 
-### Setting up Web environment
+### 5. Setting up Web environment
 
 ```shell
 # Chroimum browser as default for web
@@ -67,16 +89,16 @@ test -f /snap/bin/chromium && export CHROME_EXECUTABLE=/snap/bin/chromium
 
 **Note**: I didn't need web environment but if you are testing on web you might want to set this up
 
-### Run the project
+### 6. Run the project
 
 * Clone this repository.
 * In VSCode -> Debug -> Run and Debug as `pi_block`
 * Open `Debug Console` and check the output.
 * If everything goes fine you will see app in gtk window
 
-### Flutter commands
+## Flutter commands
 
-#### Frequently used commands
+### Frequently used commands
 
 ```shell
 # Gives list of devices
@@ -103,7 +125,7 @@ For full list of commands follow this link [Flutter CLI](<https://docs.flutter.d
 
 ## Troubleshooting
 
-### Cannot authenticate with PiHole' due to API seats exceeded
+### 1. Cannot authenticate with PiHole' due to API seats exceeded
 
 Reason is that Pi-Hole has 16 sessions as default.
 
