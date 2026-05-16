@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.7.18](https://github.com/aaryanvangari/pi-block/compare/v5.7.17...v5.7.18) (2026-05-16)
+
+### 📝 Documentation
+
+* update contributing guide with coding guidelines ([11efe65](https://github.com/aaryanvangari/pi-block/commit/11efe6552c9af9fad34d0925c246273a7073d3cd)).
+
 ## [v5.7.17](https://github.com/aaryanvangari/pi-block/compare/v5.7.16...v5.7.17) (2026-05-15)
 
 ### 📝 Documentation
