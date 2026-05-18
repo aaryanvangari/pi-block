@@ -1,5 +1,15 @@
 # Changelog
 
+## [v5.8.0](https://github.com/aaryanvangari/pi-block/compare/v5.7.18...v5.8.0) (2026-05-18)
+
+### ✨ Features
+
+* ios build setup ([73562b3](https://github.com/aaryanvangari/pi-block/commit/73562b32ad774a2081b40ef4a393b58efbe7e4bf)).
+
+### 👷 CI
+
+* ios release setup ([a3cf760](https://github.com/aaryanvangari/pi-block/commit/a3cf760566c9d3277c749d1b22de137194efc703)).
+
 ## [v5.7.18](https://github.com/aaryanvangari/pi-block/compare/v5.7.17...v5.7.18) (2026-05-16)
 
 ### 📝 Documentation
