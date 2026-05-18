@@ -45,5 +45,23 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Photo Library Read Access -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Pi Block needs access to your photo library so you can select and import files and images.</string>
+
+	<!-- Photo Library Write/Save Access -->
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Pi Block needs permission to save exported files and images to your photo library.</string>
+
+	<!-- Camera Access -->
+	<!-- <key>NSCameraUsageDescription</key>
+	<string>Pi Block needs camera access to capture photos and scan/import content.</string> -->
+
+	<!-- File/Documents Access -->
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+
+	<key>UIFileSharingEnabled</key>
+	<true/>
 </dict>
 </plist>
