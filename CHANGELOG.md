@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.8.2](https://github.com/aaryanvangari/pi-block/compare/v5.8.1...v5.8.2) (2026-05-18)
+
+### 👷 CI
+
+* import signing certificate and install provisioning profile ([5f096e5](https://github.com/aaryanvangari/pi-block/commit/5f096e5bec7ec69393bedc0e82d4e002b71c1956)).
+
 ## [v5.8.1](https://github.com/aaryanvangari/pi-block/compare/v5.8.0...v5.8.1) (2026-05-18)
 
 ### 👷 CI
