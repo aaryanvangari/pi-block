@@ -302,7 +302,7 @@ jobs:
       - name: Install CocoaPods
         run: |
           cd ios
-          pod install --deployment
+          pod install
 
       # ------------------------------------------------------------
       # Decode App Store Connect API key
