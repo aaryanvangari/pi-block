@@ -1,7 +1,7 @@
 name: pi_block
 description: "Application to manage Pi-Hole instance"
 publish_to: 'none'
-version: 5.8.0+45
+version: 5.8.1+46
 homepage: "https://piblock.opensquares.in"
 repository: "https://github.com/aaryanvangari/pi-block/"
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.8.1](https://github.com/aaryanvangari/pi-block/compare/v5.8.0...v5.8.1) (2026-05-18)
+
+### 👷 CI
+
+* fix ios build during cocoa pods installation ([7159afa](https://github.com/aaryanvangari/pi-block/commit/7159afae3b469e4c978c53a5d1fa148f60a9820d)).
+
 ## [v5.8.0](https://github.com/aaryanvangari/pi-block/compare/v5.7.18...v5.8.0) (2026-05-18)
 
 ### ✨ Features
