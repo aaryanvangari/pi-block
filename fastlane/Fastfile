@@ -1,4 +1,5 @@
 default_platform(:android)
+opt_out_usage
 
 platform :android do
 
@@ -39,8 +40,14 @@ platform :android do
 end
 
 platform :ios do
-  desc "Deploy iOS"
-  lane :deploy do
-    # later: TestFlight / App Store
+  desc "Upload to TestFlight"
+
+  lane :beta do
+    upload_to_testflight(
+      ipa: ENV["IPA_PATH"],
+      api_key_path: "./fastlane/app_store_connect_api_key.json",
+      # submit_for_review: true,
+      # automatic_release: false
+    )
   end
 end
