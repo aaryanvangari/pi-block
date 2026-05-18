@@ -317,9 +317,10 @@ jobs:
       # ------------------------------------------------------------
       # Create App Store Connect API Key JSON
       # ------------------------------------------------------------
+        # KEY_CONTENT=$(awk '{printf "%s\\n", $0}' fastlane/AuthKey.p8)
       - name: Create App Store Connect API Key JSON
         run: |
-          KEY_CONTENT=$(awk '{printf "%s\\n", $0}' fastlane/AuthKey.p8)
+          KEY_CONTENT=$(python3 -c "import json; print(json.dumps(open('fastlane/AuthKey.p8').read()))")
 
           cat > fastlane/app_store_connect_api_key.json <<EOF
           {
@@ -328,6 +329,13 @@ jobs:
             "key": "$KEY_CONTENT"
           }
           EOF
+
+      # ------------------------------------------------------------
+      # Validate API key JSON (for debugging)
+      # ------------------------------------------------------------
+      - name: Validate API key JSON
+        run: |
+          cat fastlane/app_store_connect_api_key.json
 
       # # ------------------------------------------------------------
       # # Listing Xcode versions (for debugging)
