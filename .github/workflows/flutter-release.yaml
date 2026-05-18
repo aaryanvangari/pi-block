@@ -335,7 +335,17 @@ jobs:
       # ------------------------------------------------------------
       - name: Validate API key JSON
         run: |
-          cat fastlane/app_store_connect_api_key.json
+          python3 -c "
+          import json
+
+          with open('fastlane/app_store_connect_api_key.json') as f:
+              data = json.load(f)
+
+          print('key_id exists:', 'key_id' in data)
+          print('issuer_id exists:', 'issuer_id' in data)
+          print('key exists:', 'key' in data)
+          print('private key header valid:', data['key'].startswith('-----BEGIN PRIVATE KEY-----'))
+          "
 
       # # ------------------------------------------------------------
       # # Listing Xcode versions (for debugging)
