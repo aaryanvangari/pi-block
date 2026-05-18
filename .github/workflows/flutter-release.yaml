@@ -390,13 +390,20 @@ jobs:
         run: security find-identity -v -p codesigning
 
       # ------------------------------------------------------------
+      # Show provisioning profile info (for debugging)
+      # ------------------------------------------------------------
+      - name: Show provisioning profiles
+        run: |
+          ls ~/Library/MobileDevice/Provisioning\ Profiles
+
+      # ------------------------------------------------------------
       # Build IPA
       # ------------------------------------------------------------
       - name: Build IPA
         run: |
           flutter build ipa \
             --release \
-            --export-method app-store
+            --export-options-plist=ios/ExportOptions.plist
 
       # ------------------------------------------------------------
       # Rename IPA
