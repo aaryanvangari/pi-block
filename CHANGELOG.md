@@ -1,5 +1,11 @@
 # Changelog
 
+## [v5.8.3](https://github.com/aaryanvangari/pi-block/compare/v5.8.2...v5.8.3) (2026-05-18)
+
+### 👷 CI
+
+* fix No profiles for bundleid were found by using manual provisioning profile ([7add1c5](https://github.com/aaryanvangari/pi-block/commit/7add1c57673310239b73442f3741bd3f3c6e8756)).
+
 ## [v5.8.2](https://github.com/aaryanvangari/pi-block/compare/v5.8.1...v5.8.2) (2026-05-18)
 
 ### 👷 CI
