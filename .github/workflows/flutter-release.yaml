@@ -329,19 +329,65 @@ jobs:
           }
           EOF
 
-      # ------------------------------------------------------------
-      # Listing Xcode versions (for debugging)
-      # ------------------------------------------------------------
-      - name: List installed Xcode versions
-        run: ls /Applications | grep Xcode
+      # # ------------------------------------------------------------
+      # # Listing Xcode versions (for debugging)
+      # # ------------------------------------------------------------
+      # - name: List installed Xcode versions
+      #   run: ls /Applications | grep Xcode
 
       # ------------------------------------------------------------
       # Pinning Xcode version (required for Flutter 3.35+)
       # ------------------------------------------------------------
-      # - name: Select Xcode
-      #   run: sudo xcode-select -s /Applications/Xcode_26.app
-      # /Applications/Xcode_26.0.app
-      # /Applications/Xcode.app
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.3.0.app/Contents/Developer
+
+      # ------------------------------------------------------------
+      # Import Signing Certificate
+      # ------------------------------------------------------------
+      - name: Import signing certificate
+        run: |
+          echo "$IOS_P12_BASE64" | base64 --decode > certificate.p12
+
+          security create-keychain -p "" build.keychain-db
+          security default-keychain -s build.keychain-db
+          security unlock-keychain -p "" build.keychain-db
+
+          security set-keychain-settings -lut 21600 build.keychain-db
+
+          security import certificate.p12 \
+            -k build.keychain-db \
+            -P "$IOS_P12_PASSWORD" \
+            -T /usr/bin/codesign
+
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s \
+            -k "" \
+            build.keychain-db
+
+          security list-keychains -d user -s build.keychain-db
+
+        env:
+          IOS_P12_BASE64: ${{ secrets.IOS_P12_BASE64 }}
+          IOS_P12_PASSWORD: ${{ secrets.IOS_P12_PASSWORD }}
+
+      # ------------------------------------------------------------
+      # Install provisioning profile
+      # ------------------------------------------------------------
+      - name: Install provisioning profile
+        run: |
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+
+          echo "$IOS_MOBILEPROVISION_BASE64" | base64 --decode > \
+            ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+        env:
+          IOS_MOBILEPROVISION_BASE64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
+
+      # ------------------------------------------------------------
+      # Show keychain info (for debugging)
+      # ------------------------------------------------------------
+      - name: Show signing identities
+        run: security find-identity -v -p codesigning
 
       # ------------------------------------------------------------
       # Build IPA
@@ -380,3 +426,13 @@ jobs:
         run: bundle exec fastlane ios beta
         env:
           IPA_PATH: build/ios/ipa/${{ env.APP_NAME }}-${{ needs.verify.outputs.version }}.ipa
+
+      # # ------------------------------------------------------------
+      # # Cleanup secrets from filesystem
+      # # ------------------------------------------------------------
+      # - name: Cleanup secrets
+      #   if: always()
+      #   run: |
+      #     rm -f certificate.p12
+      #     rm -f fastlane/AuthKey.p8
+      #     rm -f fastlane/app_store_connect_api_key.json
