@@ -1,0 +1,2 @@
+* fix printing sensitive data of private key
+* fix authentication issues of App Store Connect

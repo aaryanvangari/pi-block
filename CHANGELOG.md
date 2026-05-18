@@ -1,5 +1,12 @@
 # Changelog
 
+## [v5.8.4](https://github.com/aaryanvangari/pi-block/compare/v5.8.3...v5.8.4) (2026-05-18)
+
+### 👷 CI
+
+* fix printing sensitive data of private key ([75dc61f](https://github.com/aaryanvangari/pi-block/commit/75dc61fcc214c576e4afd0b435d39702ac3281b5)).
+* fix authentication issues of App Store Connect ([42a0a13](https://github.com/aaryanvangari/pi-block/commit/42a0a13d89d26e29c79c969f529fdba197511211)).
+
 ## [v5.8.3](https://github.com/aaryanvangari/pi-block/compare/v5.8.2...v5.8.3) (2026-05-18)
 
 ### 👷 CI
